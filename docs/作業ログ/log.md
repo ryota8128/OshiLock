@@ -24,5 +24,21 @@
 - **AI処理**: 1回のAPI呼び出しで5処理（カテゴリ判定、重複チェック、URL一致度、カード生成、通知タイミング）
 - **SNS Share**: カード詳細画面から共有ボタン、OS標準シェアシート、アプリリンク付き
 
+### モノレポ・API セットアップ（前回）
+- pnpm + Turborepo モノレポ構成構築
+- `apps/be-api`: Hono API（port 3012、`/` `/health` エンドポイント）
+- `packages/shared`: 共有型定義（Card, CardCategory, SourceReliability）
+- pnpm catalog でバージョン一元管理
+- コーディングガイドライン作成（`docs/coding-guidlines/`）
+
+### Expo モバイルアプリ セットアップ
+- `apps/mobile` に Expo SDK 54 + tabs テンプレートで作成
+- Expo Router 6（ファイルベースルーティング）採用
+- `@oshilock/mobile` として pnpm ワークスペースに統合
+- `@oshilock/shared` を依存に追加
+- app.json: name=OshiLock, slug=oshilock, scheme=oshilock に設定
+- **Tailscale 経由で Expo Go 実機確認成功**
+- 開発コマンドを README.md / CLAUDE.md に記載
+
 ### 次のステップ
-- Expo + Hono プロジェクト初期セットアップ
+- タブ構成カスタマイズ（ホーム / タイムライン / 気になる / マイページ）
