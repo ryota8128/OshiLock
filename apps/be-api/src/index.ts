@@ -1,14 +1,19 @@
-import { Hono } from 'hono'
+import { serve } from "@hono/node-server";
+import { SourceReliability } from "@oshilock/shared";
+import { Hono } from "hono";
 
-const app = new Hono()
+const app = new Hono();
 
-const welcomeStrings = [
-  'Hello Hono!',
-  'To learn more about Hono on Vercel, visit https://vercel.com/docs/frameworks/backend/hono'
-]
+app.get("/", (c) => {
+  return c.json({ name: "OshiLock API", status: "ok" });
+});
 
-app.get('/', (c) => {
-  return c.text(welcomeStrings.join('\n\n'))
-})
+app.get("/health", (c) => {
+  return c.json({ status: "ok" });
+});
 
-export default app
+serve({ fetch: app.fetch, port: 3012 }, (info) => {
+  console.log(`OshiLock API running at http://localhost:${info.port}`);
+});
+
+export default app;
