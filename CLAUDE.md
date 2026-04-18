@@ -11,6 +11,11 @@
 - 通知: Expo Push Notifications
 - 認証: Apple Sign In + Google Sign In
 
+## 開発コマンド
+- API: `pnpm --filter @oshilock/be-api dev`
+- Mobile: `pnpm --filter @oshilock/mobile start`
+- Mobile (Tailscale): `REACT_NATIVE_PACKAGER_HOSTNAME=$(tailscale ip -4) pnpm --filter @oshilock/mobile start`
+
 ## ドキュメント構成
 - `docs/要件定義/概要.md` — 要件定義・確定事項・未決定事項
 - `docs/要件定義/機能詳細.md` — 機能の詳細仕様
