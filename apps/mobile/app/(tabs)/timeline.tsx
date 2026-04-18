@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { router } from 'expo-router';
 import { colors, spacing, typography, radii } from '@/constants/theme';
 import { EventCardItem } from '@/components/EventCardItem';
 import { MOCK_CARDS, MOCK_OSHI, MOCK_POSTER_NAMES } from '@/data/mock';
@@ -59,7 +60,7 @@ export default function TimelineScreen() {
       {/* Card list */}
       <ScrollView style={styles.cardScroll} contentContainerStyle={styles.cardContent}>
         {filteredCards.map(card => (
-          <EventCardItem key={card.id} card={card} posterNames={MOCK_POSTER_NAMES} />
+          <EventCardItem key={card.id} card={card} posterNames={MOCK_POSTER_NAMES} onPress={() => router.push(`/event/${card.id}`)} />
         ))}
         {filteredCards.length === 0 && (
           <Text style={styles.emptyText}>カードがありません</Text>
