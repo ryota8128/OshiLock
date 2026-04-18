@@ -16,6 +16,8 @@ export type { Oshi } from "./domain/models/oshi";
 export type { Comment } from "./domain/models/comment";
 export type { Post } from "./domain/models/post";
 export type { Favorite } from "./domain/models/favorite";
+export type { UserSettings } from "./domain/models/user-settings";
+export type { UserPushToken } from "./domain/models/user-push-token";
 export type { EventCardReport } from "./domain/models/event-card-report";
 export type { CommentReport } from "./domain/models/comment-report";
 export type { EventCategory } from "./domain/enum/event-category";
