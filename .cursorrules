@@ -1,0 +1,12 @@
+# コミットメッセージ
+- 30文字以内で日本語で生成してください。
+- conventional commit のルールに従ってください。
+	feat: 機能追加
+	fix: バグ修正
+	chore: その他
+	docs: ドキュメント更新
+	style: コードスタイル修正
+	refactor: リファクタリング
+	test: テスト修正
+	perf: パフォーマンス改善
+	build: ビルド関連の変更
