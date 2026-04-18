@@ -1,0 +1,18 @@
+{
+  "name": "@oshilock/be-api",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "vercel build",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "hono": "^4",
+    "@oshilock/shared": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5",
+    "vercel": "^51"
+  }
+}
