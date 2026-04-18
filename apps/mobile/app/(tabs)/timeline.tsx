@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, spacing, typography, radii } from '@/constants/theme';
 import { EventCardItem } from '@/components/EventCardItem';
-import { MOCK_CARDS, MOCK_OSHI } from '@/data/mock';
+import { MOCK_CARDS, MOCK_OSHI, MOCK_POSTER_NAMES } from '@/data/mock';
 import type { EventCategory } from '@oshilock/shared';
 
 const FILTERS = [
@@ -59,7 +59,7 @@ export default function TimelineScreen() {
       {/* Card list */}
       <ScrollView style={styles.cardScroll} contentContainerStyle={styles.cardContent}>
         {filteredCards.map(card => (
-          <EventCardItem key={card.id} card={card} />
+          <EventCardItem key={card.id} card={card} posterNames={MOCK_POSTER_NAMES} />
         ))}
         {filteredCards.length === 0 && (
           <Text style={styles.emptyText}>カードがありません</Text>

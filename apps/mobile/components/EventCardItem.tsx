@@ -2,12 +2,12 @@ import { View, Text, StyleSheet, Pressable } from "react-native";
 import {
   colors,
   categoryColors,
-  spacing,
   radii,
   typography,
 } from "@/constants/theme";
 import { UtcIsoString, TIMEZONES } from "@oshilock/shared";
 import type { EventInfoWithUserContext, EventCategory } from "@oshilock/shared";
+import { MessageCircle, Bookmark, Trophy } from "lucide-react-native";
 
 function formatCountdown(
   datetime: string | null,
@@ -45,52 +45,37 @@ function formatSchedule(
 
 type Props = {
   card: EventInfoWithUserContext;
+  posterNames?: Record<string, string>;
   onPress?: () => void;
 };
 
 const catKey = (cat: EventCategory): keyof typeof categoryColors => {
   switch (cat) {
-    case "EVENT":
-      return "event";
-    case "MEDIA":
-      return "media";
-    case "SNS":
-      return "sns";
-    case "NEWS":
-      return "news";
-    default:
-      return "news";
+    case "EVENT": return "event";
+    case "MEDIA": return "media";
+    case "SNS": return "sns";
+    case "NEWS": return "news";
+    default: return "news";
   }
 };
 
-export function EventCardItem({ card, onPress }: Props) {
+export function EventCardItem({ card, posterNames, onPress }: Props) {
   const c = categoryColors[catKey(card.category)];
   const countdown = formatCountdown(card.schedule.datetime as string | null);
+  const fastestId = card.fastestPosterIds[0];
+  const fastestName = fastestId && posterNames?.[fastestId] || null;
 
   return (
     <Pressable onPress={onPress} style={styles.wrapper}>
       {!card.isRead && <View style={styles.unreadDot} />}
 
       <View
-        style={[
-          styles.band,
-          { backgroundColor: c.bg, borderBottomColor: c.line },
-        ]}
+        style={[styles.band, { backgroundColor: c.bg, borderBottomColor: c.line }]}
       >
         <Text style={[styles.catLabel, { color: c.fg }]}>{c.label}</Text>
         {countdown && (
-          <View
-            style={[
-              styles.countdownBadge,
-              countdown.isToday && styles.todayBadge,
-            ]}
-          >
-            <Text
-              style={[
-                styles.countdownText,
-                countdown.isToday && styles.todayText,
-              ]}
-            >
+          <View style={[styles.countdownBadge, countdown.isToday && styles.todayBadge]}>
+            <Text style={[styles.countdownText, countdown.isToday && styles.todayText]}>
               {countdown.text}
             </Text>
           </View>
@@ -109,12 +94,28 @@ export function EventCardItem({ card, onPress }: Props) {
         </Text>
 
         <View style={styles.metaRow}>
-          {card.fastestPosterIds[0] && <Text style={styles.meta}>🥇 最速</Text>}
+          {fastestName && (
+            <View style={styles.metaItem}>
+              <Trophy size={13} color={colors.medalGold} strokeWidth={1.8} />
+              <Text style={styles.fastestText}>{fastestName}</Text>
+            </View>
+          )}
           <View style={styles.metaRight}>
-            <Text style={styles.meta}>💬 {card.commentCount}</Text>
-            <Text style={[styles.meta, card.checked && styles.checkedMeta]}>
-              ☆ {card.favoriteCount}
-            </Text>
+            <View style={styles.metaItem}>
+              <MessageCircle size={14} color={colors.inkSoft} strokeWidth={1.5} />
+              <Text style={styles.meta}>{card.commentCount}</Text>
+            </View>
+            <View style={styles.metaItem}>
+              <Bookmark
+                size={14}
+                color={card.checked ? colors.watchedRose : colors.inkSoft}
+                strokeWidth={1.5}
+                fill={card.checked ? colors.watchedRose : "none"}
+              />
+              <Text style={[styles.meta, card.checked && styles.checkedMeta]}>
+                {card.favoriteCount}
+              </Text>
+            </View>
           </View>
         </View>
       </View>
@@ -197,12 +198,22 @@ const styles = StyleSheet.create({
     borderStyle: "dashed",
     paddingTop: 10,
   },
+  metaItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
   meta: {
     ...typography.meta,
   },
+  fastestText: {
+    fontSize: 10,
+    fontWeight: "600",
+    color: colors.medalGold,
+  },
   metaRight: {
     flexDirection: "row",
-    gap: 12,
+    gap: 14,
   },
   checkedMeta: {
     color: colors.watchedRose,

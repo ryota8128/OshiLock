@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, spacing, typography } from '@/constants/theme';
 import { EventCardItem } from '@/components/EventCardItem';
-import { MOCK_CARDS } from '@/data/mock';
+import { MOCK_CARDS, MOCK_POSTER_NAMES } from '@/data/mock';
 
 export default function FavoritesScreen() {
   const insets = useSafeAreaInsets();
@@ -20,7 +20,7 @@ export default function FavoritesScreen() {
           <Text style={styles.sectionLabel}>近日中</Text>
           <View style={styles.cardList}>
             {checkedCards.map(card => (
-              <EventCardItem key={card.id} card={card} />
+              <EventCardItem key={card.id} card={card} posterNames={MOCK_POSTER_NAMES} />
             ))}
           </View>
         </>

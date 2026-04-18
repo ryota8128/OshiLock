@@ -14,6 +14,28 @@ const userId = (s: string) => s as UserId;
 const commentId = (s: string) => s as CommentId;
 const utc = (s: string) => UtcIsoString.from(s);
 
+// 今日・明日のUTC日時を動的生成
+function todayAt(hour: number, min = 0): string {
+  const d = new Date();
+  d.setUTCHours(hour, min, 0, 0);
+  return d.toISOString();
+}
+function tomorrowAt(hour: number, min = 0): string {
+  const d = new Date();
+  d.setUTCDate(d.getUTCDate() + 1);
+  d.setUTCHours(hour, min, 0, 0);
+  return d.toISOString();
+}
+
+export const MOCK_POSTER_NAMES: Record<string, string> = {
+  "user-1": "Sakura",
+  "user-2": "乃木fan",
+  "user-3": "まいやん推し",
+  "user-4": "あしゅ担",
+  "user-5": "かずみん",
+  "user-6": "情報屋さん",
+};
+
 export const MOCK_OSHI: Oshi = {
   id: oshiId("oshi-1"),
   name: "乃木坂46",
@@ -34,6 +56,40 @@ export const MOCK_USER: User = {
 };
 
 export const MOCK_CARDS: EventInfoWithUserContext[] = [
+  {
+    id: eventId("card-today-1"),
+    oshiId: oshiId("oshi-1"),
+    title: "ラジオ生出演 オールナイトニッポン",
+    schedule: { datetime: utc(todayAt(16, 0)), hasTime: true },
+    content: "今夜25:00〜放送のオールナイトニッポンに生出演。リスナーからのメッセージ募集中。",
+    category: "MEDIA",
+    sourceReliability: "OFFICIAL",
+    sourceUrls: ["https://example.com/ann"],
+    fastestPosterIds: [userId("user-3"), null, null],
+    commentCount: 15,
+    favoriteCount: 78,
+    createdAt: utc("2026-04-18T02:00:00Z"),
+    updatedAt: utc("2026-04-18T02:00:00Z"),
+    isRead: false,
+    checked: true,
+  },
+  {
+    id: eventId("card-tomorrow-1"),
+    oshiId: oshiId("oshi-1"),
+    title: "握手会 幕張メッセ",
+    schedule: { datetime: utc(tomorrowAt(3, 0)), hasTime: true },
+    content: "明日12:00〜 幕張メッセにて握手会開催。第3部まであり。",
+    category: "EVENT",
+    sourceReliability: "OFFICIAL",
+    sourceUrls: ["https://example.com/handshake"],
+    fastestPosterIds: [userId("user-2"), userId("user-4"), null],
+    commentCount: 32,
+    favoriteCount: 210,
+    createdAt: utc("2026-04-17T10:00:00Z"),
+    updatedAt: utc("2026-04-17T10:00:00Z"),
+    isRead: false,
+    checked: true,
+  },
   {
     id: eventId("card-1"),
     oshiId: oshiId("oshi-1"),

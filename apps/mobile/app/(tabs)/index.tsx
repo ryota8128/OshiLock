@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, spacing, typography, radii } from '@/constants/theme';
 import { EventCardItem } from '@/components/EventCardItem';
-import { MOCK_CARDS, MOCK_USER, getUnreadCount, getTotalCardCount, getReadCount } from '@/data/mock';
+import { MOCK_CARDS, MOCK_USER, MOCK_POSTER_NAMES, getUnreadCount, getTotalCardCount, getReadCount } from '@/data/mock';
 
 function CoverageWidget() {
   const total = getTotalCardCount();
@@ -52,7 +52,7 @@ export default function HomeScreen() {
           <Text style={styles.sectionLabel}>要チェック</Text>
           <View style={styles.cardList}>
             {urgentCards.map(card => (
-              <EventCardItem key={card.id} card={card} />
+              <EventCardItem key={card.id} card={card} posterNames={MOCK_POSTER_NAMES} />
             ))}
           </View>
         </View>
@@ -62,7 +62,7 @@ export default function HomeScreen() {
         <Text style={styles.sectionLabel}>今日の予定</Text>
         <View style={styles.cardList}>
           {todayCards.map(card => (
-            <EventCardItem key={card.id} card={card} />
+            <EventCardItem key={card.id} card={card} posterNames={MOCK_POSTER_NAMES} />
           ))}
         </View>
       </View>
