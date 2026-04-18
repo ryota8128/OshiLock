@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { router } from 'expo-router';
 import { colors, spacing, typography, radii } from '@/constants/theme';
 import { MOCK_USER } from '@/data/mock';
 
@@ -12,9 +13,9 @@ function StatItem({ value, label }: { value: string; label: string }) {
   );
 }
 
-function SettingsRow({ label, value }: { label: string; value?: string }) {
+function SettingsRow({ label, value, onPress }: { label: string; value?: string; onPress?: () => void }) {
   return (
-    <Pressable style={styles.settingsRow}>
+    <Pressable style={styles.settingsRow} onPress={onPress}>
       <Text style={styles.settingsLabel}>{label}</Text>
       <View style={styles.settingsRight}>
         {value && <Text style={styles.settingsValue}>{value}</Text>}
@@ -60,7 +61,7 @@ export default function MyPageScreen() {
       </View>
 
       <View style={styles.settingsGroup}>
-        <SettingsRow label="ログアウト" />
+        <SettingsRow label="ログアウト" onPress={() => router.replace("/login")} />
       </View>
     </ScrollView>
   );

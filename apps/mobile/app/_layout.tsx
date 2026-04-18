@@ -16,6 +16,7 @@ export default function RootLayout() {
     <SafeAreaProvider>
       <StatusBar style="dark" />
       <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="login" />
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="event/[id]" />
       </Stack>
