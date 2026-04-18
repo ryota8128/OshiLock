@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, spacing, typography, radii } from '@/constants/theme';
 import { EventCardItem } from '@/components/EventCardItem';
 import { MOCK_CARDS, MOCK_OSHI } from '@/data/mock';
@@ -17,6 +18,7 @@ const FILTERS = [
 type FilterKey = typeof FILTERS[number]['key'];
 
 export default function TimelineScreen() {
+  const insets = useSafeAreaInsets();
   const [activeTab] = useState(MOCK_OSHI.name);
   const [activeFilter, setActiveFilter] = useState<FilterKey>('all');
 
@@ -27,7 +29,7 @@ export default function TimelineScreen() {
   });
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
       {/* Tab bar (group switcher) */}
       <View style={styles.tabRow}>
         <Pressable style={[styles.tab, styles.tabActive]}>

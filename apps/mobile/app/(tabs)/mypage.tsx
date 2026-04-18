@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, spacing, typography, radii } from '@/constants/theme';
 import { MOCK_USER } from '@/data/mock';
 
@@ -24,8 +25,9 @@ function SettingsRow({ label, value }: { label: string; value?: string }) {
 }
 
 export default function MyPageScreen() {
+  const insets = useSafeAreaInsets();
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+    <ScrollView style={styles.container} contentContainerStyle={[styles.contentContainer, { paddingTop: insets.top }]}>
       {/* Profile */}
       <View style={styles.profileSection}>
         <View style={styles.avatar}>

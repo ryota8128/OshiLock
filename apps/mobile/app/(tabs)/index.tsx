@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, spacing, typography, radii } from '@/constants/theme';
 import { EventCardItem } from '@/components/EventCardItem';
 import { MOCK_CARDS, MOCK_USER, getUnreadCount, getTotalCardCount, getReadCount } from '@/data/mock';
@@ -23,11 +24,12 @@ function CoverageWidget() {
 }
 
 export default function HomeScreen() {
+  const insets = useSafeAreaInsets();
   const urgentCards = MOCK_CARDS.filter(c => c.urgent);
   const todayCards = MOCK_CARDS.filter(c => c.schedule.datetime !== null && !c.urgent).slice(0, 2);
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+    <ScrollView style={styles.container} contentContainerStyle={[styles.contentContainer, { paddingTop: insets.top }]}>
       <View style={styles.header}>
         <View>
           <Text style={styles.greeting}>こんばんは、{MOCK_USER.displayName}さん</Text>

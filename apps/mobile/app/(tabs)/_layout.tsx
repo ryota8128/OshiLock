@@ -1,20 +1,7 @@
 import { Tabs } from 'expo-router';
-import { Pressable, StyleSheet, View, Text } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { House, List, Star, User } from 'lucide-react-native';
 import { colors, spacing } from '@/constants/theme';
-
-function TabIcon({ name, focused }: { name: string; focused: boolean }) {
-  const iconMap: Record<string, string> = {
-    home: '🏠',
-    timeline: '📋',
-    favorites: '☆',
-    mypage: '👤',
-  };
-  return (
-    <Text style={{ fontSize: 20, opacity: focused ? 1 : 0.5 }}>
-      {iconMap[name] || '●'}
-    </Text>
-  );
-}
 
 export default function TabLayout() {
   return (
@@ -31,28 +18,28 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'ホーム',
-          tabBarIcon: ({ focused }) => <TabIcon name="home" focused={focused} />,
+          tabBarIcon: ({ color, size }) => <House size={size} color={color} strokeWidth={1.5} />,
         }}
       />
       <Tabs.Screen
         name="timeline"
         options={{
           title: 'タイムライン',
-          tabBarIcon: ({ focused }) => <TabIcon name="timeline" focused={focused} />,
+          tabBarIcon: ({ color, size }) => <List size={size} color={color} strokeWidth={1.5} />,
         }}
       />
       <Tabs.Screen
         name="favorites"
         options={{
           title: '気になる',
-          tabBarIcon: ({ focused }) => <TabIcon name="favorites" focused={focused} />,
+          tabBarIcon: ({ color, size }) => <Star size={size} color={color} strokeWidth={1.5} />,
         }}
       />
       <Tabs.Screen
         name="mypage"
         options={{
           title: 'マイページ',
-          tabBarIcon: ({ focused }) => <TabIcon name="mypage" focused={focused} />,
+          tabBarIcon: ({ color, size }) => <User size={size} color={color} strokeWidth={1.5} />,
         }}
       />
     </Tabs>

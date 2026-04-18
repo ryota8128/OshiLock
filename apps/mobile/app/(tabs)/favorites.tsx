@@ -1,13 +1,15 @@
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, spacing, typography } from '@/constants/theme';
 import { EventCardItem } from '@/components/EventCardItem';
 import { MOCK_CARDS } from '@/data/mock';
 
 export default function FavoritesScreen() {
+  const insets = useSafeAreaInsets();
   const watchedCards = MOCK_CARDS.filter(c => c.watched);
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+    <ScrollView style={styles.container} contentContainerStyle={[styles.contentContainer, { paddingTop: insets.top }]}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>気になる</Text>
         <Text style={styles.headerSub}>リマインド設定済みのカード</Text>
