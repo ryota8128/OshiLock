@@ -7,9 +7,9 @@ export type {
   PostId,
   OshiId,
 } from "./types/branded";
-export type { UtcIsoString } from "./types/utc-iso-string";
-export type { DateString } from "./types/date-string";
-export type { TimeString } from "./types/time-string";
+export { UtcIsoString } from "./types/utc-iso-string";
+export { DateString } from "./types/date-string";
+export { TimeString } from "./types/time-string";
 export type { EventCard } from "./domain/models/event-card";
 export type { User } from "./domain/models/user";
 export type { Oshi } from "./domain/models/oshi";
