@@ -1,10 +1,10 @@
 import { SourceReliability } from "../enum/source-reliability";
-import { EventCardId, OshiId, UserId } from "../../types/branded";
+import { EventId, OshiId, UserId } from "../../types/branded";
 import { EventCategory } from "../enum/event-category";
 import { UtcIsoString } from "../../types/utc-iso-string";
 
-export interface EventCard {
-  id: EventCardId;
+export interface EventInfo {
+  id: EventId;
   oshiId: OshiId;
   title: string;
   schedule: {
@@ -15,10 +15,14 @@ export interface EventCard {
   category: EventCategory;
   sourceReliability: SourceReliability;
   sourceUrls: string[];
-  firstPosterIds: [UserId | null, UserId | null, UserId | null];
+  fastestPosterIds: [UserId | null, UserId | null, UserId | null];
   commentCount: number;
   favoriteCount: number;
-  isRead: boolean;
   createdAt: UtcIsoString;
   updatedAt: UtcIsoString;
+}
+
+export interface EventInfoWithUserContext extends EventInfo {
+  isRead: boolean;
+  checked: boolean;
 }

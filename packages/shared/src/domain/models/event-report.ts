@@ -1,10 +1,10 @@
-import { EventCardId, UserId } from "../../types/branded";
+import { EventId as EventId, UserId } from "../../types/branded";
 import { UtcIsoString } from "../../types/utc-iso-string";
 import { ReportCategory } from "../enum/report-category";
 
-export interface EventCardReport {
+export interface EventReport {
   userId: UserId;
-  eventCardId: EventCardId;
+  eventId: EventId;
   category: ReportCategory;
   createdAt: UtcIsoString;
 }
