@@ -4,6 +4,24 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+catalogs:
+  default:
+    '@hono/node-server':
+      specifier: ^1
+      version: 1.19.14
+    '@types/node':
+      specifier: ^20.11.17
+      version: 20.19.39
+    hono:
+      specifier: ^4.12.14
+      version: 4.12.14
+    tsx:
+      specifier: ^4.7.1
+      version: 4.21.0
+    typescript:
+      specifier: ^5.8.3
+      version: 5.9.3
+
 importers:
 
   .:
@@ -15,29 +33,29 @@ importers:
   apps/be-api:
     dependencies:
       '@hono/node-server':
-        specifier: ^1
+        specifier: 'catalog:'
         version: 1.19.14(hono@4.12.14)
       '@oshilock/shared':
         specifier: workspace:*
         version: link:../../packages/shared
       hono:
-        specifier: ^4.12.14
+        specifier: 'catalog:'
         version: 4.12.14
     devDependencies:
       '@types/node':
-        specifier: ^20.11.17
+        specifier: 'catalog:'
         version: 20.19.39
       tsx:
-        specifier: ^4.7.1
+        specifier: 'catalog:'
         version: 4.21.0
       typescript:
-        specifier: ^5.8.3
+        specifier: 'catalog:'
         version: 5.9.3
 
   packages/shared:
     devDependencies:
       typescript:
-        specifier: ^5
+        specifier: 'catalog:'
         version: 5.9.3
 
 packages:
