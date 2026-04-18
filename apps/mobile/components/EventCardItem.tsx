@@ -214,6 +214,7 @@ const styles = StyleSheet.create({
   metaRight: {
     flexDirection: "row",
     gap: 14,
+    marginLeft: "auto",
   },
   checkedMeta: {
     color: colors.watchedRose,
