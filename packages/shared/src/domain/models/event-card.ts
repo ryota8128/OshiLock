@@ -1,13 +1,16 @@
 import { SourceReliability } from "../enum/source-reliability";
-import { OshiId, UserId } from "../../types/branded";
+import { EventCardId, OshiId, UserId } from "../../types/branded";
 import { EventCategory } from "../enum/event-category";
 import { UtcIsoString } from "../../types/utc-iso-string";
 
 export interface EventCard {
-  id: string;
+  id: EventCardId;
   oshiId: OshiId;
   title: string;
-  date: UtcIsoString;
+  schedule: {
+    datetime: UtcIsoString | null;
+    hasTime: boolean;
+  };
   content: string;
   category: EventCategory;
   sourceReliability: SourceReliability;
@@ -16,6 +19,6 @@ export interface EventCard {
   commentCount: number;
   favoriteCount: number;
   isRead: boolean;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: UtcIsoString;
+  updatedAt: UtcIsoString;
 }

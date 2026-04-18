@@ -1,12 +1,13 @@
-import { UserId } from "../../types/branded";
+import { OshiId, UserId } from "../../types/branded";
+import { UtcIsoString } from "../../types/utc-iso-string";
 import { UserRank } from "../enum/user-rank";
 
 export interface User {
   id: UserId;
-  name: string;
+  displayName: string;
   avatarUrl: string | null;
-  introduction: string;
   rank: UserRank;
-  createdAt: string;
-  updatedAt: string;
+  oshiOrder: OshiId[];
+  createdAt: UtcIsoString;
+  updatedAt: UtcIsoString;
 }
