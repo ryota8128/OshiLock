@@ -1,18 +1,12 @@
 {
-  "name": "@oshilock/be-api",
-  "version": "0.0.1",
-  "private": true,
-  "scripts": {
-    "dev": "vercel dev",
-    "build": "vercel build",
-    "lint": "tsc --noEmit"
-  },
+  "name": "hono",
+  "type": "module",
   "dependencies": {
-    "hono": "^4",
-    "@oshilock/shared": "*"
+    "hono": "^4.12.14"
   },
   "devDependencies": {
-    "typescript": "^5",
-    "vercel": "^51"
+    "@types/node": "^20.11.17",
+    "tsx": "^4.7.1",
+    "typescript": "^5.8.3"
   }
 }

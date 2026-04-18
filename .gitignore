@@ -1,0 +1,24 @@
+# dependencies
+node_modules/
+
+# build
+dist/
+.vercel/
+.turbo/
+
+# expo
+.expo/
+apps/mobile/ios/
+apps/mobile/android/
+
+# env
+.env
+.env.local
+.env.*.local
+
+# OS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
