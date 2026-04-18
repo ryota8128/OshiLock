@@ -12,11 +12,18 @@ import {
   Heart,
   Link2,
   MoreHorizontal,
-  Share,
+  Share as ShareIcon,
   Trophy,
 } from "lucide-react-native";
 import { useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  Pressable,
+  ScrollView,
+  Share,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import * as WebBrowser from "expo-web-browser";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -68,8 +75,16 @@ export default function EventDetailScreen() {
           <ChevronLeft size={22} color={colors.ink} strokeWidth={1.5} />
         </Pressable>
         <View style={styles.navRight}>
-          <Pressable style={styles.navCircle}>
-            <Share size={15} color={colors.ink} strokeWidth={1.5} />
+          <Pressable
+            style={styles.navCircle}
+            onPress={() => {
+              const dateStr = card.schedule.datetime
+                ? `\n${formatDateTime(card.schedule.datetime)}`
+                : "";
+              Share.share({ message: `${card.title}${dateStr}` });
+            }}
+          >
+            <ShareIcon size={15} color={colors.ink} strokeWidth={1.5} />
           </Pressable>
           <Pressable
             style={[styles.navCircle, menuOpen && styles.navCircleActive]}
