@@ -61,7 +61,7 @@ const catKey = (cat: EventCategory): keyof typeof categoryColors => {
 
 export function EventCardItem({ card, posterNames, onPress }: Props) {
   const c = categoryColors[catKey(card.category)];
-  const countdown = formatCountdown(card.schedule.datetime as string | null);
+  const countdown = formatCountdown(card.schedule.datetime);
   const fastestId = card.fastestPosterIds[0];
   const fastestName = fastestId && posterNames?.[fastestId] || null;
 

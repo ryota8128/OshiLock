@@ -170,7 +170,7 @@ export default function EventDetailScreen() {
             <Text style={styles.sectionLabel}>日時</Text>
             <View style={styles.infoCard}>
               <Text style={styles.infoValue}>
-                {formatDateTime(card.schedule.datetime as string)}
+                {formatDateTime(card.schedule.datetime)}
               </Text>
             </View>
           </>

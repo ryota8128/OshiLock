@@ -89,6 +89,22 @@ export namespace UtcIsoString {
 }
 ```
 
+## `as string` キャストは不要
+
+Branded Type は `string` を継承しているので、`string` を受け取る関数・API にそのまま渡せる。`as string` キャストは不要。
+
+```typescript
+// ✅ そのまま渡す
+const utc: UtcIsoString = ...;
+new Date(utc);
+UtcIsoString.toDateString(utc, TIMEZONES.ASIA_TOKYO);
+const parts = date.split("-");
+
+// ❌ as string は書かない
+new Date(utc as string);
+UtcIsoString.toDateString(utc as string, TIMEZONES.ASIA_TOKYO);
+```
+
 ## 正規表現
 
 バリデーション用の正規表現は `packages/shared/src/const/regex.ts` の `REGEX` 定数にまとめる。

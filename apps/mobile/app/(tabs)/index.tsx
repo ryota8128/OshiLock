@@ -29,7 +29,7 @@ export default function HomeScreen() {
   const now = Date.now();
   const urgentCards = MOCK_CARDS.filter(c => {
     if (!c.schedule.datetime) return false;
-    const diff = new Date(c.schedule.datetime as string).getTime() - now;
+    const diff = new Date(c.schedule.datetime).getTime() - now;
     return diff > 0 && diff <= 48 * 60 * 60 * 1000;
   });
   const todayCards = MOCK_CARDS.filter(c => c.schedule.datetime !== null).slice(0, 2);
