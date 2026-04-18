@@ -1,6 +1,6 @@
 import { Tabs } from 'expo-router';
 import { StyleSheet } from 'react-native';
-import { House, List, Star, User } from 'lucide-react-native';
+import { House, List, Bookmark, User } from 'lucide-react-native';
 import { colors, spacing } from '@/constants/theme';
 
 export default function TabLayout() {
@@ -31,8 +31,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="favorites"
         options={{
-          title: '気になる',
-          tabBarIcon: ({ color, size }) => <Star size={size} color={color} strokeWidth={1.5} />,
+          title: 'チェック',
+          tabBarIcon: ({ color, size }) => <Bookmark size={size} color={color} strokeWidth={1.5} />,
         }}
       />
       <Tabs.Screen

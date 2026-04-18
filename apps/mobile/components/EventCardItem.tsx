@@ -7,20 +7,35 @@ import {
   typography,
 } from "@/constants/theme";
 import { UtcIsoString, TIMEZONES } from "@oshilock/shared";
-import type { EventCard, EventCategory } from "@oshilock/shared";
+import type { EventInfoWithUserContext, EventCategory } from "@oshilock/shared";
 
-type CardDisplayData = EventCard & {
-  unread: boolean;
-  watched: boolean;
-  urgent: boolean;
-  countdown?: string;
-};
+function formatCountdown(
+  datetime: string | null,
+): { text: string; isToday: boolean } | null {
+  if (!datetime) return null;
+  const target = UtcIsoString.toDateString(
+    UtcIsoString.from(datetime),
+    TIMEZONES.ASIA_TOKYO,
+  );
+  const today = UtcIsoString.toDateString(
+    UtcIsoString.now(),
+    TIMEZONES.ASIA_TOKYO,
+  );
+  if (target < today) return null;
+  if (target === today) return { text: "今日", isToday: true };
+  const diffMs = new Date(target).getTime() - new Date(today).getTime();
+  const days = Math.round(diffMs / (24 * 60 * 60 * 1000));
+  if (days === 1) return { text: "明日", isToday: false };
+  return { text: `あと${days}日`, isToday: false };
+}
 
-function formatSchedule(schedule: EventCard["schedule"]): string | null {
+function formatSchedule(
+  schedule: EventInfoWithUserContext["schedule"],
+): string | null {
   if (!schedule.datetime) return null;
-  const utc = UtcIsoString.from(schedule.datetime as string);
+  const utc = UtcIsoString.from(schedule.datetime);
   const date = UtcIsoString.toDateString(utc, TIMEZONES.ASIA_TOKYO);
-  const [, m, d] = (date as string).split("-");
+  const [, m, d] = date.split("-");
   if (schedule.hasTime) {
     const time = UtcIsoString.toTimeString(utc, TIMEZONES.ASIA_TOKYO);
     return `${Number(m)}/${Number(d)} ${time}`;
@@ -29,7 +44,7 @@ function formatSchedule(schedule: EventCard["schedule"]): string | null {
 }
 
 type Props = {
-  card: CardDisplayData;
+  card: EventInfoWithUserContext;
   onPress?: () => void;
 };
 
@@ -50,13 +65,12 @@ const catKey = (cat: EventCategory): keyof typeof categoryColors => {
 
 export function EventCardItem({ card, onPress }: Props) {
   const c = categoryColors[catKey(card.category)];
+  const countdown = formatCountdown(card.schedule.datetime as string | null);
 
   return (
     <Pressable onPress={onPress} style={styles.wrapper}>
-      {/* Unread dot */}
-      {card.unread && <View style={styles.unreadDot} />}
+      {!card.isRead && <View style={styles.unreadDot} />}
 
-      {/* Category top band */}
       <View
         style={[
           styles.band,
@@ -64,20 +78,25 @@ export function EventCardItem({ card, onPress }: Props) {
         ]}
       >
         <Text style={[styles.catLabel, { color: c.fg }]}>{c.label}</Text>
-        {card.countdown && (
+        {countdown && (
           <View
-            style={[styles.countdownBadge, card.urgent && styles.urgentBadge]}
+            style={[
+              styles.countdownBadge,
+              countdown.isToday && styles.todayBadge,
+            ]}
           >
             <Text
-              style={[styles.countdownText, card.urgent && styles.urgentText]}
+              style={[
+                styles.countdownText,
+                countdown.isToday && styles.todayText,
+              ]}
             >
-              {card.countdown}
+              {countdown.text}
             </Text>
           </View>
         )}
       </View>
 
-      {/* Content */}
       <View style={styles.content}>
         <Text style={styles.title} numberOfLines={2}>
           {card.title}
@@ -89,12 +108,11 @@ export function EventCardItem({ card, onPress }: Props) {
           {card.content}
         </Text>
 
-        {/* Meta row */}
         <View style={styles.metaRow}>
           {card.fastestPosterIds[0] && <Text style={styles.meta}>🥇 最速</Text>}
           <View style={styles.metaRight}>
             <Text style={styles.meta}>💬 {card.commentCount}</Text>
-            <Text style={[styles.meta, card.watched && styles.watchedMeta]}>
+            <Text style={[styles.meta, card.checked && styles.checkedMeta]}>
               ☆ {card.favoriteCount}
             </Text>
           </View>
@@ -140,7 +158,7 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     borderRadius: radii.badge,
   },
-  urgentBadge: {
+  todayBadge: {
     backgroundColor: colors.urgentBg,
   },
   countdownText: {
@@ -148,7 +166,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: colors.inkSoft,
   },
-  urgentText: {
+  todayText: {
     color: colors.white,
     fontWeight: "700",
   },
@@ -186,7 +204,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 12,
   },
-  watchedMeta: {
+  checkedMeta: {
     color: colors.watchedRose,
     fontWeight: "600",
   },

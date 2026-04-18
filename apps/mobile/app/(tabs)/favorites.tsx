@@ -6,27 +6,27 @@ import { MOCK_CARDS } from '@/data/mock';
 
 export default function FavoritesScreen() {
   const insets = useSafeAreaInsets();
-  const watchedCards = MOCK_CARDS.filter(c => c.watched);
+  const checkedCards = MOCK_CARDS.filter(c => c.checked);
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={[styles.contentContainer, { paddingTop: insets.top }]}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>気になる</Text>
-        <Text style={styles.headerSub}>リマインド設定済みのカード</Text>
+        <Text style={styles.headerTitle}>チェック</Text>
+        <Text style={styles.headerSub}>チェック済みのカード</Text>
       </View>
 
-      {watchedCards.length > 0 ? (
+      {checkedCards.length > 0 ? (
         <>
           <Text style={styles.sectionLabel}>近日中</Text>
           <View style={styles.cardList}>
-            {watchedCards.map(card => (
+            {checkedCards.map(card => (
               <EventCardItem key={card.id} card={card} />
             ))}
           </View>
         </>
       ) : (
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyTitle}>まだ気になるカードがありません</Text>
+          <Text style={styles.emptyTitle}>まだチェックしたカードがありません</Text>
           <Text style={styles.emptySub}>カードの ☆ ボタンを押すとここに表示されます</Text>
         </View>
       )}

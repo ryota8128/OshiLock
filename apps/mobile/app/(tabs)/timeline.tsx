@@ -24,7 +24,7 @@ export default function TimelineScreen() {
 
   const filteredCards = MOCK_CARDS.filter(card => {
     if (activeFilter === 'all') return true;
-    if (activeFilter === 'unread') return card.unread;
+    if (activeFilter === 'unread') return !card.isRead;
     return card.category === activeFilter;
   });
 
