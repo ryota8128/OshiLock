@@ -151,7 +151,11 @@ export function WaitlistSection() {
               }}
             >
               <div className="text-[11px] font-semibold tracking-[1.5px] text-ink-soft mb-2">SHARE</div>
-              「え、昨日出てたの？」をゼロにする推し活アプリ、OshiLockのWLに登録しました。先着100名は永久無料。 #OshiLock
+              「え、昨日出てたの？」をゼロにする推し活アプリ、OshiLockのWLに登録しました。
+              <br />
+              先着100名は永久無料。
+              <br />
+              #OshiLock
             </div>
           </div>
         )}

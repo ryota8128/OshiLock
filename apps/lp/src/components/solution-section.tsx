@@ -8,7 +8,12 @@ const steps = [
     icon: (
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
         <circle cx="12" cy="9" r="4" stroke="#2B2A28" strokeWidth="1.5" />
-        <path d="M4 20c0-4 4-7 8-7s8 3 8 7" stroke="#2B2A28" strokeWidth="1.5" strokeLinecap="round" />
+        <path
+          d="M4 20c0-4 4-7 8-7s8 3 8 7"
+          stroke="#2B2A28"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+        />
       </svg>
     ),
   },
@@ -18,7 +23,12 @@ const steps = [
     desc: "重複を消して、カテゴリ分け、信頼度もチェック。情報の交通整理。",
     icon: (
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-        <path d="M4 6h8M4 12h16M4 18h12" stroke="#2B2A28" strokeWidth="1.5" strokeLinecap="round" />
+        <path
+          d="M4 6h8M4 12h16M4 18h12"
+          stroke="#2B2A28"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+        />
         <circle cx="17" cy="6" r="2.5" stroke="#2B2A28" strokeWidth="1.5" />
         <circle cx="7" cy="18" r="2.5" stroke="#2B2A28" strokeWidth="1.5" />
       </svg>
@@ -30,8 +40,18 @@ const steps = [
     desc: "通知で見逃さない。毎朝の「見逃しチェック」も一緒に。",
     icon: (
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-        <path d="M6 10a6 6 0 0112 0v4l2 2H4l2-2v-4z" stroke="#2B2A28" strokeWidth="1.5" strokeLinejoin="round" />
-        <path d="M10 19a2 2 0 004 0" stroke="#2B2A28" strokeWidth="1.5" strokeLinecap="round" />
+        <path
+          d="M6 10a6 6 0 0112 0v4l2 2H4l2-2v-4z"
+          stroke="#2B2A28"
+          strokeWidth="1.5"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M10 19a2 2 0 004 0"
+          stroke="#2B2A28"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+        />
       </svg>
     ),
   },
@@ -49,7 +69,7 @@ export function SolutionSection() {
             AIが届ける。
           </>
         }
-        sub="ファンが集める。AIが届く。それがOshiLock。"
+        sub="ファンが集める。AIが届ける。それがOshiLock。"
       />
       <div
         className="mt-16 grid gap-5 grid-responsive"
