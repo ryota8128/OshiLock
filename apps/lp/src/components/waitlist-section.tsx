@@ -42,7 +42,7 @@ export function WaitlistSection() {
   };
 
   return (
-    <Section bg="#F3EFE4" padY={120} id="waitlist">
+    <Section bg="#FAF8F4" padY={120} id="waitlist">
       <div ref={formRef} />
       <div className="max-w-[640px] mx-auto">
         <SectionHeading

@@ -5,7 +5,6 @@ import { SolutionSection } from "@/components/solution-section";
 import { CardFeatureSection } from "@/components/card-feature-section";
 import { ComparisonSection } from "@/components/comparison-section";
 import { PricingSection } from "@/components/pricing-section";
-import { CreatorSection } from "@/components/creator-section";
 import { WaitlistSection } from "@/components/waitlist-section";
 import { Footer } from "@/components/footer";
 
@@ -23,7 +22,6 @@ export default function Home() {
       <div id="pricing">
         <PricingSection scrollTarget="waitlist" />
       </div>
-      <CreatorSection />
       <WaitlistSection />
       <Footer />
     </div>
