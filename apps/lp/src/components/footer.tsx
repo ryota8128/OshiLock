@@ -22,10 +22,10 @@ export function Footer() {
                 FOLLOW
               </div>
               <div className="flex flex-col gap-2.5 text-[13px]">
-                <a href="#" className="no-underline" style={{ color: "#FAF8F4" }}>
+                <a href="https://x.com/ryota_oshilock" target="_blank" rel="noopener noreferrer" className="no-underline" style={{ color: "#FAF8F4" }}>
                   X (Twitter)
                 </a>
-                <a href="#" className="no-underline" style={{ color: "#FAF8F4" }}>
+                <a href="https://www.threads.com/@ryota_oshilock" target="_blank" rel="noopener noreferrer" className="no-underline" style={{ color: "#FAF8F4" }}>
                   Threads
                 </a>
               </div>
@@ -37,9 +37,6 @@ export function Footer() {
               <div className="flex flex-col gap-2.5 text-[13px]">
                 <a href="#waitlist" className="no-underline" style={{ color: "#FAF8F4" }}>
                   事前登録
-                </a>
-                <a href="#" className="no-underline" style={{ color: "#FAF8F4" }}>
-                  お問い合わせ
                 </a>
               </div>
             </div>
