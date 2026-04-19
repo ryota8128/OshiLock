@@ -22,3 +22,4 @@ apps/mobile/android/
 # IDE
 .vscode/
 .idea/
+.vercel
