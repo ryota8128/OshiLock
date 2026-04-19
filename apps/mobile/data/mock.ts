@@ -47,6 +47,8 @@ export const MOCK_OSHI: Oshi = {
 
 export const MOCK_USER: User = {
   id: userId("user-1"),
+  authProvider: "APPLE",
+  authSub: "mock-apple-sub-001",
   displayName: "Sakura",
   avatarUrl: null,
   rank: "ACE",
