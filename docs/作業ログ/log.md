@@ -40,5 +40,50 @@
 - **Tailscale 経由で Expo Go 実機確認成功**
 - 開発コマンドを README.md / CLAUDE.md に記載
 
+## 2026-04-19
+
+### ドメインモデル設計
+
+**型定義（packages/shared）:**
+- Branded Types: `EventId`, `UserId`, `OshiId`, `CommentId`, `PostId`
+- 日付型: `UtcIsoString`, `DateString`, `TimeString`（parse/now/変換関数付き）
+- ドメインモデル: `EventInfo`, `User`, `Oshi`, `Comment`, `Post`, `Check`, `UserSettings`, `UserPushToken`, `EventReport`, `CommentReport`
+- enum: `EventCategory`, `SourceReliability`, `UserRank`, `ReportCategory`, `Platform`
+- `EventInfoWithUserContext`（EventInfo + `isRead`, `checked`）をドメイン層に定義
+
+**重要な設計判断:**
+- `EventCard` → `EventInfo` にリネーム（UIの「カード」とドメインの「情報」を分離）
+- 「気になる」→「チェック」に名称変更（ブックマークアイコン）
+- `Favorite` → `Check` モデルにリネーム
+- ユーザー固有データ（`isRead`, `checked`）は `EventInfoWithUserContext` で拡張
+- `urgent`/`countdown` は型に持たず、UIコンポーネント内で計算
+- Branded Type に `as string` キャストは不要（コーディング規約に追加）
+- API レスポンスはドメインモデルをそのまま返す方針
+- Vercel プラグインをプロジェクトレベルで無効化（`.claude/settings.json`）
+
+### モバイルUI実装
+
+**完成した画面（8画面）:**
+1. **ホーム** — カバー率プログレスバー + 要チェック + 今日の予定
+2. **タイムライン** — タブ型グループ切替（B案）+ 排他フィルタ
+3. **チェック** — チェック済みカード一覧
+4. **マイページ** — プロフィール + ランク + 統計 + 設定 + ログアウト
+5. **イベント詳細** — バッジ + タイトル + チェックボタン + 日時 + 詳細 + ソース（アプリ内ブラウザ）+ 最速TOP3 + コメント
+6. **投稿フォーム** — FABからモーダルで開く、テキスト + URL入力
+7. **ログイン** — ロゴ + Apple/Google ボタン
+8. **404** — Not Found
+
+**コンポーネント・インフラ:**
+- `EventCardItem` — カードC案（上帯カテゴリ）、Lucideアイコン、日付/カウントダウン表示
+- デザイントークン（`constants/theme.ts`）
+- モックデータ（`data/mock.ts`）— 今日・明日のイベント含む8件
+- SafeArea 対応（全画面）
+- FAB（右下 + ボタン、全タブ共通）
+- シェア機能（iOS シェアシート）
+- ソースURL（アプリ内ブラウザ `expo-web-browser`）
+- 画面遷移: カードタップ → 詳細、ログアウト → ログイン、ログイン → ホーム
+
 ### 次のステップ
-- タブ構成カスタマイズ（ホーム / タイムライン / 気になる / マイページ）
+- 認証実装（Apple Sign In + Google Sign In）
+- BE API 設計
+- DynamoDB 設計

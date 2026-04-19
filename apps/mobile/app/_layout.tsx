@@ -19,6 +19,7 @@ export default function RootLayout() {
         <Stack.Screen name="login" />
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="event/[id]" />
+        <Stack.Screen name="post" options={{ presentation: "modal" }} />
       </Stack>
     </SafeAreaProvider>
   );

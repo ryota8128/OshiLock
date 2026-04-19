@@ -1,10 +1,11 @@
-import { Tabs } from 'expo-router';
-import { StyleSheet } from 'react-native';
-import { House, List, Bookmark, User } from 'lucide-react-native';
+import { Tabs, router } from 'expo-router';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { House, List, Bookmark, User, Plus } from 'lucide-react-native';
 import { colors, spacing } from '@/constants/theme';
 
 export default function TabLayout() {
   return (
+    <>
     <Tabs
       screenOptions={{
         headerShown: false,
@@ -43,6 +44,12 @@ export default function TabLayout() {
         }}
       />
     </Tabs>
+
+    {/* FAB */}
+    <Pressable style={styles.fab} onPress={() => router.push("/post")}>
+      <Plus size={28} color={colors.white} strokeWidth={2} />
+    </Pressable>
+    </>
   );
 }
 
@@ -56,5 +63,21 @@ const styles = StyleSheet.create({
   tabBarLabel: {
     fontSize: 10,
     fontWeight: '600',
+  },
+  fab: {
+    position: 'absolute',
+    right: 16,
+    bottom: spacing.tabBarHeight + 8,
+    width: 54,
+    height: 54,
+    borderRadius: 27,
+    backgroundColor: colors.ink,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.25,
+    shadowRadius: 16,
+    elevation: 8,
   },
 });
