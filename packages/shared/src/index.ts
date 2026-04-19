@@ -28,3 +28,6 @@ export type { UserRank } from "./domain/enum/user-rank";
 export type { ReportCategory } from "./domain/enum/report-category";
 export { AUTH_PROVIDER } from "./domain/enum/auth-provider";
 export type { AuthProvider } from "./domain/enum/auth-provider";
+export { SUBSCRIPTION_STATUS } from "./domain/enum/subscription-status";
+export type { SubscriptionStatus } from "./domain/enum/subscription-status";
+export type { UserOshi } from "./domain/models/user-oshi";

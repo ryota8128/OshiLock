@@ -50,7 +50,6 @@ export const MOCK_USER: User = {
   displayName: "Sakura",
   avatarUrl: null,
   rank: "ACE",
-  oshiOrder: [oshiId("oshi-1")],
   createdAt: utc("2026-03-01T00:00:00Z"),
   updatedAt: utc("2026-04-18T00:00:00Z"),
 };
