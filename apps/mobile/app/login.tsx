@@ -1,10 +1,31 @@
-import { View, Text, StyleSheet, Pressable } from "react-native";
-import { router } from "expo-router";
+import { View, Text, StyleSheet, Pressable, Alert } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors, categoryColors } from "@/constants/theme";
+import { useAuth } from "@/contexts/AuthContext";
+
+const APPLE_CANCEL_CODE = "ERR_REQUEST_CANCELED";
 
 export default function LoginScreen() {
   const insets = useSafeAreaInsets();
+  const { signInWithApple, signInWithGoogle } = useAuth();
+
+  const handleApple = async () => {
+    try {
+      await signInWithApple();
+    } catch (e) {
+      if (!(e instanceof Error && "code" in e && e.code === APPLE_CANCEL_CODE)) {
+        Alert.alert("エラー", "Appleサインインに失敗しました");
+      }
+    }
+  };
+
+  const handleGoogle = async () => {
+    try {
+      await signInWithGoogle();
+    } catch (e) {
+      Alert.alert("エラー", "Googleサインインに失敗しました");
+    }
+  };
 
   return (
     <View style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom + 20 }]}>
@@ -29,14 +50,14 @@ export default function LoginScreen() {
       <View style={styles.authSection}>
         <Pressable
           style={styles.appleButton}
-          onPress={() => router.replace("/(tabs)")}
+          onPress={handleApple}
         >
           <Text style={styles.appleButtonText}>Appleでサインイン</Text>
         </Pressable>
 
         <Pressable
           style={styles.googleButton}
-          onPress={() => router.replace("/(tabs)")}
+          onPress={handleGoogle}
         >
           <Text style={styles.googleButtonText}>Googleで続ける</Text>
         </Pressable>

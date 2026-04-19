@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
 import { colors, spacing, typography, radii } from '@/constants/theme';
+import { useAuth } from '@/contexts/AuthContext';
 import { MOCK_USER } from '@/data/mock';
 
 function StatItem({ value, label }: { value: string; label: string }) {
@@ -27,6 +27,7 @@ function SettingsRow({ label, value, onPress }: { label: string; value?: string;
 
 export default function MyPageScreen() {
   const insets = useSafeAreaInsets();
+  const { signOut } = useAuth();
   return (
     <ScrollView style={styles.container} contentContainerStyle={[styles.contentContainer, { paddingTop: insets.top }]}>
       {/* Profile */}
@@ -61,7 +62,7 @@ export default function MyPageScreen() {
       </View>
 
       <View style={styles.settingsGroup}>
-        <SettingsRow label="ログアウト" onPress={() => router.replace("/login")} />
+        <SettingsRow label="ログアウト" onPress={() => signOut()} />
       </View>
     </ScrollView>
   );
