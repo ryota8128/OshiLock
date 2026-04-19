@@ -208,79 +208,128 @@ export function AppScreenHome() {
 
 export function AppScreenDetail() {
   return (
-    <div className="h-full font-sans" style={{ background: "#FAF8F4", padding: "16px 20px" }}>
-      {/* Back nav */}
-      <div className="flex items-center gap-2 mb-4">
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-          <path d="M11 4L6 9l5 5" stroke="#2B2A28" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-        <span className="text-[13px] text-ink-soft">戻る</span>
+    <div className="h-full font-sans" style={{ background: "#FAF8F4", paddingBottom: 20 }}>
+      {/* Top nav */}
+      <div className="flex items-center justify-between" style={{ padding: "12px 16px" }}>
+        <span className="text-[22px] text-ink cursor-pointer">‹</span>
+        <div className="flex items-center gap-3.5">
+          <div className="flex items-center justify-center rounded-full" style={{ width: 34, height: 34, background: "rgba(43,42,40,0.05)" }}>
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+              <path d="M8 1v10M8 1L4.5 4.5M8 1l3.5 3.5" stroke="#2B2A28" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M3 8v6h10V8" stroke="#2B2A28" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
+          <div className="flex items-center justify-center rounded-full" style={{ width: 34, height: 34, background: "rgba(43,42,40,0.05)" }}>
+            <svg width="16" height="4" viewBox="0 0 16 4">
+              <circle cx="2" cy="2" r="1.5" fill="#2B2A28" />
+              <circle cx="8" cy="2" r="1.5" fill="#2B2A28" />
+              <circle cx="14" cy="2" r="1.5" fill="#2B2A28" />
+            </svg>
+          </div>
+        </div>
       </div>
 
-      {/* Detail card */}
-      <div
-        style={{
-          background: "#fff",
-          border: "1px solid rgba(43,42,40,0.08)",
-          borderRadius: 16,
-          padding: "20px 18px",
-          marginBottom: 16,
-        }}
-      >
-        <div className="flex items-center gap-2 mb-3">
-          <span
-            className="text-[10px] font-semibold tracking-wider uppercase px-2 py-1 rounded"
-            style={{ background: "rgba(212,80,42,0.1)", color: "#D4502A" }}
-          >
-            TV出演
+      <div style={{ padding: "0 16px 14px" }}>
+        {/* Category + verified */}
+        <div className="flex items-center gap-2 flex-wrap mb-3">
+          <span className="inline-flex items-center gap-1.5 text-[10px] font-bold rounded-full px-2.5 py-1" style={{ background: "rgba(212,80,42,0.1)", color: "#D4502A", border: "1px solid rgba(212,80,42,0.2)" }}>
+            <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M2 2h12v10l-6 3-6-3V2z" stroke="currentColor" strokeWidth="1.5" /></svg>
+            イベント
           </span>
-          <span className="text-[10px] text-ink-faint">信頼度 高</span>
+          <span className="inline-flex items-center gap-1 text-[10px] font-semibold rounded-full px-2 py-1" style={{ background: "rgba(76,175,80,0.1)", color: "rgba(56,142,60,1)", border: "1px solid rgba(76,175,80,0.2)" }}>
+            ◎ 公式確認済
+          </span>
         </div>
-        <div className="text-[17px] font-medium text-ink leading-snug mb-2">
-          バラエティ番組出演決定
-        </div>
-        <div className="text-[13px] text-ink-muted leading-relaxed mb-3">
-          今夜22:00〜放送のバラエティ番組にゲスト出演。トークコーナーに登場予定。
-        </div>
-        <div className="flex gap-4 text-[11px] text-ink-soft">
-          <span>📅 今日 22:00</span>
-          <span>📺 テレビ東京</span>
-        </div>
-      </div>
 
-      {/* Comments section */}
-      <div className="text-[12px] font-semibold text-ink-soft tracking-wider uppercase mb-3">
-        COMMENTS · 5
-      </div>
-      {[
-        { name: "推し活民A", text: "予約録画した！", time: "2分前" },
-        { name: "推し活民B", text: "リアタイする！", time: "5分前" },
-      ].map((c, i) => (
-        <div
-          key={i}
-          className="flex gap-3 mb-3"
-          style={{ fontSize: 13 }}
-        >
-          <div
-            className="flex items-center justify-center shrink-0 rounded-full font-semibold text-[11px]"
-            style={{
-              width: 28,
-              height: 28,
-              background: "rgba(43,42,40,0.06)",
-              color: "#7A756C",
-            }}
-          >
-            {c.name[0]}
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="font-medium text-ink text-[12px]">{c.name}</span>
-              <span className="text-[10px] text-ink-faint">{c.time}</span>
+        {/* Title */}
+        <div className="text-[20px] font-bold text-ink mb-2.5" style={{ lineHeight: 1.35, letterSpacing: -0.4 }}>
+          3rd TOUR チケット先行販売
+        </div>
+
+        {/* Key/Value info */}
+        <div className="bg-white rounded-[10px] mb-3.5" style={{ border: "1px solid rgba(43,42,40,0.1)", padding: "10px 14px" }}>
+          {[
+            { k: "受付期間", v: "4/22(火) 18:00 〜 4/25(金) 23:59" },
+            { k: "公演日", v: "2026/7/20(日) 18:00開演" },
+            { k: "会場", v: "東京ガーデンシアター" },
+          ].map((r, i, arr) => (
+            <div key={i} className="flex py-[7px]" style={{ borderBottom: i < arr.length - 1 ? "1px dashed rgba(43,42,40,0.1)" : "none" }}>
+              <div className="text-[11px] text-ink-soft shrink-0" style={{ width: 70 }}>{r.k}</div>
+              <div className="text-[12px] text-ink flex-1">{r.v}</div>
             </div>
-            <div className="text-ink-muted text-[13px] mt-0.5">{c.text}</div>
+          ))}
+        </div>
+
+        {/* Body */}
+        <div className="text-[10px] font-bold text-ink-soft mb-2" style={{ letterSpacing: 1 }}>詳細</div>
+        <div className="bg-white rounded-[10px] mb-3.5 text-[12px] text-ink" style={{ border: "1px solid rgba(43,42,40,0.1)", padding: "12px 14px", lineHeight: 1.65 }}>
+          3rd TOUR「静寂の裏側」東京追加公演のチケット先行販売が決定しました。モバイル会員限定、抽選制。1人4枚まで。
+        </div>
+
+        {/* Watch button */}
+        <div className="flex items-center justify-center gap-2 rounded-xl mb-1.5" style={{ padding: "13px 14px", background: "rgba(212,80,42,0.06)", color: "#D4502A", border: "1px solid rgba(212,80,42,0.15)", fontSize: 14, fontWeight: 700 }}>
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+            <path d="M8 3C4.5 3 2 8 2 8s2.5 5 6 5 6-5 6-5-2.5-5-6-5z" stroke="currentColor" strokeWidth="1.3" />
+            <circle cx="8" cy="8" r="2" stroke="currentColor" strokeWidth="1.3" />
+          </svg>
+          気になる
+          <span className="text-[11px] font-medium opacity-70 ml-1">· 313</span>
+        </div>
+        <div className="text-[10px] text-ink-soft text-center mb-5">
+          最適なタイミングに通知されます
+        </div>
+
+        {/* Source */}
+        <div className="text-[10px] font-bold text-ink-soft mb-2" style={{ letterSpacing: 1 }}>ソース</div>
+        <div className="bg-white rounded-[10px] mb-4" style={{ border: "1px solid rgba(43,42,40,0.1)", padding: "10px 14px" }}>
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] text-ink-soft flex-1 overflow-hidden text-ellipsis whitespace-nowrap">nogizaka46.com/news/...</span>
+            <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M3 1h7v7M10 1L1 10" stroke="#7A756C" strokeWidth="1.5" strokeLinecap="round" /></svg>
           </div>
         </div>
-      ))}
+
+        {/* Fastest TOP3 */}
+        <div className="text-[10px] font-bold text-ink-soft mb-2" style={{ letterSpacing: 1 }}>最速投稿 · TOP3</div>
+        <div className="bg-white rounded-[10px] overflow-hidden mb-4" style={{ border: "1px solid rgba(43,42,40,0.1)" }}>
+          {[
+            { r: "🥇", n: "@sakura_mori", t: "12秒" },
+            { r: "🥈", n: "@yuki_922", t: "48秒" },
+            { r: "🥉", n: "@_noa_", t: "2分31秒" },
+          ].map((x, i) => (
+            <div key={i} className="flex items-center gap-2.5" style={{ padding: "10px 14px", borderBottom: i < 2 ? "1px solid rgba(43,42,40,0.08)" : "none" }}>
+              <span className="text-[14px]">{x.r}</span>
+              <div className="flex items-center justify-center rounded-full shrink-0 text-[10px] font-semibold" style={{ width: 24, height: 24, background: "rgba(43,42,40,0.06)", color: "#7A756C" }}>
+                {x.n[1].toUpperCase()}
+              </div>
+              <span className="text-[12px] text-ink flex-1">{x.n}</span>
+              <span className="text-[10px] text-ink-soft">{x.t}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Comments */}
+        <div className="text-[10px] font-bold text-ink-soft mb-2" style={{ letterSpacing: 1 }}>コメント · 24</div>
+        <div className="flex flex-col gap-2.5">
+          {[
+            { n: "yuki_922", t: "やばい、絶対取る…!", l: 12 },
+            { n: "mika_nk", t: "会場どこにするか迷う", l: 5 },
+          ].map((x, i) => (
+            <div key={i} className="flex gap-2.5 items-start">
+              <div className="flex items-center justify-center rounded-full shrink-0 text-[10px] font-semibold" style={{ width: 28, height: 28, background: "rgba(43,42,40,0.06)", color: "#7A756C" }}>
+                {x.n[0].toUpperCase()}
+              </div>
+              <div className="flex-1 bg-white rounded-[10px]" style={{ border: "1px solid rgba(43,42,40,0.08)", padding: "8px 12px" }}>
+                <div className="text-[11px] font-semibold text-ink mb-0.5">@{x.n}</div>
+                <div className="text-[12px] text-ink" style={{ lineHeight: 1.4 }}>{x.t}</div>
+                <div className="text-[10px] text-ink-soft mt-1 flex items-center gap-1">
+                  <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M8 14s-5.5-3.5-5.5-7A3.5 3.5 0 018 4a3.5 3.5 0 015.5 3c0 3.5-5.5 7-5.5 7z" stroke="currentColor" strokeWidth="1.3" /></svg>
+                  {x.l} · 返信
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
