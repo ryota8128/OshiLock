@@ -1,20 +1,46 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useTransition } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Section, SectionHeading } from "./section";
 import { PrimaryCTA } from "./primary-cta";
+import {
+  submitWaitlist,
+  waitlistSchema,
+} from "@/app/actions/waitlist";
+
+type FormValues = {
+  email: string;
+  oshi: string;
+  sns: string;
+};
 
 export function WaitlistSection() {
   const [submitted, setSubmitted] = useState(false);
-  const [email, setEmail] = useState("");
-  const [oshi, setOshi] = useState("");
-  const [sns, setSns] = useState("");
+  const [serverError, setServerError] = useState("");
+  const [isPending, startTransition] = useTransition();
   const formRef = useRef<HTMLDivElement>(null);
 
-  const onSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email || !oshi) return;
-    setSubmitted(true);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormValues>({
+    resolver: zodResolver(waitlistSchema),
+    defaultValues: { email: "", oshi: "", sns: "" },
+  });
+
+  const onSubmit = (data: FormValues) => {
+    setServerError("");
+    startTransition(async () => {
+      const result = await submitWaitlist(data);
+      if (result.success) {
+        setSubmitted(true);
+      } else {
+        setServerError(result.error);
+      }
+    });
   };
 
   return (
@@ -56,38 +82,36 @@ export function WaitlistSection() {
         {/* Form */}
         {!submitted ? (
           <form
-            onSubmit={onSubmit}
+            onSubmit={handleSubmit(onSubmit)}
             className="mt-5 bg-white border border-black/[.08] rounded-2xl p-8 font-sans"
           >
-            <Field label="メールアドレス" required>
+            <Field label="メールアドレス" required error={errors.email?.message}>
               <input
                 type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                {...register("email")}
                 placeholder="you@example.com"
-                required
                 className="w-full py-[13px] px-4 text-[15px] border-[1.5px] border-black/[.12] rounded-[10px] bg-paper text-ink font-sans transition-colors"
               />
             </Field>
-            <Field label="あなたの推し" required hint="グループ名・アーティスト名・キャラ名など">
+            <Field label="あなたの推し" required hint="グループ名・アーティスト名・キャラ名など" error={errors.oshi?.message}>
               <input
-                value={oshi}
-                onChange={(e) => setOshi(e.target.value)}
+                {...register("oshi")}
                 placeholder="例: 〇〇グループ、〇〇さん"
-                required
                 className="w-full py-[13px] px-4 text-[15px] border-[1.5px] border-black/[.12] rounded-[10px] bg-paper text-ink font-sans transition-colors"
               />
             </Field>
             <Field label="拡散してくれたSNSアカウント" hint="任意 · X / Threads のみ">
               <input
-                value={sns}
-                onChange={(e) => setSns(e.target.value)}
+                {...register("sns")}
                 placeholder="@your_account（X / Threads）"
                 className="w-full py-[13px] px-4 text-[15px] border-[1.5px] border-black/[.12] rounded-[10px] bg-paper text-ink font-sans transition-colors"
               />
             </Field>
-            <PrimaryCTA full size="lg" type="submit" arrow style={{ marginTop: 12 }}>
-              無料枠を確保する
+            {serverError && (
+              <div className="text-terracotta text-[13px] font-medium mb-3">{serverError}</div>
+            )}
+            <PrimaryCTA full size="lg" type="submit" arrow style={{ marginTop: 12, opacity: isPending ? 0.6 : 1 }}>
+              {isPending ? "送信中..." : "無料枠を確保する"}
             </PrimaryCTA>
             <div className="mt-4 text-[11px] text-ink-soft text-center leading-[1.7]">
               登録いただいた情報は、リリース通知・先着枠の確認にのみ使用します。
@@ -142,11 +166,13 @@ function Field({
   label,
   required,
   hint,
+  error,
   children,
 }: {
   label: string;
   required?: boolean;
   hint?: string;
+  error?: string;
   children: React.ReactNode;
 }) {
   return (
@@ -156,7 +182,8 @@ function Field({
         {required && <span className="text-[10px] text-terracotta font-semibold">必須</span>}
       </label>
       {children}
-      {hint && <div className="text-[11px] text-ink-soft mt-1.5">{hint}</div>}
+      {error && <div className="text-terracotta text-[11px] mt-1.5">{error}</div>}
+      {hint && !error && <div className="text-[11px] text-ink-soft mt-1.5">{hint}</div>}
     </div>
   );
 }
