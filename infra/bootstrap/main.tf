@@ -13,8 +13,17 @@ provider "aws" {
   region = "ap-northeast-1"
 }
 
+locals {
+  tags = {
+    Project     = "oshilock"
+    Environment = "shared"
+  }
+}
+
 resource "aws_s3_bucket" "tfstate" {
   bucket = "oshilock-tfstate"
+
+  tags = local.tags
 
   lifecycle {
     prevent_destroy = true
@@ -57,4 +66,6 @@ resource "aws_dynamodb_table" "tfstate_lock" {
     name = "LockID"
     type = "S"
   }
+
+  tags = local.tags
 }
