@@ -5,10 +5,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Section, SectionHeading } from "./section";
 import { PrimaryCTA } from "./primary-cta";
-import {
-  submitWaitlist,
-  waitlistSchema,
-} from "@/app/actions/waitlist";
+import { submitWaitlist } from "@/app/actions/waitlist";
+import { waitlistSchema } from "@/lib/waitlist-schema";
 
 type FormValues = {
   email: string;
