@@ -26,3 +26,5 @@ export type { EventCategory } from "./domain/enum/event-category";
 export type { SourceReliability } from "./domain/enum/source-reliability";
 export type { UserRank } from "./domain/enum/user-rank";
 export type { ReportCategory } from "./domain/enum/report-category";
+export { AUTH_PROVIDER } from "./domain/enum/auth-provider";
+export type { AuthProvider } from "./domain/enum/auth-provider";
