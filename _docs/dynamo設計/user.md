@@ -2,18 +2,31 @@
 
 ## ドメインモデル
 
-ユーザーに関するデータは以下の3モデルに分かれている（SK 分割パターン）。
+ユーザーに関するデータは以下の4モデルに分かれている（SK 分割パターン）。
 
-### User（プロフィール）
+### User（プロフィール + 認証）
 ```typescript
 interface User {
   id: UserId;
+  authProvider: AuthProvider; // APPLE | GOOGLE
+  authSub: string;            // プロバイダーのユーザーID
   displayName: string;
   avatarUrl: string | null;
-  rank: UserRank;         // LEGEND | STAR | ACE | REGULAR | ROOKIE | NO_RANK
-  oshiOrder: OshiId[];    // 推しの並び順
+  rank: UserRank;             // LEGEND | STAR | ACE | REGULAR | ROOKIE | NO_RANK
   createdAt: UtcIsoString;
   updatedAt: UtcIsoString;
+}
+```
+
+### UserOshi（推し × サブスク）
+```typescript
+interface UserOshi {
+  userId: UserId;
+  oshiId: OshiId;
+  order: number;                          // 表示順（0始まり、小さい方が優先）
+  subscriptionStatus: SubscriptionStatus; // FREE | TRIAL | ACTIVE | INACTIVE
+  joinedAt: UtcIsoString;
+  expiresAt: UtcIsoString | null;         // null = 無期限（FREE ユーザー）
 }
 ```
 
@@ -38,15 +51,6 @@ interface UserPushToken {
 }
 ```
 
-### 認証情報（DB 追加項目）
-ドメインモデルには未定義だが、DB には以下を保存する必要がある。
-
-| 項目 | 説明 |
-|---|---|
-| authProvider | APPLE / GOOGLE |
-| authSub | プロバイダーのユーザーID（Apple の user / Google の sub） |
-| email | 初回ログイン時に取得（Apple は2回目以降 null） |
-
 ---
 
 ## DynamoDB アイテム設計（シングルテーブル）
@@ -55,8 +59,8 @@ interface UserPushToken {
 
 | PK | SK | データ | 用途 |
 |---|---|---|---|
-| `USER#<userId>` | `PROFILE` | displayName, avatarUrl, rank, oshiOrder, createdAt, updatedAt | プロフィール |
-| `USER#<userId>` | `AUTH` | authProvider, authSub, email | 認証情報 |
+| `USER#<userId>` | `PROFILE` | authProvider, authSub, displayName, avatarUrl, rank, createdAt, updatedAt | プロフィール + 認証 |
+| `USER#<userId>` | `OSHI#<oshiId>` | order, subscriptionStatus, joinedAt, expiresAt | 推し × サブスク |
 | `USER#<userId>` | `SETTINGS` | notification: { reminder, dailySummary } | 通知設定 |
 | `USER#<userId>` | `PUSH_TOKEN#<platform>` | token, platform, createdAt | Push トークン |
 
@@ -65,6 +69,8 @@ interface UserPushToken {
 | GSI 名 | PK | SK | 用途 |
 |---|---|---|---|
 | `GSI1` | `AUTH#<authProvider>#<authSub>` | `USER#<userId>` | authSub からユーザー検索（ログイン時） |
+
+※ GSI1 のデータは PROFILE アイテムに `GSI1PK` 属性として保存する。
 
 ---
 
@@ -75,7 +81,7 @@ interface UserPushToken {
 | # | パターン | 操作 | キー |
 |---|---|---|---|
 | U-1 | authSub でユーザーを検索（ログイン時） | GSI1 Query | GSI1-PK: `AUTH#APPLE#<sub>` |
-| U-2 | ユーザー新規作成（初回ログイン） | BatchWrite | PK: `USER#<id>`, SK: `PROFILE` + `AUTH` + `SETTINGS` |
+| U-2 | ユーザー新規作成（初回ログイン） | BatchWrite | PK: `USER#<id>`, SK: `PROFILE` + `SETTINGS` |
 | U-3 | ユーザー削除（退会） | BatchWrite | PK: `USER#<id>`, 全 SK 削除 |
 
 ### プロフィール
@@ -84,30 +90,39 @@ interface UserPushToken {
 |---|---|---|---|
 | U-4 | プロフィール取得（マイページ） | GetItem | PK: `USER#<id>`, SK: `PROFILE` |
 | U-5 | 表示名変更 | UpdateItem | PK: `USER#<id>`, SK: `PROFILE`, SET displayName |
-| U-6 | 推し順序変更 | UpdateItem | PK: `USER#<id>`, SK: `PROFILE`, SET oshiOrder |
-| U-7 | ランク更新（年1回バッチ） | UpdateItem | PK: `USER#<id>`, SK: `PROFILE`, SET rank |
-| U-8 | 他ユーザーのプロフィール取得（最速投稿者名表示等） | GetItem | PK: `USER#<id>`, SK: `PROFILE` |
+| U-6 | ランク更新（年1回バッチ） | UpdateItem | PK: `USER#<id>`, SK: `PROFILE`, SET rank |
+| U-7 | 他ユーザーのプロフィール取得（最速投稿者名表示等） | GetItem | PK: `USER#<id>`, SK: `PROFILE` |
+
+### 推し × サブスク
+
+| # | パターン | 操作 | キー |
+|---|---|---|---|
+| U-8 | ユーザーの推し一覧取得 | Query | PK: `USER#<id>`, SK: begins_with(`OSHI#`) |
+| U-9 | 推しに参加（サブスク開始） | PutItem | PK: `USER#<id>`, SK: `OSHI#<oshiId>` |
+| U-10 | 推しの表示順変更 | UpdateItem | PK: `USER#<id>`, SK: `OSHI#<oshiId>`, SET order |
+| U-11 | サブスク状態更新 | UpdateItem | PK: `USER#<id>`, SK: `OSHI#<oshiId>`, SET subscriptionStatus, expiresAt |
+| U-12 | 推しから離脱 | DeleteItem | PK: `USER#<id>`, SK: `OSHI#<oshiId>` |
 
 ### 設定
 
 | # | パターン | 操作 | キー |
 |---|---|---|---|
-| U-9 | 通知設定取得 | GetItem | PK: `USER#<id>`, SK: `SETTINGS` |
-| U-10 | 通知設定変更（個別項目） | UpdateItem | PK: `USER#<id>`, SK: `SETTINGS`, SET notification.reminder |
+| U-13 | 通知設定取得 | GetItem | PK: `USER#<id>`, SK: `SETTINGS` |
+| U-14 | 通知設定変更（個別項目） | UpdateItem | PK: `USER#<id>`, SK: `SETTINGS`, SET notification.reminder |
 
 ### Push トークン
 
 | # | パターン | 操作 | キー |
 |---|---|---|---|
-| U-11 | Push トークン登録/更新 | PutItem | PK: `USER#<id>`, SK: `PUSH_TOKEN#IOS` |
-| U-12 | Push トークン取得（通知送信時） | GetItem | PK: `USER#<id>`, SK: `PUSH_TOKEN#IOS` |
-| U-13 | 全ユーザーの Push トークン取得（一斉通知） | Scan + Filter | SK: begins_with(`PUSH_TOKEN#`) |
+| U-15 | Push トークン登録/更新 | PutItem | PK: `USER#<id>`, SK: `PUSH_TOKEN#IOS` |
+| U-16 | Push トークン取得（通知送信時） | GetItem | PK: `USER#<id>`, SK: `PUSH_TOKEN#IOS` |
+| U-17 | 全ユーザーの Push トークン取得（一斉通知） | Scan + Filter | SK: begins_with(`PUSH_TOKEN#`) |
 
 ### 複合取得
 
 | # | パターン | 操作 | キー |
 |---|---|---|---|
-| U-14 | ユーザー全データ取得（アプリ起動時） | Query | PK: `USER#<id>` → PROFILE + AUTH + SETTINGS + PUSH_TOKEN |
+| U-18 | ユーザー全データ取得（アプリ起動時） | Query | PK: `USER#<id>` → PROFILE + OSHI# + SETTINGS + PUSH_TOKEN |
 
 ---
 
@@ -131,5 +146,5 @@ interface UserPushToken {
 ## 備考
 
 - `userId` は ULID を使用予定（時系列ソート可能 + ランダム性）
-- U-13（全ユーザー Scan）は MVP ではユーザー数が少ないので問題ないが、スケール時は GSI 追加を検討
-- Apple はメールを初回のみ返すため、AUTH アイテムに初回で保存必須
+- U-17（全ユーザー Scan）は MVP ではユーザー数が少ないので問題ないが、スケール時は GSI 追加を検討
+- `SubscriptionStatus.isActive(status)` でサブスクが有効かどうか判定可能
