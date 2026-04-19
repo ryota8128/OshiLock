@@ -4,7 +4,10 @@
   "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",
-    "lint": "turbo lint"
+    "lint": "turbo lint",
+    "mobile": "pnpm --filter @oshilock/mobile start:ts",
+    "mobile:clear": "pnpm --filter @oshilock/mobile start:ts -- --clear",
+    "api": "pnpm --filter @oshilock/be-api dev"
   },
   "devDependencies": {
     "turbo": "^2"

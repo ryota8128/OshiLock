@@ -19,6 +19,7 @@ export default function LoginScreen() {
     }
   };
 
+  // Google はキャンセル時にスローせず dismiss として処理されるため、catch は本当のエラーのみ
   const handleGoogle = async () => {
     try {
       await signInWithGoogle();
