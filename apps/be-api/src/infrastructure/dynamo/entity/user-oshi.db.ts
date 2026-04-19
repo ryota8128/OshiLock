@@ -1,0 +1,31 @@
+import { Entity } from "electrodb";
+import { SUBSCRIPTION_STATUS } from "@oshilock/shared";
+import { dynamoClient, TABLE_NAME } from "../client.js";
+
+export const UserOshiEntity = new Entity(
+  {
+    model: {
+      entity: "UserOshi",
+      version: "1",
+      service: "oshilock",
+    },
+    attributes: {
+      userId: { type: "string", required: true },
+      oshiId: { type: "string", required: true },
+      order: { type: "number", required: true},
+      subscriptionStatus: {
+        type: Object.values(SUBSCRIPTION_STATUS),
+        required: true,
+      },
+      joinedAt: { type: "string", required: true },
+      expiresAt: { type: "string" },
+    },
+    indexes: {
+      primary: {
+        pk: { field: "pk", composite: ["userId"], template: "USER#${userId}" },
+        sk: { field: "sk", composite: ["oshiId"], template: "OSHI#${oshiId}" },
+      },
+    },
+  },
+  { client: dynamoClient, table: TABLE_NAME },
+);
