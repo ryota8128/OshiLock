@@ -29,7 +29,7 @@
 - `apps/be-api`: Hono API（port 3012、`/` `/health` エンドポイント）
 - `packages/shared`: 共有型定義（Card, CardCategory, SourceReliability）
 - pnpm catalog でバージョン一元管理
-- コーディングガイドライン作成（`docs/coding-guidlines/`）
+- コーディングガイドライン作成（`_docs/coding-guidlines/`）
 
 ### Expo モバイルアプリ セットアップ
 - `apps/mobile` に Expo SDK 54 + tabs テンプレートで作成

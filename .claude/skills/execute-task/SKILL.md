@@ -14,12 +14,12 @@ description: タスク定義の実行
 実装を始める前に、以下のドキュメントをすべて読み込む。
 
 ```
-docs/coding-guidlines/monorepo.md
-docs/coding-guidlines/shared-package.md
-docs/coding-guidlines/branded-types.md
+_docs/coding-guidlines/monorepo.md
+_docs/coding-guidlines/shared-package.md
+_docs/coding-guidlines/branded-types.md
 ```
 
-**新しいガイドラインファイルが追加されている可能性があるため、必ず `docs/coding-guidlines/` ディレクトリを確認してから読み込むこと。**
+**新しいガイドラインファイルが追加されている可能性があるため、必ず `_docs/coding-guidlines/` ディレクトリを確認してから読み込むこと。**
 
 ### 2. 関連コードの確認
 
