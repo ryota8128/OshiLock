@@ -233,6 +233,7 @@ export const signInRequestSchema = z.object({
 - `OshiLockBeException` — ベース例外。`statusCode` + `message` + `toJSON()`
 - `ValidationException extends OshiLockBeException` — zod のフィールドエラーを `details` に含む
 - `TransactionCanceledException extends OshiLockBeException` — DynamoDB トランザクション失敗時
+- `NotFoundException extends OshiLockBeException` — 404 Not Found。デフォルトメッセージ「リソースが見つかりません」
 - 新しいエラー種別は `OshiLockBeException` を継承して `domain/errors/` に追加する
 - **BE 内で `throw new Error()` は禁止。必ずカスタム例外を使う**
 
@@ -342,6 +343,43 @@ const result = await UserEntity.query.byAuth({ authProvider, authSub }).go({ hyd
 
 entity ファイルの `toXxx` 関数で変換する（上記 ElectroDB エンティティのセクション参照）。
 repository では `toXxx` を import して使うだけ。
+
+### map の部分更新（pickDefined）
+
+`required: true` の map プロパティを optional で部分更新する場合、**ドットパスで個別フィールドを指定**する。
+map ごと渡すと required バリデーションで `ConditionalCheckFailedException` になる。
+
+`infrastructure/dynamo/utils.ts` の `pickDefined` で undefined を除外してからドットパスで `.set()` する。
+
+```typescript
+// ✅ ドットパス + pickDefined で部分更新
+import { pickDefined } from '../utils.js';
+
+.set(pickDefined({
+  'notification.reminder': params.notification.reminder,
+  'notification.dailySummary': params.notification.dailySummary,
+}))
+
+// ❌ map ごと渡さない（required プロパティが欠けると ConditionalCheckFailedException）
+.set({ notification: pickDefined(params.notification) })
+
+// ❌ map をそのまま渡さない
+.set({ notification: params.notification })
+
+// ❌ if チェーンで手動フィルタリングしない
+if (params.notification.reminder !== undefined) {
+  query = query.set({ 'notification.reminder': params.notification.reminder });
+}
+```
+
+`pickDefined` は `-?` で optional 修飾子を除去し、型レベルでも undefined を消す。
+
+```typescript
+// { reminder?: boolean | undefined } → { reminder: boolean }
+export function pickDefined<T extends Record<string, unknown>>(
+  obj: T,
+): { [K in keyof T]-?: Exclude<T[K], undefined> } { ... }
+```
 
 ## テスト
 

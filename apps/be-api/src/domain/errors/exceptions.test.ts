@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { ValidationException } from './validation.exception';
 import { TransactionCanceledException } from './transaction-canceled.exception';
 import { UnauthorizedException } from './unauthorized.exception';
+import { NotFoundException } from './not-found.exception';
 import { ZodError, ZodIssueCode } from 'zod';
 
 describe('ValidationException', () => {
@@ -90,5 +91,29 @@ describe('UnauthorizedException', () => {
     const json = error.toJSON();
     expect(json.error).toBe('UnauthorizedException');
     expect(json.statusCode).toBe(401);
+  });
+});
+
+describe('NotFoundException', () => {
+  it('statusCode が 404 である', () => {
+    const error = new NotFoundException();
+    expect(error.statusCode).toBe(404);
+  });
+
+  it('デフォルトメッセージが設定される', () => {
+    const error = new NotFoundException();
+    expect(error.message).toBe('リソースが見つかりません');
+  });
+
+  it('カスタムメッセージを設定できる', () => {
+    const error = new NotFoundException('ユーザー設定が見つかりません');
+    expect(error.message).toBe('ユーザー設定が見つかりません');
+  });
+
+  it('toJSON に正しい情報を含む', () => {
+    const error = new NotFoundException();
+    const json = error.toJSON();
+    expect(json.error).toBe('NotFoundException');
+    expect(json.statusCode).toBe(404);
   });
 });
