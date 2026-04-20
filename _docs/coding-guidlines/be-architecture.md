@@ -353,12 +353,6 @@ map ごと渡すと required バリデーションで `ConditionalCheckFailedExc
 
 ```typescript
 // ✅ ドットパス + pickDefined で部分更新
-import { pickDefined } from '../utils.js';
-
-.set(pickDefined({
-  'notification.reminder': params.notification.reminder,
-  'notification.dailySummary': params.notification.dailySummary,
-}))
 
 // ❌ map ごと渡さない（required プロパティが欠けると ConditionalCheckFailedException）
 .set({ notification: pickDefined(params.notification) })
