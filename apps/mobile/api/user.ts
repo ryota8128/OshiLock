@@ -1,15 +1,16 @@
 import { apiClient } from './client';
-import type { UpdateProfileResponse, AvatarPresignedUrlsResponse } from '@oshilock/shared';
+import type {
+  UpdateProfileRequest,
+  UpdateProfileResponse,
+  AvatarPresignedUrlsResponse,
+} from '@oshilock/shared';
 
 export const userApi = {
   getAvatarUploadUrls(): Promise<AvatarPresignedUrlsResponse> {
     return apiClient.post<AvatarPresignedUrlsResponse>('/users/me/avatar/presigned-urls');
   },
 
-  updateProfile(body: {
-    displayName: string;
-    avatarPath?: string | null;
-  }): Promise<UpdateProfileResponse> {
+  updateProfile(body: UpdateProfileRequest): Promise<UpdateProfileResponse> {
     return apiClient.put<UpdateProfileResponse>('/users/me/profile', body);
   },
 };

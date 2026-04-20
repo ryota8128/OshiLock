@@ -13,22 +13,23 @@ import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import { Camera } from 'lucide-react-native';
+import { DisplayName } from '@oshilock/shared';
 import { colors, radii, typography } from '@/constants/theme';
 import { useAuth } from '@/contexts/AuthContext';
 import { Avatar } from '@/components/Avatar';
 import { resizeForAvatar } from '@/utils/image';
+import { userApi, uploadToS3 } from '@/api/user';
 
-const MAX_DISPLAY_NAME = 20;
-const MIN_DISPLAY_NAME = 2;
+type AvatarUris = { sm: string; lg: string } | null;
 
 export default function OnboardingScreen() {
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
   const [displayName, setDisplayName] = useState(user?.displayName ?? '');
-  const [avatarUri, setAvatarUri] = useState<string | null>(null);
+  const [avatarUris, setAvatarUris] = useState<AvatarUris>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const isValid = displayName.trim().length >= MIN_DISPLAY_NAME;
+  const isValid = DisplayName.schema.safeParse(displayName.trim()).success;
 
   async function pickImage() {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -43,9 +44,7 @@ export default function OnboardingScreen() {
         resizeForAvatar(result.assets[0].uri, 'sm'),
         resizeForAvatar(result.assets[0].uri, 'lg'),
       ]);
-      // プレビューは sm を表示、アップロード時に両方送信
-      setAvatarUri(sm.uri);
-      // TODO: lg.uri もアップロード時に使用
+      setAvatarUris({ sm: sm.uri, lg: lg.uri });
     }
   }
 
@@ -54,9 +53,23 @@ export default function OnboardingScreen() {
 
     setIsSubmitting(true);
     try {
-      // TODO: BE に表示名 + アバター画像を送信
-      // 1. アバター画像があれば presigned URL でアップロード
-      // 2. PUT /users/me/profile で表示名 + avatarUrl を更新
+      let avatarPath: string | undefined;
+
+      if (avatarUris) {
+        const { avatarPath: path, smUploadUrl, lgUploadUrl } = await userApi.getAvatarUploadUrls();
+        avatarPath = path;
+
+        await Promise.all([
+          uploadToS3(smUploadUrl, avatarUris.sm),
+          uploadToS3(lgUploadUrl, avatarUris.lg),
+        ]);
+      }
+
+      await userApi.updateProfile({
+        displayName: displayName.trim(),
+        avatarPath,
+      });
+
       router.replace('/(tabs)');
     } catch (e) {
       Alert.alert('エラー', 'プロフィールの設定に失敗しました');
@@ -75,16 +88,12 @@ export default function OnboardingScreen() {
 
       {/* Avatar */}
       <Pressable style={styles.avatarSection} onPress={pickImage}>
-        {avatarUri ? (
-          <Avatar
-            avatarUrl={avatarUri}
-            displayName={displayName || '?'}
-            userId={user?.uid ?? ''}
-            size="lg"
-          />
-        ) : (
-          <Avatar displayName={displayName || '?'} userId={user?.uid ?? ''} size="lg" />
-        )}
+        <Avatar
+          avatarUrl={avatarUris?.sm ?? null}
+          displayName={displayName || '?'}
+          userId={user?.uid ?? ''}
+          size="lg"
+        />
         <View style={styles.cameraIcon}>
           <Camera size={14} color={colors.white} strokeWidth={2} />
         </View>
@@ -100,11 +109,11 @@ export default function OnboardingScreen() {
           onChangeText={setDisplayName}
           placeholder="表示名を入力"
           placeholderTextColor={colors.inkSoft}
-          maxLength={MAX_DISPLAY_NAME}
+          maxLength={DisplayName.maxLength}
           autoFocus
         />
         <Text style={styles.charCount}>
-          {displayName.length} / {MAX_DISPLAY_NAME}
+          {displayName.length} / {DisplayName.maxLength}
         </Text>
       </View>
 
