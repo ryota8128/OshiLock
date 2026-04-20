@@ -200,15 +200,86 @@ export const signInRequestSchema = z.object({
 - `infrastructure/dynamo/entity/` に配置
 - ファイル名は `<モデル名>.db.ts`
 - enum の type は `Object.values(定数)` で定義する
+- `EntityItem<typeof XxxEntity>` でアイテム型を定義し、export する
+- `toXxx` マッピング関数を entity ファイルに定義する（ElectroDB の型と密結合のため）
 
 ```typescript
-// ✅ 正しい
+// ✅ entity ファイルの構成
+import { Entity, type EntityItem } from "electrodb";
+import { UserId, AuthProvider, UserRank, UtcIsoString } from "@oshilock/shared";
+import type { User } from "@oshilock/shared";
+
+// namespace の外で Entity を生成（namespace 内から参照できないため）
+const _entity = new Entity({ ... });
+
+// namespace に entity / Item 型 / マッピング関数をまとめる
+export namespace UserDb {
+  export const entity = _entity;
+  export type Item = EntityItem<typeof _entity>;
+
+  export function toUser(record: Item): User {
+    return {
+      id: UserId.from(record.userId),
+      authProvider: AuthProvider.schema.parse(record.authProvider),
+      rank: UserRank.schema.parse(record.rank),
+      createdAt: UtcIsoString.from(record.createdAt),
+      // ...
+    };
+  }
+}
+```
+
+```typescript
+// ✅ repository では XxxDb 経由でアクセス
+import { UserDb } from "../entity/user.db.js";
+
+// entity へのアクセス
+UserDb.entity.query.primary({ userId }).go();
+UserDb.entity.create({ ... }).go();
+
+// マッピング
+const record = result.data[0];
+return record ? UserDb.toUser(record) : null;
+
+// ❌ namespace 外の entity を直接 import しない
+import { _entity } from "../entity/user.db.js";
+
+// ❌ repository に手動型定義や as キャストを書かない
+type ElectroDBUserRecord = { userId: string; ... };
+id: record.userId as UserId,
+```
+
+```typescript
+// ✅ enum の type は Object.values で定義
 import { AUTH_PROVIDER } from "@oshilock/shared";
 type: Object.values(AUTH_PROVIDER),
 
 // ❌ リテラルで書かない
 type: ["APPLE", "GOOGLE"] as const,
 ```
+
+## ElectroDB クエリ
+
+### GSI クエリの hydrate
+
+GSI は KEYS_ONLY で定義しているため、GSI 経由のクエリには常に `hydrate: true` を指定する。
+primary インデックスのクエリには不要。
+
+```typescript
+// ✅ GSI クエリ → hydrate: true
+const result = await UserEntity.query.byAuth({ authProvider, authSub }).go({ hydrate: true });
+
+// ✅ primary クエリ → hydrate 不要
+const result = await UserEntity.query.primary({ userId }).go();
+
+// ✅ 例外: GSI から key のみ取得したい場合は明示的に hydrate: false
+const result = await UserEntity.query.byAuth({ authProvider, authSub }).go({ hydrate: false });
+```
+
+### DB → ドメインモデル変換
+
+entity ファイルの `toXxx` 関数で変換する（上記 ElectroDB エンティティのセクション参照）。
+repository では `toXxx` を import して使うだけ。
 
 ## 環境変数
 
