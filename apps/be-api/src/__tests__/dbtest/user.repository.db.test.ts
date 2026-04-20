@@ -30,7 +30,7 @@ describe('DynamoUserRepository', () => {
       expect(user.displayName).toBe('TestUser');
       expect(user.authProvider).toBe('APPLE');
       expect(user.rank).toBe('NO_RANK');
-      expect(user.avatarUrl).toBeNull();
+      expect(user.avatarPath).toBeNull();
     });
 
     it('同じ userId で2回作成すると TransactionCanceledException がスローされる', async () => {
@@ -99,6 +99,102 @@ describe('DynamoUserRepository', () => {
     it('存在しない authSub では null を返す', async () => {
       const user = await repository.findByAuth(AUTH_PROVIDER.APPLE, 'nonexistent');
       expect(user).toBeNull();
+    });
+  });
+
+  describe('updateProfile', () => {
+    it('表示名を更新できる', async () => {
+      const userId = UserId.generate();
+
+      await repository.create({
+        userId,
+        authProvider: AUTH_PROVIDER.APPLE,
+        authSub: 'apple-sub-update-001',
+        displayName: 'BeforeUpdate',
+      });
+
+      await repository.updateProfile({
+        userId,
+        displayName: 'AfterUpdate',
+      });
+
+      const user = await repository.findById(userId);
+      expect(user).not.toBeNull();
+      expect(user!.displayName).toBe('AfterUpdate');
+    });
+
+    it('avatarPath を設定できる', async () => {
+      const userId = UserId.generate();
+
+      await repository.create({
+        userId,
+        authProvider: AUTH_PROVIDER.APPLE,
+        authSub: 'apple-sub-update-002',
+        displayName: 'AvatarUser',
+      });
+
+      await repository.updateProfile({
+        userId,
+        displayName: 'AvatarUser',
+        avatarPath: `avatars/${userId}/hash`,
+      });
+
+      const user = await repository.findById(userId);
+      expect(user).not.toBeNull();
+      expect(user!.avatarPath).toBe(`avatars/${userId}/hash`);
+    });
+
+    it('avatarPath が undefined の場合は変更しない', async () => {
+      const userId = UserId.generate();
+
+      await repository.create({
+        userId,
+        authProvider: AUTH_PROVIDER.APPLE,
+        authSub: 'apple-sub-update-003',
+        displayName: 'NoAvatarChange',
+      });
+
+      await repository.updateProfile({
+        userId,
+        displayName: 'NoAvatarChange',
+        avatarPath: undefined,
+      });
+
+      const user = await repository.findById(userId);
+      expect(user).not.toBeNull();
+      expect(user!.avatarPath).toBeNull();
+    });
+
+    it('avatarPath が null の場合は削除される', async () => {
+      const userId = UserId.generate();
+
+      await repository.create({
+        userId,
+        authProvider: AUTH_PROVIDER.APPLE,
+        authSub: 'apple-sub-update-004',
+        displayName: 'DeleteAvatar',
+      });
+
+      // まず avatarPath を設定
+      await repository.updateProfile({
+        userId,
+        displayName: 'DeleteAvatar',
+        avatarPath: `avatars/${userId}/hash`,
+      });
+
+      const before = await repository.findById(userId);
+      expect(before!.avatarPath).toBe(`avatars/${userId}/hash`);
+
+      // null を指定して削除
+      await repository.updateProfile({
+        userId,
+        displayName: 'DeleteAvatar',
+        avatarPath: null,
+      });
+
+      const after = await repository.findById(userId);
+      expect(after).not.toBeNull();
+      expect(after!.avatarPath).toBeNull();
     });
   });
 
