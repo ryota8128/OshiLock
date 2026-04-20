@@ -1,6 +1,6 @@
-import { OshiId, UserId } from "../../types/branded";
-import { UtcIsoString } from "../../types/utc-iso-string";
-import { SubscriptionStatus } from "../enum/subscription-status";
+import { OshiId, UserId } from '../../types/branded';
+import { UtcIsoString } from '../value-objects/utc-iso-string';
+import { SubscriptionStatus } from '../enum/subscription-status';
 
 export interface UserOshi {
   userId: UserId;

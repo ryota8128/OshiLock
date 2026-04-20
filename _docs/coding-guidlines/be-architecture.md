@@ -113,6 +113,53 @@ auth.post("/signin", async (c) => {
 });
 ```
 
+## API レスポンス型
+
+- レスポンス型は `packages/shared/src/api/response/` に定義する
+- BE と Mobile の両方が同じ型を参照する（API 契約を shared で定義）
+- controller でレスポンス型を明示的に型注釈して型を強制する
+
+```typescript
+// ✅ shared にレスポンス型を定義
+// packages/shared/src/api/response/user.response.ts
+export type UpdateProfileResponse = {
+  user: UserWithAvatarUrl;
+};
+
+// ✅ controller で型注釈を付けて型を強制
+import type { UpdateProfileResponse } from "@oshilock/shared";
+
+const result = await updateProfileUseCase.execute({ ... });
+const response: UpdateProfileResponse = { user: result };
+return c.json(response);
+
+// ✅ Mobile で同じ型を参照
+import type { UpdateProfileResponse } from "@oshilock/shared";
+const res = await apiClient.put<UpdateProfileResponse>("/users/me/profile", body);
+```
+
+### バリデーション定数（value-object）
+
+- 文字数制限等のバリデーション定数は `packages/shared/src/domain/value-objects/` に zod schema として定義する
+- BE のリクエストスキーマと Mobile のバリデーションで同じ値を使う
+
+```typescript
+// ✅ shared に value-object を定義
+// packages/shared/src/domain/value-objects/display-name.ts
+export namespace DisplayName {
+  export const schema = z.string().min(2).max(20);
+}
+
+// ✅ BE のリクエストスキーマで使う
+import { DisplayName } from "@oshilock/shared";
+export const updateProfileRequestSchema = z.object({
+  displayName: DisplayName.schema,
+});
+
+// ✅ Mobile のバリデーションでも使う
+const isValid = DisplayName.schema.safeParse(input).success;
+```
+
 ## DI（依存注入）
 
 ### 方針

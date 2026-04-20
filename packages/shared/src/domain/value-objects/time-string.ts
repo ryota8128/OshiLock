@@ -1,10 +1,10 @@
-import { z } from "zod";
-import { REGEX } from "../const/regex";
-import { Timezone } from "../const/timezone";
-import { Branded } from "./branded";
+import { z } from 'zod';
+import { REGEX } from '../../const/regex';
+import { Timezone } from '../../const/timezone';
+import { Branded } from '../../types/branded';
 
 /** "18:00" 形式の時刻文字列 */
-export type TimeString = Branded<string, "TimeString">;
+export type TimeString = Branded<string, 'TimeString'>;
 
 export namespace TimeString {
   export const schema = z.string().regex(REGEX.TIME_STRING).transform(from);
@@ -18,10 +18,10 @@ export namespace TimeString {
   }
 
   export function now(timezone: Timezone): TimeString {
-    const formatter = new Intl.DateTimeFormat("en-CA", {
+    const formatter = new Intl.DateTimeFormat('en-CA', {
       timeZone: timezone.iana,
-      hour: "2-digit",
-      minute: "2-digit",
+      hour: '2-digit',
+      minute: '2-digit',
       hour12: false,
     });
     return formatter.format(new Date()) as TimeString;

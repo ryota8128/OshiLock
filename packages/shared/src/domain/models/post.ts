@@ -1,5 +1,5 @@
-import { OshiId, PostId, UserId } from "../../types/branded";
-import { UtcIsoString } from "../../types/utc-iso-string";
+import { OshiId, PostId, UserId } from '../../types/branded';
+import { UtcIsoString } from '../value-objects/utc-iso-string';
 
 export interface Post {
   id: PostId;

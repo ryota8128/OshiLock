@@ -1,5 +1,5 @@
-import { EventId, CommentId, UserId } from "../../types/branded";
-import { UtcIsoString } from "../../types/utc-iso-string";
+import { EventId, CommentId, UserId } from '../../types/branded';
+import { UtcIsoString } from '../value-objects/utc-iso-string';
 
 export interface Comment {
   id: CommentId;

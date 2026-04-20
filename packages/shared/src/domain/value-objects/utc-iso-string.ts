@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { Timezone } from '../const/timezone';
-import { Branded } from './branded';
+import { Timezone } from '../../const/timezone';
+import { Branded } from '../../types/branded';
 import { DateString } from './date-string';
 import { TimeString } from './time-string';
 

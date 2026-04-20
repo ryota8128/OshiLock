@@ -111,6 +111,23 @@ type Event = {
 };
 ```
 
+## Value Object（Branded Type にしないもの）
+
+ID の取り違え防止が不要な値（DisplayName 等）は Branded Type にせず、`namespace + schema` のみで定義する。
+
+```typescript
+// ✅ Branded Type 不要 — schema だけ持つ
+export namespace DisplayName {
+  export const schema = z.string().min(2).max(20);
+}
+
+// 使い方
+DisplayName.schema.parse(input);              // バリデーション
+DisplayName.schema.safeParse(input).success;  // 判定
+```
+
+配置先: `packages/shared/src/domain/value-objects/`
+
 ## タイムゾーン変換
 
 `UtcIsoString` の namespace 関数で変換する。

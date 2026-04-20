@@ -1,6 +1,6 @@
-import { UserId } from "../../types/branded";
-import { UtcIsoString } from "../../types/utc-iso-string";
-import { Platform } from "../enum/platform";
+import { UserId } from '../../types/branded';
+import { UtcIsoString } from '../value-objects/utc-iso-string';
+import { Platform } from '../enum/platform';
 
 export interface UserPushToken {
   userId: UserId;
