@@ -16,6 +16,7 @@ import { Camera } from 'lucide-react-native';
 import { colors, radii, typography } from '@/constants/theme';
 import { useAuth } from '@/contexts/AuthContext';
 import { Avatar } from '@/components/Avatar';
+import { resizeForAvatar } from '@/utils/image';
 
 const MAX_DISPLAY_NAME = 20;
 const MIN_DISPLAY_NAME = 2;
@@ -38,7 +39,13 @@ export default function OnboardingScreen() {
     });
 
     if (!result.canceled && result.assets[0]) {
-      setAvatarUri(result.assets[0].uri);
+      const [sm, lg] = await Promise.all([
+        resizeForAvatar(result.assets[0].uri, 'sm'),
+        resizeForAvatar(result.assets[0].uri, 'lg'),
+      ]);
+      // プレビューは sm を表示、アップロード時に両方送信
+      setAvatarUri(sm.uri);
+      // TODO: lg.uri もアップロード時に使用
     }
   }
 
