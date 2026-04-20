@@ -7,7 +7,7 @@ const APPLE_CANCEL_CODE = "ERR_REQUEST_CANCELED";
 
 export default function LoginScreen() {
   const insets = useSafeAreaInsets();
-  const { signInWithApple, signInWithGoogle } = useAuth();
+  const { signInWithApple } = useAuth();
 
   const handleApple = async () => {
     try {
@@ -16,15 +16,6 @@ export default function LoginScreen() {
       if (!(e instanceof Error && "code" in e && e.code === APPLE_CANCEL_CODE)) {
         Alert.alert("エラー", "Appleサインインに失敗しました");
       }
-    }
-  };
-
-  // Google はキャンセル時にスローせず dismiss として処理されるため、catch は本当のエラーのみ
-  const handleGoogle = async () => {
-    try {
-      await signInWithGoogle();
-    } catch (e) {
-      Alert.alert("エラー", "Googleサインインに失敗しました");
     }
   };
 
@@ -49,18 +40,13 @@ export default function LoginScreen() {
 
       {/* Auth buttons */}
       <View style={styles.authSection}>
-        <Pressable
-          style={styles.appleButton}
-          onPress={handleApple}
-        >
+        <Pressable style={styles.appleButton} onPress={handleApple}>
           <Text style={styles.appleButtonText}>Appleでサインイン</Text>
         </Pressable>
 
-        <Pressable
-          style={styles.googleButton}
-          onPress={handleGoogle}
-        >
-          <Text style={styles.googleButtonText}>Googleで続ける</Text>
+        {/* TODO: Google Sign In は Development Build 移行時に実装 */}
+        <Pressable style={[styles.googleButton, styles.disabledButton]} disabled>
+          <Text style={[styles.googleButtonText, styles.disabledText]}>Googleで続ける（準備中）</Text>
         </Pressable>
       </View>
 
@@ -157,6 +143,12 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "600",
     color: colors.ink,
+  },
+  disabledButton: {
+    opacity: 0.4,
+  },
+  disabledText: {
+    color: colors.inkSoft,
   },
   terms: {
     marginTop: 18,
