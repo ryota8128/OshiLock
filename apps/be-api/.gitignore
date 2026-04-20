@@ -15,6 +15,9 @@ node_modules/
 .env
 .env.production
 
+# Firebase
+firebase-service-account.json
+
 # logs
 logs/
 *.log

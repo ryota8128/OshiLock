@@ -7,7 +7,7 @@ function createCredentialProvider() {
   if (env.IS_LOCAL) {
     return fromSSO({ profile: env.AWS_PROFILE });
   }
-  return awsCredentialsProvider({ roleArn: env.AWS_ROLE_ARN! });
+  return awsCredentialsProvider({ roleArn: env.AWS_ROLE_ARN });
 }
 
 export const dynamoClient = new DynamoDBClient({
