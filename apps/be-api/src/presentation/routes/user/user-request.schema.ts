@@ -1,6 +1,7 @@
 import { z } from 'zod';
+import { DisplayName } from '@oshilock/shared';
 
 export const updateProfileRequestSchema = z.object({
-  displayName: z.string().min(2).max(20),
+  displayName: DisplayName.schema,
   avatarPath: z.string().nullable().optional(),
 });
