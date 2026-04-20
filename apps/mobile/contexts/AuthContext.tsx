@@ -87,7 +87,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     isSigningIn.current = true;
-    setIsLoading(true);
 
     try {
       // Firebase にサインイン
@@ -110,7 +109,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       Alert.alert('エラー', 'サーバーへの登録に失敗しました。再度ログインしてください。');
     } finally {
       isSigningIn.current = false;
-      setIsLoading(false);
     }
   }
 

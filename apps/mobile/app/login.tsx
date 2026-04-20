@@ -1,4 +1,5 @@
-import { View, Text, StyleSheet, Pressable, Alert } from 'react-native';
+import { useState } from 'react';
+import { View, Text, StyleSheet, Pressable, Alert, ActivityIndicator } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '@/constants/theme';
 import { useAuth } from '@/contexts/AuthContext';
@@ -9,14 +10,17 @@ const APPLE_CANCEL_CODE = 'ERR_REQUEST_CANCELED';
 export default function LoginScreen() {
   const insets = useSafeAreaInsets();
   const { signInWithApple } = useAuth();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleApple = async () => {
+    setIsSubmitting(true);
     try {
       await signInWithApple();
     } catch (e) {
       if (!(e instanceof Error && 'code' in e && e.code === APPLE_CANCEL_CODE)) {
         Alert.alert('エラー', 'Appleサインインに失敗しました');
       }
+      setIsSubmitting(false);
     }
   };
 
@@ -24,14 +28,25 @@ export default function LoginScreen() {
     <View style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom + 20 }]}>
       <View style={styles.hero}>
         <OshiLogo width={300} />
+        <Text style={styles.catchCopy}>
+          ファンが見つけて、AIが届ける。{'\n'}推し活専用の情報コミュニティ。
+        </Text>
       </View>
       <View style={styles.authSection}>
-        <Pressable style={styles.appleButton} onPress={handleApple}>
-          <Text style={styles.appleButtonText}>Appleでサインイン</Text>
+        <Pressable
+          style={[styles.appleButton, isSubmitting && styles.buttonDisabled]}
+          onPress={handleApple}
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? (
+            <ActivityIndicator color={colors.white} />
+          ) : (
+            <Text style={styles.appleButtonText}>Appleでサインイン</Text>
+          )}
         </Pressable>
 
         {/* TODO: Google Sign In は Development Build 移行時に実装 */}
-        <Pressable style={[styles.googleButton, styles.disabledButton]} disabled>
+        <Pressable style={[styles.googleButton, styles.buttonDisabled]} disabled>
           <Text style={[styles.googleButtonText, styles.disabledText]}>
             Googleで続ける（準備中）
           </Text>
@@ -74,6 +89,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 64,
   },
   appleButtonText: {
     fontSize: 15,
@@ -94,7 +110,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: colors.ink,
   },
-  disabledButton: {
+  buttonDisabled: {
     opacity: 0.4,
   },
   disabledText: {
