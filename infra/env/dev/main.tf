@@ -69,3 +69,15 @@ module "storage" {
   bucket_name               = "oshilock-assets-${local.env}"
   cloudfront_public_key_pem = file("../../keys/cloudfront-dev-public.pem")
 }
+
+output "cloudfront_domain_name" {
+  value = module.storage.cloudfront_domain_name
+}
+
+output "cloudfront_key_pair_id" {
+  value = module.storage.cloudfront_key_pair_id
+}
+
+output "s3_bucket_name" {
+  value = module.storage.bucket_name
+}
