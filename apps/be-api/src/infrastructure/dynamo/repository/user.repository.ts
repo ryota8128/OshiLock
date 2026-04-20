@@ -37,6 +37,7 @@ export class DynamoUserRepository implements IUserRepository {
             createdAt: now,
             updatedAt: now,
           })
+          .where(({ userId }, { notExists }) => notExists(userId))
           .commit(),
         userSettings
           .create({
