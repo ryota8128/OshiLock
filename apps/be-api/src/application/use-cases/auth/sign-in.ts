@@ -22,6 +22,10 @@ export class SignInUseCase {
     );
 
     if (existingUser) {
+      // 既存ユーザー: claims が未設定の場合のみ設定（移行用）
+      if (!verified.userId) {
+        await this.authGateway.setCustomClaims(verified.uid, { userId: existingUser.id });
+      }
       return { userId: existingUser.id, isNewUser: false };
     }
 
@@ -32,6 +36,9 @@ export class SignInUseCase {
       authSub: verified.authSub,
       displayName: verified.name || `User_${userId.slice(-6)}`,
     });
+
+    // Firebase token に userId を埋め込む
+    await this.authGateway.setCustomClaims(verified.uid, { userId });
 
     return { userId, isNewUser: true };
   }

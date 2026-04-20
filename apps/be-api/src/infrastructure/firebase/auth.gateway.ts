@@ -3,11 +3,16 @@ import type { IAuthGateway, VerifiedToken } from '../../domain/gateway/auth.gate
 import { firebaseAuth } from './client.js';
 
 export class FirebaseAuthGateway implements IAuthGateway {
+  async setCustomClaims(firebaseUid: string, claims: { userId: string }): Promise<void> {
+    await firebaseAuth.setCustomUserClaims(firebaseUid, claims);
+  }
+
   async verifyIdToken(idToken: string): Promise<VerifiedToken> {
     const decoded = await firebaseAuth.verifyIdToken(idToken);
 
     return {
       uid: decoded.uid,
+      userId: (decoded.userId as string) ?? null,
       authProvider: resolveAuthProvider(decoded.firebase.sign_in_provider),
       authSub: decoded.sub,
       email: decoded.email ?? null,

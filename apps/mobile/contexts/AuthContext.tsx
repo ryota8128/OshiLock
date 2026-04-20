@@ -1,23 +1,19 @@
 // TODO: Development Build 移行時に @react-native-firebase に置き換え
 // 現在は Expo Go 互換のため Firebase Web SDK を使用
-import * as AppleAuthentication from "expo-apple-authentication";
-import * as Crypto from "expo-crypto";
-import * as SecureStore from "expo-secure-store";
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  type ReactNode,
-} from "react";
+import * as AppleAuthentication from 'expo-apple-authentication';
+import * as Crypto from 'expo-crypto';
+import * as SecureStore from 'expo-secure-store';
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { Alert } from 'react-native';
 import {
   onAuthStateChanged,
   signOut as firebaseSignOut,
   type User as FirebaseUser,
-} from "firebase/auth";
-import { firebaseAuth, signInWithAppleCredential } from "@/config/firebase";
+} from 'firebase/auth';
+import { firebaseAuth, signInWithAppleCredential } from '@/config/firebase';
+import { authApi } from '@/api/auth';
 
-const TOKEN_KEY = "auth_token";
+const TOKEN_KEY = 'auth_token';
 
 type AuthUser = {
   uid: string;
@@ -28,16 +24,16 @@ type AuthUser = {
 type AuthContextType = {
   user: AuthUser | null;
   isLoading: boolean;
+  isNewUser: boolean;
   signInWithApple: () => Promise<void>;
   signOut: () => Promise<void>;
-  getIdToken: () => Promise<string | null>;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export function useAuth() {
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth must be used within AuthProvider");
+  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
   return ctx;
 }
 
@@ -52,8 +48,9 @@ function toAuthUser(firebaseUser: FirebaseUser): AuthUser {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isNewUser, setIsNewUser] = useState(false);
 
-  // Firebase の認証状態を監視（自動リフレッシュ含む）
+  // Firebase の認証状態を監視（起動時の自動ログイン復元 + トークンリフレッシュ）
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
       if (firebaseUser) {
@@ -70,12 +67,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   async function signInWithApple() {
-    // nonce を生成して Apple に渡し、Firebase で検証する
     const nonce = Math.random().toString(36).substring(2, 10);
-    const hashedNonce = await Crypto.digestStringAsync(
-      Crypto.CryptoDigestAlgorithm.SHA256,
-      nonce,
-    );
+    const hashedNonce = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, nonce);
 
     const credential = await AppleAuthentication.signInAsync({
       requestedScopes: [
@@ -86,12 +79,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     if (!credential.identityToken) {
-      throw new Error("Apple Sign In: identityToken is null");
+      throw new Error('Apple Sign In: identityToken is null');
     }
 
-    // Firebase に Apple の credential でサインイン
-    await signInWithAppleCredential(credential.identityToken, nonce);
-    // onAuthStateChanged が user を自動更新する
+    // Firebase にサインイン
+    const firebaseCredential = await signInWithAppleCredential(credential.identityToken, nonce);
+    const token = await firebaseCredential.user.getIdToken();
+
+    // BE にユーザー登録/ログイン
+    try {
+      const result = await authApi.signIn(token);
+      setIsNewUser(result.isNewUser);
+
+      // Custom Claims が設定された後、token をリフレッシュして claims を反映
+      if (result.isNewUser) {
+        await firebaseCredential.user.getIdToken(true);
+      }
+    } catch (e) {
+      console.error('BE signin failed:', e);
+      await signOut();
+      Alert.alert('エラー', 'サーバーへの登録に失敗しました。再度ログインしてください。');
+    }
   }
 
   // TODO: Google Sign In は Development Build 移行時に @react-native-google-signin で実装
@@ -100,19 +108,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await firebaseSignOut(firebaseAuth);
     await SecureStore.deleteItemAsync(TOKEN_KEY);
     setUser(null);
-  }
-
-  // BE への API リクエスト時に使う Firebase ID Token を取得
-  async function getIdToken(): Promise<string | null> {
-    const currentUser = firebaseAuth.currentUser;
-    if (!currentUser) return null;
-    return currentUser.getIdToken();
+    setIsNewUser(false);
   }
 
   return (
-    <AuthContext.Provider
-      value={{ user, isLoading, signInWithApple, signOut, getIdToken }}
-    >
+    <AuthContext.Provider value={{ user, isLoading, isNewUser, signInWithApple, signOut }}>
       {children}
     </AuthContext.Provider>
   );
