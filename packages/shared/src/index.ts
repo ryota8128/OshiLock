@@ -35,8 +35,11 @@ export { signInRequestSchema } from './api/request/auth.request';
 export type { SignInRequest } from './api/request/auth.request';
 export { updateProfileRequestSchema } from './api/request/user.request';
 export type { UpdateProfileRequest } from './api/request/user.request';
+export { updateUserSettingsRequestSchema } from './api/request/user-settings.request';
+export type { UpdateUserSettingsRequest } from './api/request/user-settings.request';
 export type { SignInResponse } from './api/response/auth.response';
 export type {
   UpdateProfileResponse,
   AvatarPresignedUrlsResponse,
 } from './api/response/user.response';
+export type { UserSettingsResponse } from './api/response/user-settings.response';
