@@ -31,3 +31,8 @@ export { SUBSCRIPTION_STATUS } from './domain/enum/subscription-status';
 export { SubscriptionStatus } from './domain/enum/subscription-status';
 export type { UserOshi } from './domain/models/user-oshi';
 export { DisplayName } from './domain/value-objects/display-name';
+export type { SignInResponse } from './api/response/auth.response';
+export type {
+  UpdateProfileResponse,
+  AvatarPresignedUrlsResponse,
+} from './api/response/user.response';

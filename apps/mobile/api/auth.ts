@@ -1,10 +1,5 @@
 import { apiClient } from './client';
-import type { UserId } from '@oshilock/shared';
-
-type SignInResponse = {
-  userId: UserId;
-  isNewUser: boolean;
-};
+import type { SignInResponse } from '@oshilock/shared';
 
 export const authApi = {
   signIn(idToken: string): Promise<SignInResponse> {
