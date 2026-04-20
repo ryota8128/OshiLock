@@ -1,12 +1,15 @@
 import { Hono } from 'hono';
 import type { AuthEnv } from '../../middleware/auth.js';
-import type { UpdateProfileResponse, AvatarPresignedUrlsResponse } from '@oshilock/shared';
+import {
+  type UpdateProfileResponse,
+  type AvatarPresignedUrlsResponse,
+  updateProfileRequestSchema,
+} from '@oshilock/shared';
 import {
   updateProfileUseCase,
   generateAvatarUploadUrlsUseCase,
 } from '../../../composition/dependencies.js';
 import { validate } from '../../middleware/validate.js';
-import { updateProfileRequestSchema } from './user-request.schema.js';
 
 const user = new Hono<AuthEnv>();
 

@@ -1,8 +1,7 @@
 import { Hono } from 'hono';
-import type { SignInResponse } from '@oshilock/shared';
+import { type SignInResponse, signInRequestSchema } from '@oshilock/shared';
 import { signInUseCase } from '../../../composition/dependencies.js';
 import { validate } from '../../middleware/validate.js';
-import { signInRequestSchema } from './auth-request.schema.js';
 
 const auth = new Hono();
 
