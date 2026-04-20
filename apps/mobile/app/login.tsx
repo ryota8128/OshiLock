@@ -20,6 +20,7 @@ export default function LoginScreen() {
       if (!(e instanceof Error && 'code' in e && e.code === APPLE_CANCEL_CODE)) {
         Alert.alert('エラー', 'Appleサインインに失敗しました');
       }
+    } finally {
       setIsSubmitting(false);
     }
   };

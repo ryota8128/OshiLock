@@ -105,6 +105,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(toAuthUser(firebaseCredential.user));
     } catch (e) {
       console.error('BE signin failed:', e);
+      isSigningIn.current = false;
       await signOut();
       Alert.alert('エラー', 'サーバーへの登録に失敗しました。再度ログインしてください。');
     } finally {

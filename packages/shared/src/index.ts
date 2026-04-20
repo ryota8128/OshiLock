@@ -39,6 +39,7 @@ export { updateUserSettingsRequestSchema } from './api/request/user-settings.req
 export type { UpdateUserSettingsRequest } from './api/request/user-settings.request';
 export type { SignInResponse } from './api/response/auth.response';
 export type {
+  GetProfileResponse,
   UpdateProfileResponse,
   AvatarPresignedUrlsResponse,
 } from './api/response/user.response';
