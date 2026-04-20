@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { REGEX } from '../../const/regex';
 import { Timezone } from '../../const/timezone';
-import { Branded } from '../../types/branded';
+import { Branded } from './branded';
 
 /** "18:00" 形式の時刻文字列 */
 export type TimeString = Branded<string, 'TimeString'>;

@@ -1,4 +1,4 @@
-import { OshiId } from '../../types/branded';
+import { OshiId } from '../value-objects/branded';
 import { UtcIsoString } from '../value-objects/utc-iso-string';
 
 export interface Oshi {

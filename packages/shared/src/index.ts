@@ -1,5 +1,5 @@
-export type { Branded } from './types/branded';
-export { UserId, EventId, CommentId, PostId, OshiId } from './types/branded';
+export type { Branded } from './domain/value-objects/branded';
+export { UserId, EventId, CommentId, PostId, OshiId } from './domain/value-objects/branded';
 export { TIMEZONES } from './const/timezone';
 export type { Timezone } from './const/timezone';
 export { UtcIsoString } from './domain/value-objects/utc-iso-string';

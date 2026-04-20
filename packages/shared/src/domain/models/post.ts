@@ -1,4 +1,4 @@
-import { OshiId, PostId, UserId } from '../../types/branded';
+import { OshiId, PostId, UserId } from '../value-objects/branded';
 import { UtcIsoString } from '../value-objects/utc-iso-string';
 
 export interface Post {

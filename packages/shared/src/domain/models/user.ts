@@ -1,4 +1,4 @@
-import { UserId } from '../../types/branded';
+import { UserId } from '../value-objects/branded';
 import { UtcIsoString } from '../value-objects/utc-iso-string';
 import { AuthProvider } from '../enum/auth-provider';
 import { UserRank } from '../enum/user-rank';

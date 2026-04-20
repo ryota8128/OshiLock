@@ -1,4 +1,4 @@
-import { OshiId, UserId } from '../../types/branded';
+import { OshiId, UserId } from '../value-objects/branded';
 import { UtcIsoString } from '../value-objects/utc-iso-string';
 import { SubscriptionStatus } from '../enum/subscription-status';
 

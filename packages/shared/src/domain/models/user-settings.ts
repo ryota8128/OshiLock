@@ -1,4 +1,4 @@
-import { UserId } from "../../types/branded";
+import { UserId } from '../value-objects/branded';
 
 export interface UserSettings {
   userId: UserId;

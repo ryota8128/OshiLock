@@ -1,4 +1,4 @@
-import { EventId, UserId } from '../../types/branded';
+import { EventId, UserId } from '../value-objects/branded';
 import { UtcIsoString } from '../value-objects/utc-iso-string';
 
 export interface Check {

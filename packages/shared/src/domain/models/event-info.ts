@@ -1,5 +1,5 @@
 import { SourceReliability } from '../enum/source-reliability';
-import { EventId, OshiId, UserId } from '../../types/branded';
+import { EventId, OshiId, UserId } from '../value-objects/branded';
 import { EventCategory } from '../enum/event-category';
 import { UtcIsoString } from '../value-objects/utc-iso-string';
 

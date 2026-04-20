@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { Timezone } from '../../const/timezone';
-import { Branded } from '../../types/branded';
+import { Branded } from './branded';
 
 /** "2026-04-18" 形式の日付文字列 */
 export type DateString = Branded<string, 'DateString'>;
