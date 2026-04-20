@@ -7,18 +7,19 @@ import { TimeString } from "./time-string";
 export type UtcIsoString = Branded<string, "UtcIsoString">;
 
 export namespace UtcIsoString {
-  export function now(): UtcIsoString {
-    return new Date().toISOString() as UtcIsoString;
-  }
+  export const schema = z.string().datetime().transform(from);
 
   export function from(value: string): UtcIsoString {
     return value as UtcIsoString;
-	}
+  }
 
-	export function parse(value: string): UtcIsoString {
-		const parsed = z.string().datetime().parse(value);
-		return parsed as UtcIsoString;
-	}
+  export function parse(value: string): UtcIsoString {
+    return schema.parse(value);
+  }
+
+  export function now(): UtcIsoString {
+    return new Date().toISOString() as UtcIsoString;
+  }
 
   export function toDateString(value: UtcIsoString, timezone: Timezone): DateString {
     const formatter = new Intl.DateTimeFormat("en-CA", {
