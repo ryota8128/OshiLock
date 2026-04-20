@@ -47,6 +47,7 @@ export class DynamoUserRepository implements IUserRepository {
               dailySummary: true,
             },
           })
+          .where(({ userId }, { notExists }) => notExists(userId))
           .commit(),
       ])
       .go();
