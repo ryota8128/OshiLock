@@ -16,6 +16,9 @@ apps/mobile/android/
 .env.local
 .env.*.local
 
+# local
+CLAUDE.local.md
+
 # OS
 .DS_Store
 

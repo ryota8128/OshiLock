@@ -1,7 +1,7 @@
-import type { User, AuthProvider } from '@oshilock/shared';
+import type { User, AuthProvider, UserId } from '@oshilock/shared';
 
 export type CreateUserParams = {
-  userId: string;
+  userId: UserId;
   authProvider: AuthProvider;
   authSub: string;
   displayName: string;
@@ -10,5 +10,5 @@ export type CreateUserParams = {
 export interface IUserRepository {
   findByAuth(authProvider: AuthProvider, authSub: string): Promise<User | null>;
   findById(userId: string): Promise<User | null>;
-  create(params: CreateUserParams): Promise<User | null>;
+  create(params: CreateUserParams): Promise<User>;
 }

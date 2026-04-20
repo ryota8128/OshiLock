@@ -172,7 +172,9 @@ export const signInRequestSchema = z.object({
 
 - `OshiLockBeException` — ベース例外。`statusCode` + `message` + `toJSON()`
 - `ValidationException extends OshiLockBeException` — zod のフィールドエラーを `details` に含む
+- `TransactionCanceledException extends OshiLockBeException` — DynamoDB トランザクション失敗時
 - 新しいエラー種別は `OshiLockBeException` を継承して `domain/errors/` に追加する
+- **BE 内で `throw new Error()` は禁止。必ずカスタム例外を使う**
 
 ### エラーレスポンス形式
 
