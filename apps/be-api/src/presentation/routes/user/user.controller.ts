@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import type { AuthEnv } from '../../middleware/auth.js';
 import {
+  type GetProfileResponse,
   type UpdateProfileResponse,
   type AvatarPresignedUrlsResponse,
   type UserSettingsResponse,
@@ -8,6 +9,7 @@ import {
   updateUserSettingsRequestSchema,
 } from '@oshilock/shared';
 import {
+  getProfileUseCase,
   updateProfileUseCase,
   generateAvatarUploadUrlsUseCase,
   getSettingsUseCase,
@@ -16,6 +18,13 @@ import {
 import { validate } from '../../middleware/validate.js';
 
 const user = new Hono<AuthEnv>();
+
+user.get('/me', async (c) => {
+  const { userId } = c.get('auth');
+  const result = await getProfileUseCase.execute(userId);
+  const response: GetProfileResponse = { user: result };
+  return c.json(response);
+});
 
 user.post('/me/avatar/presigned-urls', async (c) => {
   const { userId } = c.get('auth');

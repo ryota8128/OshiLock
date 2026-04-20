@@ -3,6 +3,7 @@ import { DynamoUserRepository } from '../infrastructure/dynamo/repository/user.r
 import { DynamoUserSettingsRepository } from '../infrastructure/dynamo/repository/user-settings.repository.js';
 import { S3StorageGateway } from '../infrastructure/s3/storage.gateway.js';
 import { SignInUseCase } from '../application/use-cases/auth/sign-in.js';
+import { GetProfileUseCase } from '../application/use-cases/user/get-profile.js';
 import { UpdateProfileUseCase } from '../application/use-cases/user/update-profile.js';
 import { GenerateAvatarUploadUrlsUseCase } from '../application/use-cases/user/generate-avatar-upload-urls.js';
 import { GetSettingsUseCase } from '../application/use-cases/user/get-settings.js';
@@ -16,6 +17,7 @@ const storageGateway = new S3StorageGateway();
 
 // Use Cases
 export const signInUseCase = new SignInUseCase(authGateway, userRepository);
+export const getProfileUseCase = new GetProfileUseCase(userRepository, storageGateway);
 export const updateProfileUseCase = new UpdateProfileUseCase(userRepository, storageGateway);
 export const generateAvatarUploadUrlsUseCase = new GenerateAvatarUploadUrlsUseCase(storageGateway);
 export const getSettingsUseCase = new GetSettingsUseCase(userSettingsRepository);

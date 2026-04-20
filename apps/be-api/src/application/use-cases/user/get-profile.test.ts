@@ -1,0 +1,91 @@
+import { describe, expect, it, vi } from 'vitest';
+import { GetProfileUseCase } from './get-profile';
+import type { IUserRepository } from '../../../domain/repository/user.repository.interface';
+import type { IStorageGateway } from '../../../domain/gateway/storage.gateway.interface';
+import type { User } from '@oshilock/shared';
+import { UserId } from '@oshilock/shared';
+
+function createMockUserRepository(overrides: Partial<IUserRepository> = {}): IUserRepository {
+  return {
+    findByAuth: vi.fn(),
+    findById: vi.fn(),
+    create: vi.fn(),
+    updateProfile: vi.fn(),
+    ...overrides,
+  };
+}
+
+function createMockStorageGateway(overrides: Partial<IStorageGateway> = {}): IStorageGateway {
+  return {
+    generateAvatarUploadUrls: vi.fn(),
+    generateAvatarDisplayUrls: vi.fn(),
+    ...overrides,
+  };
+}
+
+const USER_ID = UserId.from('u_testUser123');
+
+const MOCK_USER: User = {
+  id: USER_ID,
+  authProvider: 'APPLE',
+  authSub: 'apple-sub-123',
+  displayName: 'Test User',
+  avatarPath: null,
+  rank: 'NO_RANK',
+  createdAt: '2026-01-01T00:00:00.000Z' as never,
+  updatedAt: '2026-01-01T00:00:00.000Z' as never,
+};
+
+describe('GetProfileUseCase', () => {
+  it('ユーザーが見つからない場合 NotFoundException をスローする', async () => {
+    const userRepository = createMockUserRepository({
+      findById: vi.fn().mockResolvedValue(null),
+    });
+    const storageGateway = createMockStorageGateway();
+
+    const useCase = new GetProfileUseCase(userRepository, storageGateway);
+
+    await expect(useCase.execute(USER_ID)).rejects.toThrow('ユーザーが見つかりません');
+  });
+
+  it('avatarPath がない場合 avatarUrl は null', async () => {
+    const userRepository = createMockUserRepository({
+      findById: vi.fn().mockResolvedValue(MOCK_USER),
+    });
+    const storageGateway = createMockStorageGateway();
+
+    const useCase = new GetProfileUseCase(userRepository, storageGateway);
+    const result = await useCase.execute(USER_ID);
+
+    expect(result.id).toBe(USER_ID);
+    expect(result.avatarUrl).toBeNull();
+    expect(storageGateway.generateAvatarDisplayUrls).not.toHaveBeenCalled();
+  });
+
+  it('avatarPath がある場合 avatarUrl に sm/lg を含む', async () => {
+    const userWithAvatar: User = {
+      ...MOCK_USER,
+      avatarPath: 'avatars/u_testUser123/hash123',
+    };
+    const userRepository = createMockUserRepository({
+      findById: vi.fn().mockResolvedValue(userWithAvatar),
+    });
+    const storageGateway = createMockStorageGateway({
+      generateAvatarDisplayUrls: vi.fn().mockReturnValue({
+        avatarSmUrl: 'https://cdn.example.com/sm.webp',
+        avatarLgUrl: 'https://cdn.example.com/lg.webp',
+      }),
+    });
+
+    const useCase = new GetProfileUseCase(userRepository, storageGateway);
+    const result = await useCase.execute(USER_ID);
+
+    expect(result.avatarUrl).toEqual({
+      sm: 'https://cdn.example.com/sm.webp',
+      lg: 'https://cdn.example.com/lg.webp',
+    });
+    expect(storageGateway.generateAvatarDisplayUrls).toHaveBeenCalledWith(
+      'avatars/u_testUser123/hash123',
+    );
+  });
+});
