@@ -22,7 +22,7 @@ const _entity = new Entity(
       authProvider: { type: Object.values(AUTH_PROVIDER), required: true },
       authSub: { type: 'string', required: true },
       displayName: { type: 'string', required: true },
-      avatarUrl: { type: 'string' },
+      avatarPath: { type: 'string' },
       rank: {
         type: Object.values(USER_RANK),
         required: true,
@@ -63,7 +63,7 @@ export namespace UserDb {
       authProvider: AuthProvider.schema.parse(record.authProvider),
       authSub: record.authSub,
       displayName: record.displayName,
-      avatarUrl: record.avatarUrl ?? null,
+      avatarPath: record.avatarPath ?? null,
       rank: UserRank.schema.parse(record.rank),
       createdAt: UtcIsoString.from(record.createdAt),
       updatedAt: UtcIsoString.from(record.updatedAt),

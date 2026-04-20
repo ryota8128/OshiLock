@@ -1,7 +1,9 @@
-import { type AuthProvider, type User, USER_RANK, UtcIsoString } from '@oshilock/shared';
+import { type AuthProvider, type User, UserId, USER_RANK, UtcIsoString } from '@oshilock/shared';
 import { TransactionCanceledException } from '../../../domain/errors/transaction-canceled.exception.js';
+import { OshiLockBeException } from '../../../domain/errors/oshilock-be.exception.js';
 import type {
   CreateUserParams,
+  UpdateProfileParams,
   IUserRepository,
 } from '../../../domain/repository/user.repository.interface.js';
 import { UserDb } from '../entity/user.db.js';
@@ -61,10 +63,25 @@ export class DynamoUserRepository implements IUserRepository {
       authProvider: params.authProvider,
       authSub: params.authSub,
       displayName: params.displayName,
-      avatarUrl: null,
+      avatarPath: null,
       rank: USER_RANK.NO_RANK,
       createdAt: now,
       updatedAt: now,
     };
+  }
+
+  async updateProfile(params: UpdateProfileParams): Promise<User> {
+    const now = UtcIsoString.now();
+
+    const result = await UserDb.entity
+      .patch({ userId: params.userId })
+      .set({
+        displayName: params.displayName,
+        avatarPath: params.avatarPath ?? undefined,
+        updatedAt: now,
+      })
+      .go({ response: 'all_new' });
+
+    return UserDb.toDomain(result.data);
   }
 }
