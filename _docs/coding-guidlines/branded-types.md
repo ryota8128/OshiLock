@@ -8,10 +8,11 @@
 
 ## 定義場所
 
-- `packages/shared/src/types/branded.ts` — Branded ユーティリティと ID 型
-- `packages/shared/src/types/utc-iso-string.ts` — UTC ISO 8601 文字列
-- `packages/shared/src/types/date-string.ts` — `YYYY-MM-DD` 形式の日付文字列
-- `packages/shared/src/types/time-string.ts` — `HH:mm` 形式の時刻文字列
+- `packages/shared/src/domain/value-objects/branded.ts` — Branded ユーティリティと ID 型
+- `packages/shared/src/domain/value-objects/utc-iso-string.ts` — UTC ISO 8601 文字列
+- `packages/shared/src/domain/value-objects/date-string.ts` — `YYYY-MM-DD` 形式の日付文字列
+- `packages/shared/src/domain/value-objects/time-string.ts` — `HH:mm` 形式の時刻文字列
+- `packages/shared/src/domain/value-objects/display-name.ts` — 表示名（schema のみ）
 
 ## namespace の構成
 
