@@ -7,6 +7,16 @@ import { Branded } from "./branded";
 export type TimeString = Branded<string, "TimeString">;
 
 export namespace TimeString {
+  export const schema = z.string().regex(REGEX.TIME_STRING).transform(from);
+
+  export function from(value: string): TimeString {
+    return value as TimeString;
+  }
+
+  export function parse(value: string): TimeString {
+    return schema.parse(value);
+  }
+
   export function now(timezone: Timezone): TimeString {
     const formatter = new Intl.DateTimeFormat("en-CA", {
       timeZone: timezone.iana,
@@ -15,14 +25,5 @@ export namespace TimeString {
       hour12: false,
     });
     return formatter.format(new Date()) as TimeString;
-  }
-
-  export function from(value: string): TimeString {
-    return value as TimeString;
-  }
-
-  export function parse(value: string): TimeString {
-    const parsed = z.string().regex(REGEX.TIME_STRING).parse(value);
-    return parsed as TimeString;
   }
 }

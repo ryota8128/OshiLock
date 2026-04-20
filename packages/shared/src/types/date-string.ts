@@ -6,6 +6,16 @@ import { Branded } from "./branded";
 export type DateString = Branded<string, "DateString">;
 
 export namespace DateString {
+  export const schema = z.string().date().transform(from);
+
+  export function from(value: string): DateString {
+    return value as DateString;
+  }
+
+  export function parse(value: string): DateString {
+    return schema.parse(value);
+  }
+
   export function now(timezone: Timezone): DateString {
     const formatter = new Intl.DateTimeFormat("en-CA", {
       timeZone: timezone.iana,
@@ -14,14 +24,5 @@ export namespace DateString {
       day: "2-digit",
     });
     return formatter.format(new Date()) as DateString;
-  }
-
-  export function from(value: string): DateString {
-    return value as DateString;
-  }
-
-  export function parse(value: string): DateString {
-    const parsed = z.string().date().parse(value);
-    return parsed as DateString;
   }
 }

@@ -1,12 +1,5 @@
-export type {
-  Branded,
-  UserId,
-  GroupId,
-  EventId,
-  CommentId,
-  PostId,
-  OshiId,
-} from "./types/branded";
+export type { Branded } from "./types/branded";
+export { UserId, GroupId, EventId, CommentId, PostId, OshiId } from "./types/branded";
 export { TIMEZONES } from "./const/timezone";
 export type { Timezone } from "./const/timezone";
 export { UtcIsoString } from "./types/utc-iso-string";
@@ -27,13 +20,13 @@ export type { EventCategory } from "./domain/enum/event-category";
 export { SOURCE_RELIABILITY } from "./domain/enum/source-reliability";
 export type { SourceReliability } from "./domain/enum/source-reliability";
 export { USER_RANK } from "./domain/enum/user-rank";
-export type { UserRank } from "./domain/enum/user-rank";
+export { UserRank } from "./domain/enum/user-rank";
 export { REPORT_CATEGORY } from "./domain/enum/report-category";
 export type { ReportCategory } from "./domain/enum/report-category";
 export { PLATFORM } from "./domain/enum/platform";
 export type { Platform } from "./domain/enum/platform";
 export { AUTH_PROVIDER } from "./domain/enum/auth-provider";
-export type { AuthProvider } from "./domain/enum/auth-provider";
+export { AuthProvider } from "./domain/enum/auth-provider";
 export { SUBSCRIPTION_STATUS } from "./domain/enum/subscription-status";
 export type { SubscriptionStatus } from "./domain/enum/subscription-status";
 export type { UserOshi } from "./domain/models/user-oshi";
