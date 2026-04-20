@@ -17,6 +17,9 @@ catalog:
   '@vercel/functions': ^2
   firebase-admin: ^13
   ulid: ^2.3.0
+  prettier: ^3
+  husky: ^9
+  lint-staged: ^16
 
 onlyBuiltDependencies:
   - esbuild
