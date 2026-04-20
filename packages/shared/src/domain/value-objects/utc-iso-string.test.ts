@@ -27,6 +27,33 @@ describe('UtcIsoString', () => {
     });
   });
 
+  describe('afterMs', () => {
+    it('指定ミリ秒後のUTC ISO文字列を返す', () => {
+      const before = Date.now();
+      const result = UtcIsoString.afterMs(60_000);
+      const after = Date.now();
+
+      const resultTime = new Date(result).getTime();
+      expect(resultTime).toBeGreaterThanOrEqual(before + 60_000);
+      expect(resultTime).toBeLessThanOrEqual(after + 60_000);
+    });
+
+    it('0ミリ秒で現在時刻を返す', () => {
+      const before = Date.now();
+      const result = UtcIsoString.afterMs(0);
+      const after = Date.now();
+
+      const resultTime = new Date(result).getTime();
+      expect(resultTime).toBeGreaterThanOrEqual(before);
+      expect(resultTime).toBeLessThanOrEqual(after);
+    });
+
+    it('返り値がUTC ISO形式である', () => {
+      const result = UtcIsoString.afterMs(1000);
+      expect(result).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/);
+    });
+  });
+
   describe('toDateString', () => {
     it('UTCの日付をJSTの日付に変換する', () => {
       const utc = UtcIsoString.from('2026-04-18T15:00:00Z');
