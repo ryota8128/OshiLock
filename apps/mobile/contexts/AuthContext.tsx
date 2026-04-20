@@ -3,7 +3,7 @@
 import * as AppleAuthentication from 'expo-apple-authentication';
 import * as Crypto from 'expo-crypto';
 import * as SecureStore from 'expo-secure-store';
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { Alert } from 'react-native';
 import {
   onAuthStateChanged,
@@ -49,10 +49,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isNewUser, setIsNewUser] = useState(false);
+  const isSigningIn = useRef(false);
 
   // Firebase の認証状態を監視（起動時の自動ログイン復元 + トークンリフレッシュ）
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
+      // signInWithApple 実行中は BE 完了まで遷移を遅延
+      if (isSigningIn.current) return;
+
       if (firebaseUser) {
         setUser(toAuthUser(firebaseUser));
         const token = await firebaseUser.getIdToken();
@@ -82,23 +86,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       throw new Error('Apple Sign In: identityToken is null');
     }
 
-    // Firebase にサインイン
-    const firebaseCredential = await signInWithAppleCredential(credential.identityToken, nonce);
-    const token = await firebaseCredential.user.getIdToken();
+    isSigningIn.current = true;
+    setIsLoading(true);
 
-    // BE にユーザー登録/ログイン
     try {
+      // Firebase にサインイン
+      const firebaseCredential = await signInWithAppleCredential(credential.identityToken, nonce);
+      const token = await firebaseCredential.user.getIdToken();
+
+      // BE にユーザー登録/ログイン
       const result = await authApi.signIn(token);
       setIsNewUser(result.isNewUser);
 
-      // Custom Claims が設定された後、token をリフレッシュして claims を反映
       // Custom Claims 反映済みの token を取得して保存
       const refreshedToken = await firebaseCredential.user.getIdToken(true);
       await SecureStore.setItemAsync(TOKEN_KEY, refreshedToken);
+
+      // 全て完了後に user をセット
+      setUser(toAuthUser(firebaseCredential.user));
     } catch (e) {
       console.error('BE signin failed:', e);
       await signOut();
       Alert.alert('エラー', 'サーバーへの登録に失敗しました。再度ログインしてください。');
+    } finally {
+      isSigningIn.current = false;
+      setIsLoading(false);
     }
   }
 

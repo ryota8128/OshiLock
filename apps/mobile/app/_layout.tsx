@@ -9,7 +9,7 @@ import 'react-native-reanimated';
 SplashScreen.preventAutoHideAsync();
 
 function RootNavigator() {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, isNewUser } = useAuth();
   const segments = useSegments();
   const firstSegment = segments[0];
 
@@ -18,23 +18,26 @@ function RootNavigator() {
 
     SplashScreen.hideAsync();
 
-    const inAuthGroup = firstSegment === "login";
+    const inAuthGroup = firstSegment === 'login';
 
     if (!user && !inAuthGroup) {
-      router.replace("/login");
-    } else if (user && inAuthGroup) {
-      router.replace("/(tabs)");
+      router.replace('/login');
+      return;
     }
-  }, [user, isLoading, firstSegment]);
+    if (!user || !inAuthGroup) return;
+
+    router.replace(isNewUser ? '/onboarding' : '/(tabs)');
+  }, [user, isLoading, isNewUser, firstSegment]);
 
   if (isLoading) return null;
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="login" />
+      <Stack.Screen name="onboarding" />
       <Stack.Screen name="(tabs)" />
       <Stack.Screen name="event/[id]" />
-      <Stack.Screen name="post" options={{ presentation: "modal" }} />
+      <Stack.Screen name="post" options={{ presentation: 'modal' }} />
     </Stack>
   );
 }
