@@ -86,56 +86,69 @@ import { UserEntity } from "../infrastructure/dynamo/entity/user.db.js";
 import { UserEntity } from "../infrastructure/dynamo/entity/index.js";
 ```
 
-## リクエストバリデーション
+## リクエスト / レスポンス型（API 契約）
 
-`validate()` ミドルウェアを使い、zod スキーマで query / body をパースする。
-コントローラー内で手動バリデーションしない。
+API のリクエスト・レスポンスは `packages/shared/src/api/` に定義し、BE と Mobile で共有する。
 
-```typescript
-// ✅ validate ミドルウェアを使う
-import { validate } from "../../middleware/validate.js";
-import { signInRequestSchema } from "./auth-request.schema.js";
-
-auth.post(
-  "/signin",
-  validate({ body: signInRequestSchema }),
-  async (c) => {
-    const { idToken } = c.get("validated"); // 型安全
-    const result = await signInUseCase.execute(idToken);
-    return c.json(result);
-  },
-);
-
-// ❌ コントローラー内で手動バリデーションしない
-auth.post("/signin", async (c) => {
-  const { idToken } = await c.req.json();
-  if (!idToken) return c.json({ error: "required" }, 400);
-});
+```
+packages/shared/src/api/
+  request/
+    auth.request.ts     ← schema + 入力型
+    user.request.ts
+  response/
+    auth.response.ts    ← レスポンス型
+    user.response.ts
 ```
 
-## API レスポンス型
+### リクエスト
+
+- schema（zod）と入力型（`z.input`）を shared に定義する
+- BE の controller は shared から直接 import する（中間 re-export ファイルは作らない）
+- Mobile の API 呼び出しで入力型を使って型安全を保証する
+
+```typescript
+// ✅ shared にリクエスト schema + 型を定義
+// packages/shared/src/api/request/user.request.ts
+export const updateProfileRequestSchema = z.object({
+  displayName: DisplayName.schema,
+  avatarPath: z.string().nullable().optional(),
+});
+export type UpdateProfileRequest = z.input<typeof updateProfileRequestSchema>;
+
+// ✅ BE controller で shared から直接 import
+import { type SignInResponse, signInRequestSchema } from '@oshilock/shared';
+auth.post('/signin', validate({ body: signInRequestSchema }), async (c) => { ... });
+
+// ✅ Mobile で入力型を使う
+import type { UpdateProfileRequest } from '@oshilock/shared';
+updateProfile(body: UpdateProfileRequest): Promise<UpdateProfileResponse> { ... }
+
+// ❌ BE に中間 re-export ファイルを作らない
+// auth-request.schema.ts ← 不要
+export { signInRequestSchema } from '@oshilock/shared';
+
+// ❌ コントローラー内で手動バリデーションしない
+const { idToken } = await c.req.json();
+if (!idToken) return c.json({ error: 'required' }, 400);
+```
+
+### レスポンス
 
 - レスポンス型は `packages/shared/src/api/response/` に定義する
-- BE と Mobile の両方が同じ型を参照する（API 契約を shared で定義）
 - controller でレスポンス型を明示的に型注釈して型を強制する
 
 ```typescript
 // ✅ shared にレスポンス型を定義
-// packages/shared/src/api/response/user.response.ts
 export type UpdateProfileResponse = {
   user: UserWithAvatarUrl;
 };
 
 // ✅ controller で型注釈を付けて型を強制
-import type { UpdateProfileResponse } from "@oshilock/shared";
-
-const result = await updateProfileUseCase.execute({ ... });
 const response: UpdateProfileResponse = { user: result };
 return c.json(response);
 
 // ✅ Mobile で同じ型を参照
-import type { UpdateProfileResponse } from "@oshilock/shared";
-const res = await apiClient.put<UpdateProfileResponse>("/users/me/profile", body);
+const res = await apiClient.put<UpdateProfileResponse>('/users/me/profile', body);
 ```
 
 ### バリデーション定数（value-object）
