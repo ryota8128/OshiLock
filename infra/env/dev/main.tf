@@ -1,3 +1,7 @@
+locals {
+  env = "dev"
+}
+
 terraform {
   required_version = ">= 1.12"
 
@@ -24,8 +28,8 @@ provider "aws" {
 module "dynamodb" {
   source = "../../modules/dynamodb"
 
-  table_name = "oshilock-dev"
-  env        = "dev"
+  table_name = "oshilock-${local.env}"
+  env        = local.env
 
   attributes = [
     { name = "pk", type = "S" },
@@ -56,4 +60,12 @@ module "dynamodb" {
   ttl_enabled                 = true
   pitr_enabled                = false
   deletion_protection_enabled = false
+}
+
+module "storage" {
+  source = "../../modules/storage"
+
+  env                       = local.env
+  bucket_name               = "oshilock-assets-${local.env}"
+  cloudfront_public_key_pem = file("../../keys/cloudfront-dev-public.pem")
 }

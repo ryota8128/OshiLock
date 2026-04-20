@@ -9,3 +9,6 @@ override.tf
 override.tf.json
 *_override.tf
 *_override.tf.json
+
+# Keys (秘密鍵)
+keys/*-private.pem
