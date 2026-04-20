@@ -5,6 +5,7 @@ import { errorHandler } from './presentation/middleware/error-handler.js';
 import { authMiddleware, type AuthEnv } from './presentation/middleware/auth.js';
 import { auth } from './presentation/routes/auth/auth.controller.js';
 import { health } from './presentation/routes/health.controller.js';
+import { user } from './presentation/routes/user/user.controller.js';
 
 // 認証不要のルート
 const publicApp = new Hono();
@@ -14,9 +15,7 @@ publicApp.route('/auth', auth);
 // 認証必須のルート
 const protectedApp = new Hono<AuthEnv>();
 protectedApp.use('*', authMiddleware);
-// TODO: 認証必須のルートをここに追加
-// protectedApp.route("/events", events);
-// protectedApp.route("/users", users);
+protectedApp.route('/users', user);
 
 // メインアプリ
 const app = new Hono();
