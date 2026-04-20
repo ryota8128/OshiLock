@@ -10,7 +10,8 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "zod": "catalog:"
+    "zod": "catalog:",
+    "ulid": "catalog:"
   },
   "devDependencies": {
     "typescript": "catalog:",
