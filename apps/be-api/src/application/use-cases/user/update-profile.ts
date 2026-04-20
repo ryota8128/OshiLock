@@ -5,7 +5,7 @@ import type { IStorageGateway } from '../../../domain/gateway/storage.gateway.in
 type UpdateProfileInput = {
   userId: UserId;
   displayName: string;
-  avatarPath: string | null;
+  avatarPath?: string | null;
 };
 
 export class UpdateProfileUseCase {

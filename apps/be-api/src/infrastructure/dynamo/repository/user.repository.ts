@@ -73,15 +73,18 @@ export class DynamoUserRepository implements IUserRepository {
   async updateProfile(params: UpdateProfileParams): Promise<User> {
     const now = UtcIsoString.now();
 
-    const result = await UserDb.entity
+    let query = UserDb.entity
       .patch({ userId: params.userId })
-      .set({
-        displayName: params.displayName,
-        avatarPath: params.avatarPath ?? undefined,
-        updatedAt: now,
-      })
-      .go({ response: 'all_new' });
+      .set({ displayName: params.displayName, updatedAt: now });
 
+    // undefined: 変更しない、null: 属性削除、string: 設定
+    if (params.avatarPath === null) {
+      query = query.remove(['avatarPath']);
+    } else if (params.avatarPath !== undefined) {
+      query = query.set({ avatarPath: params.avatarPath });
+    }
+
+    const result = await query.go({ response: 'all_new' });
     return UserDb.toDomain(result.data);
   }
 }

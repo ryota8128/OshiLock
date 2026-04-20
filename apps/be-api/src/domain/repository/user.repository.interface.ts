@@ -10,7 +10,7 @@ export type CreateUserParams = {
 export type UpdateProfileParams = {
   userId: UserId;
   displayName: string;
-  avatarPath: string | null;
+  avatarPath?: string | null;
 };
 
 export interface IUserRepository {
