@@ -92,9 +92,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsNewUser(result.isNewUser);
 
       // Custom Claims が設定された後、token をリフレッシュして claims を反映
-      if (result.isNewUser) {
-        await firebaseCredential.user.getIdToken(true);
-      }
+      // Custom Claims 反映済みの token を取得して保存
+      const refreshedToken = await firebaseCredential.user.getIdToken(true);
+      await SecureStore.setItemAsync(TOKEN_KEY, refreshedToken);
     } catch (e) {
       console.error('BE signin failed:', e);
       await signOut();
