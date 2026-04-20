@@ -6,7 +6,7 @@ export { UtcIsoString } from './types/utc-iso-string';
 export { DateString } from './types/date-string';
 export { TimeString } from './types/time-string';
 export type { EventInfo, EventInfoWithUserContext } from './domain/models/event-info';
-export type { User } from './domain/models/user';
+export type { User, UserWithAvatarUrl } from './domain/models/user';
 export type { Oshi } from './domain/models/oshi';
 export type { Comment } from './domain/models/comment';
 export type { Post } from './domain/models/post';
