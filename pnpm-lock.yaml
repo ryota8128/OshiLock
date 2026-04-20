@@ -39,6 +39,9 @@ catalogs:
     typescript:
       specifier: ^5.8.3
       version: 5.9.3
+    ulid:
+      specifier: ^2.3.0
+      version: 2.4.0
     vitest:
       specifier: ^3.2.1
       version: 3.2.4
@@ -83,6 +86,9 @@ importers:
       hono:
         specifier: 'catalog:'
         version: 4.12.14
+      ulid:
+        specifier: 'catalog:'
+        version: 2.4.0
       zod:
         specifier: 'catalog:'
         version: 3.25.76
@@ -5997,6 +6003,10 @@ packages:
 
   ua-parser-js@1.0.41:
     resolution: {integrity: sha512-LbBDqdIC5s8iROCUjMbW1f5dJQTEFB1+KO9ogbvlb3nm9n4YHa5p4KTvFPWvh2Hs8gZMBuiB1/8+pdfe/tDPug==}
+    hasBin: true
+
+  ulid@2.4.0:
+    resolution: {integrity: sha512-fIRiVTJNcSRmXKPZtGzFQv9WRrZ3M9eoptl/teFJvjOzmpU+/K/JH6HZ8deBfb5vMEpicJcLn7JmvdknlMq7Zg==}
     hasBin: true
 
   unbox-primitive@1.1.0:
@@ -13624,6 +13634,8 @@ snapshots:
   typescript@5.9.3: {}
 
   ua-parser-js@1.0.41: {}
+
+  ulid@2.4.0: {}
 
   unbox-primitive@1.1.0:
     dependencies:

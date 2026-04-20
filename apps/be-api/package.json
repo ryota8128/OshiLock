@@ -15,7 +15,8 @@
     "@aws-sdk/lib-dynamodb": "catalog:",
     "@aws-sdk/credential-providers": "catalog:",
     "@vercel/functions": "catalog:",
-    "firebase-admin": "catalog:"
+    "firebase-admin": "catalog:",
+    "ulid": "catalog:"
   },
   "devDependencies": {
     "@types/node": "catalog:",

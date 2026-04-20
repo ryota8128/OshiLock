@@ -16,6 +16,7 @@ catalog:
   '@aws-sdk/credential-providers': ^3.1032.0
   '@vercel/functions': ^2
   firebase-admin: ^13
+  ulid: ^2.3.0
 
 onlyBuiltDependencies:
   - esbuild
