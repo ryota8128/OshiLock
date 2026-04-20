@@ -1,13 +1,13 @@
-import { z } from "zod";
-import { ulid } from "ulid";
+import { z } from 'zod';
+import { ulid } from 'ulid';
 
 declare const __brand: unique symbol;
 
 export type Branded<T, B extends string> = T & { readonly [__brand]: B };
 
-export type UserId = Branded<string, "UserId">;
+export type UserId = Branded<string, 'UserId'>;
 export namespace UserId {
-  const PREFIX = "u_";
+  const PREFIX = 'u_';
   export const schema = z.string().startsWith(PREFIX).transform(from);
   export function from(value: string): UserId {
     return value as UserId;
@@ -17,9 +17,9 @@ export namespace UserId {
   }
 }
 
-export type EventId = Branded<string, "EventId">;
+export type EventId = Branded<string, 'EventId'>;
 export namespace EventId {
-  const PREFIX = "e_";
+  const PREFIX = 'e_';
   export const schema = z.string().startsWith(PREFIX).transform(from);
   export function from(value: string): EventId {
     return value as EventId;
@@ -29,9 +29,9 @@ export namespace EventId {
   }
 }
 
-export type CommentId = Branded<string, "CommentId">;
+export type CommentId = Branded<string, 'CommentId'>;
 export namespace CommentId {
-  const PREFIX = "c_";
+  const PREFIX = 'c_';
   export const schema = z.string().startsWith(PREFIX).transform(from);
   export function from(value: string): CommentId {
     return value as CommentId;
@@ -41,9 +41,9 @@ export namespace CommentId {
   }
 }
 
-export type PostId = Branded<string, "PostId">;
+export type PostId = Branded<string, 'PostId'>;
 export namespace PostId {
-  const PREFIX = "p_";
+  const PREFIX = 'p_';
   export const schema = z.string().startsWith(PREFIX).transform(from);
   export function from(value: string): PostId {
     return value as PostId;
@@ -53,9 +53,9 @@ export namespace PostId {
   }
 }
 
-export type OshiId = Branded<string, "OshiId">;
+export type OshiId = Branded<string, 'OshiId'>;
 export namespace OshiId {
-  const PREFIX = "o_";
+  const PREFIX = 'o_';
   export const schema = z.string().startsWith(PREFIX).transform(from);
   export function from(value: string): OshiId {
     return value as OshiId;
