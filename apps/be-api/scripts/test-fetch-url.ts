@@ -1,4 +1,4 @@
-import { UrlProcessor } from '../src/application/services/url-processor.js';
+import { UrlProcessor } from '../src/application/services/post/url-processor.js';
 
 const url = process.argv[2];
 

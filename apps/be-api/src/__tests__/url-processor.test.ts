@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll } from 'vitest';
-import { UrlProcessor } from '../application/services/url-processor.js';
+import { UrlProcessor } from '../application/services/post/url-processor.js';
 
 let processor: UrlProcessor;
 
