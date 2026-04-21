@@ -12,14 +12,8 @@ const _entity = new Entity(
     },
     attributes: {
       userId: { type: 'string', required: true },
-      notification: {
-        type: 'map',
-        properties: {
-          reminder: { type: 'boolean', required: true, default: true },
-          dailySummary: { type: 'boolean', required: true, default: true },
-        },
-        required: true,
-      },
+      notificationReminder: { type: 'boolean', required: true, default: true },
+      notificationDailySummary: { type: 'boolean', required: true, default: true },
     },
     indexes: {
       primary: {
@@ -39,8 +33,8 @@ export namespace UserSettingsDb {
     return {
       userId: UserId.from(record.userId),
       notification: {
-        reminder: record.notification.reminder,
-        dailySummary: record.notification.dailySummary,
+        reminder: record.notificationReminder,
+        dailySummary: record.notificationDailySummary,
       },
     };
   }

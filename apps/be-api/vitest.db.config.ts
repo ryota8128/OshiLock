@@ -7,5 +7,6 @@ export default defineConfig({
     include: ['**/*.db.test.ts'],
     testTimeout: 30000,
     hookTimeout: 60000,
+    fileParallelism: false,
   },
 });
