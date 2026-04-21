@@ -10,7 +10,7 @@ export type { User, UserWithAvatarUrl } from './domain/models/user';
 export type { Oshi } from './domain/models/oshi';
 export type { Comment } from './domain/models/comment';
 export type { Post } from './domain/models/post';
-export type { Check } from './domain/models/check';
+export type { Save } from './domain/models/save';
 export type { UserSettings } from './domain/models/user-settings';
 export type { UserPushToken } from './domain/models/user-push-token';
 export type { EventReport as EventCardReport } from './domain/models/event-report';

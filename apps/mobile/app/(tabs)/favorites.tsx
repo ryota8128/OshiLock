@@ -7,28 +7,36 @@ import { MOCK_CARDS, MOCK_POSTER_NAMES } from '@/data/mock';
 
 export default function FavoritesScreen() {
   const insets = useSafeAreaInsets();
-  const checkedCards = MOCK_CARDS.filter(c => c.checked);
+  const savedCards = MOCK_CARDS.filter((c) => c.saved);
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={[styles.contentContainer, { paddingTop: insets.top }]}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={[styles.contentContainer, { paddingTop: insets.top }]}
+    >
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>チェック</Text>
-        <Text style={styles.headerSub}>チェック済みのカード</Text>
+        <Text style={styles.headerTitle}>保存</Text>
+        <Text style={styles.headerSub}>保存したカード</Text>
       </View>
 
-      {checkedCards.length > 0 ? (
+      {savedCards.length > 0 ? (
         <>
           <Text style={styles.sectionLabel}>近日中</Text>
           <View style={styles.cardList}>
-            {checkedCards.map(card => (
-              <EventCardItem key={card.id} card={card} posterNames={MOCK_POSTER_NAMES} onPress={() => router.push(`/event/${card.id}`)} />
+            {savedCards.map((card) => (
+              <EventCardItem
+                key={card.id}
+                card={card}
+                posterNames={MOCK_POSTER_NAMES}
+                onPress={() => router.push(`/event/${card.id}`)}
+              />
             ))}
           </View>
         </>
       ) : (
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyTitle}>まだチェックしたカードがありません</Text>
-          <Text style={styles.emptySub}>カードの ☆ ボタンを押すとここに表示されます</Text>
+          <Text style={styles.emptyTitle}>まだ保存したカードがありません</Text>
+          <Text style={styles.emptySub}>カードの保存ボタンを押すとここに表示されます</Text>
         </View>
       )}
     </ScrollView>
@@ -42,8 +50,11 @@ const styles = StyleSheet.create({
   headerTitle: { ...typography.heading },
   headerSub: { ...typography.caption, marginTop: 2 },
   sectionLabel: {
-    ...typography.label, textTransform: 'uppercase',
-    paddingHorizontal: spacing.lg, marginBottom: spacing.sm, marginTop: spacing.md,
+    ...typography.label,
+    textTransform: 'uppercase',
+    paddingHorizontal: spacing.lg,
+    marginBottom: spacing.sm,
+    marginTop: spacing.md,
   },
   cardList: { paddingHorizontal: spacing.lg, gap: spacing.cardGap },
   emptyContainer: { alignItems: 'center', marginTop: 80 },

@@ -1,8 +1,8 @@
-import { categoryColors, colors, typography } from "@/constants/theme";
-import { MOCK_CARDS, MOCK_COMMENTS, MOCK_POSTER_NAMES } from "@/data/mock";
-import type { EventCategory } from "@oshilock/shared";
-import { TIMEZONES, UtcIsoString } from "@oshilock/shared";
-import { router, useLocalSearchParams } from "expo-router";
+import { categoryColors, colors, typography } from '@/constants/theme';
+import { MOCK_CARDS, MOCK_COMMENTS, MOCK_POSTER_NAMES } from '@/data/mock';
+import type { EventCategory } from '@oshilock/shared';
+import type { DateString, TimeString } from '@oshilock/shared';
+import { router, useLocalSearchParams } from 'expo-router';
 import {
   BellOff,
   Bookmark,
@@ -14,40 +14,37 @@ import {
   MoreHorizontal,
   Share as ShareIcon,
   Trophy,
-} from "lucide-react-native";
-import { useState } from "react";
-import {
-  Pressable,
-  ScrollView,
-  Share,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
-import * as WebBrowser from "expo-web-browser";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+} from 'lucide-react-native';
+import { useState } from 'react';
+import { Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
+import * as WebBrowser from 'expo-web-browser';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const catKey = (cat: EventCategory): keyof typeof categoryColors => {
   switch (cat) {
-    case "EVENT":
-      return "event";
-    case "MEDIA":
-      return "media";
-    case "SNS":
-      return "sns";
-    case "NEWS":
-      return "news";
+    case 'EVENT':
+      return 'event';
+    case 'MEDIA':
+      return 'media';
+    case 'SNS':
+      return 'sns';
+    case 'NEWS':
+      return 'news';
     default:
-      return "news";
+      return 'news';
   }
 };
 
-function formatDateTime(datetime: string): string {
-  const utc = UtcIsoString.from(datetime);
-  const date = UtcIsoString.toDateString(utc, TIMEZONES.ASIA_TOKYO);
-  const time = UtcIsoString.toTimeString(utc, TIMEZONES.ASIA_TOKYO);
-  const [y, m, d] = date.split("-");
-  return `${y}/${Number(m)}/${Number(d)} ${time}`;
+function formatScheduleDetail(
+  startDate: DateString | null,
+  startTime: TimeString | null,
+): string | null {
+  if (!startDate) return null;
+  const [y, m, d] = startDate.split('-');
+  if (startTime) {
+    return `${y}/${Number(m)}/${Number(d)} ${startTime}`;
+  }
+  return `${y}/${Number(m)}/${Number(d)}`;
 }
 
 export default function EventDetailScreen() {
@@ -78,10 +75,11 @@ export default function EventDetailScreen() {
           <Pressable
             style={styles.navCircle}
             onPress={() => {
-              const dateStr = card.schedule.datetime
-                ? `\n${formatDateTime(card.schedule.datetime)}`
-                : "";
-              Share.share({ message: `${card.title}${dateStr}` });
+              const dateStr = formatScheduleDetail(
+                card.schedule.startDate,
+                card.schedule.startTime,
+              );
+              Share.share({ message: `${card.title}${dateStr ? `\n${dateStr}` : ''}` });
             }}
           >
             <ShareIcon size={15} color={colors.ink} strokeWidth={1.5} />
@@ -99,16 +97,13 @@ export default function EventDetailScreen() {
       {menuOpen && (
         <View style={styles.contextMenu}>
           {[
-            { icon: Link2, label: "リンクをコピー", danger: false },
-            { icon: BellOff, label: "通知をオフ", danger: false },
-            { icon: Flag, label: "この情報を通報", danger: true },
+            { icon: Link2, label: 'リンクをコピー', danger: false },
+            { icon: BellOff, label: '通知をオフ', danger: false },
+            { icon: Flag, label: 'この情報を通報', danger: true },
           ].map((item, i, arr) => (
             <Pressable
               key={i}
-              style={[
-                styles.menuItem,
-                i < arr.length - 1 && styles.menuItemBorder,
-              ]}
+              style={[styles.menuItem, i < arr.length - 1 && styles.menuItemBorder]}
               onPress={() => setMenuOpen(false)}
             >
               <item.icon
@@ -116,9 +111,7 @@ export default function EventDetailScreen() {
                 color={item.danger ? colors.unreadDot : colors.ink}
                 strokeWidth={1.5}
               />
-              <Text
-                style={[styles.menuText, item.danger && styles.menuTextDanger]}
-              >
+              <Text style={[styles.menuText, item.danger && styles.menuTextDanger]}>
                 {item.label}
               </Text>
             </Pressable>
@@ -129,17 +122,10 @@ export default function EventDetailScreen() {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Category + reliability badges */}
         <View style={styles.badgeRow}>
-          <View
-            style={[
-              styles.catBadge,
-              { backgroundColor: c.bg, borderColor: c.line },
-            ]}
-          >
-            <Text style={[styles.catBadgeText, { color: c.fg }]}>
-              {c.label}
-            </Text>
+          <View style={[styles.catBadge, { backgroundColor: c.bg, borderColor: c.line }]}>
+            <Text style={[styles.catBadgeText, { color: c.fg }]}>{c.label}</Text>
           </View>
-          {card.sourceReliability === "OFFICIAL" && (
+          {card.sourceReliability === 'OFFICIAL' && (
             <View style={styles.officialBadge}>
               <Text style={styles.officialText}>◎ 公式確認済</Text>
             </View>
@@ -149,28 +135,28 @@ export default function EventDetailScreen() {
         {/* Title */}
         <Text style={styles.title}>{card.title}</Text>
 
-        {/* Check button */}
-        <Pressable style={styles.checkButton}>
+        {/* Save button */}
+        <Pressable style={styles.saveButton}>
           <Bookmark
             size={16}
             color={colors.watchedRose}
             strokeWidth={1.8}
-            fill={card.checked ? colors.watchedRose : "none"}
+            fill={card.saved ? colors.watchedRose : 'none'}
           />
-          <Text style={styles.checkButtonText}>チェックする</Text>
-          <Text style={styles.checkCount}>{card.favoriteCount}</Text>
+          <Text style={styles.saveButtonText}>保存する</Text>
+          <Text style={styles.saveCount}>{card.savedCount}</Text>
         </Pressable>
-        <Text style={styles.checkHint}>
+        <Text style={styles.saveHint}>
           最適なタイミング（前日 / 終了1時間前など）に通知されます
         </Text>
 
         {/* Key/Value info */}
-        {card.schedule.datetime && (
+        {card.schedule.startDate && (
           <>
             <Text style={styles.sectionLabel}>日時</Text>
             <View style={styles.infoCard}>
               <Text style={styles.infoValue}>
-                {formatDateTime(card.schedule.datetime)}
+                {formatScheduleDetail(card.schedule.startDate, card.schedule.startTime)}
               </Text>
             </View>
           </>
@@ -194,13 +180,9 @@ export default function EventDetailScreen() {
                   onPress={() => WebBrowser.openBrowserAsync(url)}
                 >
                   <Text style={styles.sourceUrl} numberOfLines={1}>
-                    {url.replace(/^https?:\/\//, "")}
+                    {url.replace(/^https?:\/\//, '')}
                   </Text>
-                  <ExternalLink
-                    size={11}
-                    color={colors.inkSoft}
-                    strokeWidth={1.5}
-                  />
+                  <ExternalLink size={11} color={colors.inkSoft} strokeWidth={1.5} />
                 </Pressable>
               ))}
             </View>
@@ -217,14 +199,9 @@ export default function EventDetailScreen() {
               {card.fastestPosterIds.map((uid, i) => {
                 if (!uid) return null;
                 const name = MOCK_POSTER_NAMES[uid] || uid;
-                const isLast = card.fastestPosterIds
-                  .slice(i + 1)
-                  .every((u) => u === null);
+                const isLast = card.fastestPosterIds.slice(i + 1).every((u) => u === null);
                 return (
-                  <View
-                    key={i}
-                    style={[styles.top3Row, !isLast && styles.top3RowBorder]}
-                  >
+                  <View key={i} style={[styles.top3Row, !isLast && styles.top3RowBorder]}>
                     <Trophy
                       size={16}
                       color={
@@ -262,9 +239,7 @@ export default function EventDetailScreen() {
                   <Text style={styles.commentBody}>{cm.body}</Text>
                   <View style={styles.commentMeta}>
                     <Heart size={11} color={colors.inkSoft} strokeWidth={1.5} />
-                    <Text style={styles.commentMetaText}>
-                      {cm.likeCount} · 返信
-                    </Text>
+                    <Text style={styles.commentMetaText}>{cm.likeCount} · 返信</Text>
                   </View>
                 </View>
               </View>
@@ -279,25 +254,25 @@ export default function EventDetailScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.paper },
   navBar: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
   },
   navButton: { padding: 4 },
-  navRight: { flexDirection: "row", gap: 14 },
+  navRight: { flexDirection: 'row', gap: 14 },
   navCircle: {
     width: 34,
     height: 34,
     borderRadius: 17,
-    backgroundColor: "rgba(43,42,40,0.05)",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: 'rgba(43,42,40,0.05)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  navCircleActive: { backgroundColor: "rgba(43,42,40,0.1)" },
+  navCircleActive: { backgroundColor: 'rgba(43,42,40,0.1)' },
   contextMenu: {
-    position: "absolute",
+    position: 'absolute',
     top: 100,
     right: 16,
     width: 200,
@@ -306,45 +281,45 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     borderRadius: 12,
     zIndex: 10,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.12,
     shadowRadius: 24,
     elevation: 8,
   },
   menuItem: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 10,
     paddingVertical: 11,
     paddingHorizontal: 14,
   },
   menuItemBorder: {
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(43,42,40,0.06)",
+    borderBottomColor: 'rgba(43,42,40,0.06)',
   },
   menuText: { fontSize: 13, color: colors.ink },
-  menuTextDanger: { color: colors.unreadDot, fontWeight: "600" },
+  menuTextDanger: { color: colors.unreadDot, fontWeight: '600' },
   scrollContent: { paddingHorizontal: 16, paddingBottom: 40 },
   badgeRow: {
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: 8,
     marginBottom: 12,
-    flexWrap: "wrap",
+    flexWrap: 'wrap',
   },
   catBadge: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 6,
     paddingVertical: 4,
     paddingHorizontal: 10,
     borderRadius: 999,
     borderWidth: 1,
   },
-  catBadgeText: { fontSize: 10, fontWeight: "700" },
+  catBadgeText: { fontSize: 10, fontWeight: '700' },
   officialBadge: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 4,
     paddingVertical: 4,
     paddingHorizontal: 9,
@@ -355,12 +330,12 @@ const styles = StyleSheet.create({
   },
   officialText: {
     fontSize: 10,
-    fontWeight: "600",
+    fontWeight: '600',
     color: colors.officialGreen,
   },
   title: {
     fontSize: 20,
-    fontWeight: "700",
+    fontWeight: '700',
     color: colors.ink,
     lineHeight: 27,
     marginBottom: 14,
@@ -368,14 +343,14 @@ const styles = StyleSheet.create({
   },
   sectionLabel: {
     ...typography.label,
-    textTransform: "uppercase",
+    textTransform: 'uppercase',
     marginBottom: 8,
     marginTop: 20,
   },
-  checkButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+  saveButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     gap: 8,
     padding: 13,
     backgroundColor: colors.watchedRoseBg,
@@ -384,18 +359,18 @@ const styles = StyleSheet.create({
     borderColor: colors.watchedRoseBorder,
     marginBottom: 6,
   },
-  checkButtonText: {
+  saveButtonText: {
     fontSize: 14,
-    fontWeight: "700",
+    fontWeight: '700',
     color: colors.watchedRose,
   },
-  checkCount: {
+  saveCount: {
     fontSize: 11,
-    fontWeight: "500",
+    fontWeight: '500',
     color: colors.watchedRose,
     opacity: 0.7,
   },
-  checkHint: { fontSize: 10, color: colors.inkSoft, textAlign: "center" },
+  saveHint: { fontSize: 10, color: colors.inkSoft, textAlign: 'center' },
   infoCard: {
     backgroundColor: colors.white,
     borderRadius: 10,
@@ -418,11 +393,11 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     borderColor: colors.border,
-    overflow: "hidden",
+    overflow: 'hidden',
   },
   sourceRow: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 8,
     paddingVertical: 10,
     paddingHorizontal: 14,
@@ -433,11 +408,11 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     borderColor: colors.border,
-    overflow: "hidden",
+    overflow: 'hidden',
   },
   top3Row: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 10,
     paddingVertical: 10,
     paddingHorizontal: 14,
@@ -450,23 +425,23 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: "#E8DDC6",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: '#E8DDC6',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  top3AvatarText: { fontSize: 10, fontWeight: "600", color: colors.ink },
+  top3AvatarText: { fontSize: 10, fontWeight: '600', color: colors.ink },
   top3Name: { fontSize: 12, color: colors.ink, flex: 1 },
   commentList: { gap: 10 },
-  commentRow: { flexDirection: "row", gap: 10, alignItems: "flex-start" },
+  commentRow: { flexDirection: 'row', gap: 10, alignItems: 'flex-start' },
   commentAvatar: {
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: "#E8DDC6",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: '#E8DDC6',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  commentAvatarText: { fontSize: 11, fontWeight: "600", color: colors.ink },
+  commentAvatarText: { fontSize: 11, fontWeight: '600', color: colors.ink },
   commentBubble: {
     flex: 1,
     backgroundColor: colors.white,
@@ -477,14 +452,14 @@ const styles = StyleSheet.create({
   },
   commentAuthor: {
     fontSize: 11,
-    fontWeight: "600",
+    fontWeight: '600',
     color: colors.ink,
     marginBottom: 2,
   },
   commentBody: { fontSize: 12, color: colors.ink, lineHeight: 17 },
   commentMeta: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 4,
     marginTop: 4,
   },
