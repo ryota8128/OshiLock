@@ -6,6 +6,7 @@ import { authMiddleware, type AuthEnv } from './presentation/middleware/auth.js'
 import { auth } from './presentation/routes/auth/auth.controller.js';
 import { health } from './presentation/routes/health.controller.js';
 import { user } from './presentation/routes/user/user.controller.js';
+import { post } from './presentation/routes/post/post.controller.js';
 
 // 認証不要のルート
 const publicApp = new Hono();
@@ -16,6 +17,7 @@ publicApp.route('/auth', auth);
 const protectedApp = new Hono<AuthEnv>();
 protectedApp.use('*', authMiddleware);
 protectedApp.route('/users', user);
+protectedApp.route('/posts', post);
 
 // メインアプリ
 const app = new Hono();

@@ -1,4 +1,5 @@
 import { OshiId, PostId, UserId } from '../value-objects/branded';
+import { PostStatus } from '../enum/post-status';
 import { UtcIsoString } from '../value-objects/utc-iso-string';
 
 export interface Post {
@@ -7,5 +8,6 @@ export interface Post {
   userId: UserId;
   body: string;
   sourceUrls: string[];
+  status: PostStatus;
   createdAt: UtcIsoString;
 }

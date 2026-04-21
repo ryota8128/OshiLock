@@ -8,12 +8,15 @@ import { UpdateProfileUseCase } from '../application/use-cases/user/update-profi
 import { GenerateAvatarUploadUrlsUseCase } from '../application/use-cases/user/generate-avatar-upload-urls.js';
 import { GetSettingsUseCase } from '../application/use-cases/user/get-settings.js';
 import { UpdateSettingsUseCase } from '../application/use-cases/user/update-settings.js';
+import { DynamoPostRepository } from '../infrastructure/dynamo/repository/post.repository.js';
+import { CreatePostUseCase } from '../application/use-cases/post/create-post.js';
 
 // Infrastructure
 const authGateway = new FirebaseAuthGateway();
 const userRepository = new DynamoUserRepository();
 const userSettingsRepository = new DynamoUserSettingsRepository();
 const storageGateway = new S3StorageGateway();
+const postRepository = new DynamoPostRepository();
 
 // Use Cases
 export const signInUseCase = new SignInUseCase(authGateway, userRepository);
@@ -22,3 +25,4 @@ export const updateProfileUseCase = new UpdateProfileUseCase(userRepository, sto
 export const generateAvatarUploadUrlsUseCase = new GenerateAvatarUploadUrlsUseCase(storageGateway);
 export const getSettingsUseCase = new GetSettingsUseCase(userSettingsRepository);
 export const updateSettingsUseCase = new UpdateSettingsUseCase(userSettingsRepository);
+export const createPostUseCase = new CreatePostUseCase(postRepository);
