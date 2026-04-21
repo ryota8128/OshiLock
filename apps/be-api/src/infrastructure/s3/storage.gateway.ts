@@ -1,4 +1,4 @@
-import { PutObjectCommand } from '@aws-sdk/client-s3';
+import { PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl as getS3SignedUrl } from '@aws-sdk/s3-request-presigner';
 import { getSignedUrl as getCfSignedUrl } from '@aws-sdk/cloudfront-signer';
 import { ulid } from 'ulid';
@@ -76,5 +76,22 @@ export class S3StorageGateway implements IStorageGateway {
     });
 
     return { avatarSmUrl, avatarLgUrl };
+  }
+
+  async deleteAvatarImages(avatarPath: string): Promise<void> {
+    await Promise.all([
+      s3Client.send(
+        new DeleteObjectCommand({
+          Bucket: env.S3_BUCKET_NAME,
+          Key: toS3Key(avatarPath, '_sm.webp'),
+        }),
+      ),
+      s3Client.send(
+        new DeleteObjectCommand({
+          Bucket: env.S3_BUCKET_NAME,
+          Key: toS3Key(avatarPath, '_lg.webp'),
+        }),
+      ),
+    ]);
   }
 }

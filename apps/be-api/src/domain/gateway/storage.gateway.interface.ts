@@ -12,4 +12,5 @@ export type AvatarSignedDisplayUrls = {
 export interface IStorageGateway {
   generateAvatarUploadUrls(userId: string): Promise<AvatarPresignedUploadUrls>;
   generateAvatarDisplayUrls(avatarPath: string): AvatarSignedDisplayUrls;
+  deleteAvatarImages(avatarPath: string): Promise<void>;
 }
