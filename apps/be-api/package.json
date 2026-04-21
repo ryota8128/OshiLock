@@ -19,10 +19,13 @@
     "@google/genai": "catalog:",
     "@hono/node-server": "catalog:",
     "@oshilock/shared": "workspace:*",
+    "@types/turndown": "catalog:",
     "@vercel/functions": "catalog:",
+    "cheerio": "catalog:",
     "electrodb": "catalog:",
     "firebase-admin": "catalog:",
     "hono": "catalog:",
+    "turndown": "catalog:",
     "ulid": "catalog:",
     "zod": "catalog:"
   },
