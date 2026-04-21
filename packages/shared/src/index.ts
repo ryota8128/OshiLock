@@ -33,6 +33,8 @@ export type { UserOshi } from './domain/models/user-oshi';
 export { DisplayName } from './domain/value-objects/display-name';
 export { PostBody } from './domain/value-objects/post-body';
 export { POST_STATUS } from './domain/enum/post-status';
+export { LLM_PROVIDER } from './domain/enum/llm-provider';
+export type { LlmProvider } from './domain/enum/llm-provider';
 export type { PostStatus } from './domain/enum/post-status';
 export { signInRequestSchema } from './api/request/auth.request';
 export type { SignInRequest } from './api/request/auth.request';

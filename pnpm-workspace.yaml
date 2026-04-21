@@ -24,6 +24,7 @@ catalog:
   '@aws-sdk/client-s3': ^3.1032.0
   '@aws-sdk/s3-request-presigner': ^3.1032.0
   '@aws-sdk/cloudfront-signer': ^3.1031.0
+  '@google/genai': ^1.50.1
 
 onlyBuiltDependencies:
   - esbuild
