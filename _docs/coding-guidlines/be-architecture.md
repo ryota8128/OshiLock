@@ -235,6 +235,7 @@ export const signInRequestSchema = z.object({
 - `TransactionCanceledException extends OshiLockBeException` — DynamoDB トランザクション失敗時
 - `NotFoundException extends OshiLockBeException` — 404 Not Found。デフォルトメッセージ「リソースが見つかりません」
 - `RateLimitException extends OshiLockBeException` — 429 Too Many Requests。投稿制限（日次上限・クールダウン）等
+- `AiGatewayException extends OshiLockBeException` — 500。AI 処理失敗時
 - 新しいエラー種別は `OshiLockBeException` を継承して `domain/errors/` に追加する
 - **BE 内で `throw new Error()` は禁止。必ずカスタム例外を使う**
 
@@ -314,12 +315,13 @@ id: record.userId as UserId,
 ```
 
 ```typescript
-// ✅ enum の type は Object.values で定義
+// ✅ enum の type は Object.values で定義（ElectroDB・Gemini スキーマ等すべてで共通）
 import { AUTH_PROVIDER } from "@oshilock/shared";
 type: Object.values(AUTH_PROVIDER),
 
-// ❌ リテラルで書かない
+// ❌ リテラルで書かない（shared の定数から参照する）
 type: ["APPLE", "GOOGLE"] as const,
+enum: ['EVENT', 'GOODS', 'MEDIA', 'SNS', 'NEWS'],
 ```
 
 ## ElectroDB クエリ
@@ -345,29 +347,48 @@ const result = await UserEntity.query.byAuth({ authProvider, authSub }).go({ hyd
 entity ファイルの `toXxx` 関数で変換する（上記 ElectroDB エンティティのセクション参照）。
 repository では `toXxx` を import して使うだけ。
 
-### map の部分更新（pickDefined）
+### DynamoDB の map 属性はフラット化する
 
-`required: true` の map プロパティを optional で部分更新する場合、**ドットパスで個別フィールドを指定**する。
-map ごと渡すと required バリデーションで `ConditionalCheckFailedException` になる。
-
-`infrastructure/dynamo/utils.ts` の `pickDefined` で undefined を除外してからドットパスで `.set()` する。
+ElectroDB の map 型は部分更新が複雑になるため、**DB 属性はフラット化**し、domain モデル側は map 構造を維持する。`toDomain` で変換する。
 
 ```typescript
-// ✅ ドットパス + pickDefined で部分更新
+// ✅ DB: フラット属性
+attributes: {
+  notificationReminder: { type: 'boolean', required: true, default: true },
+  notificationDailySummary: { type: 'boolean', required: true, default: true },
+}
 
-// ❌ map ごと渡さない（required プロパティが欠けると ConditionalCheckFailedException）
-.set({ notification: pickDefined(params.notification) })
+// ✅ toDomain で map 構造に変換
+export function toDomain(record: Item): UserSettings {
+  return {
+    notification: {
+      reminder: record.notificationReminder,
+      dailySummary: record.notificationDailySummary,
+    },
+  };
+}
 
-// ❌ map をそのまま渡さない
-.set({ notification: params.notification })
+// ✅ 部分更新は pickDefined + .set() でシンプルに
+.set(pickDefined({
+  notificationReminder: params.notification.reminder,
+  notificationDailySummary: params.notification.dailySummary,
+}))
+```
 
-// ❌ if チェーンで手動フィルタリングしない
-if (params.notification.reminder !== undefined) {
-  query = query.set({ 'notification.reminder': params.notification.reminder });
+```typescript
+// ❌ map 型で定義しない（部分更新が複雑になる）
+notification: {
+  type: 'map',
+  properties: {
+    reminder: { type: 'boolean', required: true },
+  },
 }
 ```
 
-`pickDefined` は `-?` で optional 修飾子を除去し、型レベルでも undefined を消す。
+### pickDefined ユーティリティ
+
+`infrastructure/dynamo/utils.ts` の `pickDefined` で undefined を除外してから `.set()` に渡す。
+`-?` で optional 修飾子を除去し、型レベルでも undefined を消す。
 
 ```typescript
 // { reminder?: boolean | undefined } → { reminder: boolean }
