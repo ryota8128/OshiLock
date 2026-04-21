@@ -44,10 +44,8 @@ export class DynamoUserRepository implements IUserRepository {
         userSettings
           .create({
             userId: params.userId,
-            notification: {
-              reminder: true,
-              dailySummary: true,
-            },
+            notificationReminder: true,
+            notificationDailySummary: true,
           })
           .where(({ userId }, { notExists }) => notExists(userId))
           .commit(),

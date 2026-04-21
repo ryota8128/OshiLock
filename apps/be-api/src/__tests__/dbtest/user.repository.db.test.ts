@@ -260,7 +260,8 @@ describe('DynamoUserRepository', () => {
       await UserSettingsDb.entity
         .create({
           userId,
-          notification: { reminder: true, dailySummary: true },
+          notificationReminder: true,
+          notificationDailySummary: true,
         })
         .go();
 

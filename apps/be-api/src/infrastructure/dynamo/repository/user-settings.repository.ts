@@ -16,7 +16,12 @@ export class DynamoUserSettingsRepository implements IUserSettingsRepository {
   async update(params: UpdateUserSettingsParams): Promise<UserSettings> {
     const result = await UserSettingsDb.entity
       .patch({ userId: params.userId })
-      .set({ notification: pickDefined(params.notification) })
+      .set(
+        pickDefined({
+          notificationReminder: params.notification.reminder,
+          notificationDailySummary: params.notification.dailySummary,
+        }),
+      )
       .go({ response: 'all_new' });
 
     return UserSettingsDb.toDomain(result.data);

@@ -18,7 +18,7 @@ export class CreatePostUseCase {
   }
 
   async execute(input: CreatePostInput): Promise<Post> {
-    await this.policy.ensureCanCreate(input.userId);
+    await this.policy.ensureCanCreate(input.userId, input.oshiId);
 
     return this.postRepository.create({
       postId: PostId.generate(),
