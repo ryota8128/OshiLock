@@ -1,14 +1,35 @@
 import { z } from 'zod';
+import { LLM_PROVIDER } from '@oshilock/shared';
 
-const commonSchema = z.object({
-  NODE_ENV: z.enum(['development', 'production', 'test']),
-  PORT: z.coerce.number(),
-  AWS_REGION: z.string().min(1).default('ap-northeast-1'),
-  DYNAMODB_TABLE_NAME: z.string().min(1),
-  S3_BUCKET_NAME: z.string().min(1),
-  CLOUDFRONT_DOMAIN: z.string().min(1),
-  CLOUDFRONT_KEY_PAIR_ID: z.string().min(1),
-});
+const commonSchema = z
+  .object({
+    NODE_ENV: z.enum(['development', 'production', 'test']),
+    PORT: z.coerce.number(),
+    AWS_REGION: z.string().min(1).default('ap-northeast-1'),
+    DYNAMODB_TABLE_NAME: z.string().min(1),
+    S3_BUCKET_NAME: z.string().min(1),
+    CLOUDFRONT_DOMAIN: z.string().min(1),
+    CLOUDFRONT_KEY_PAIR_ID: z.string().min(1),
+    LLM_PROVIDER: z.enum(['GEMINI', 'GPT', 'CLAUDE']),
+    GEMINI_API_KEY: z.string().min(1).optional(),
+    OPENAI_API_KEY: z.string().min(1).optional(),
+    ANTHROPIC_API_KEY: z.string().min(1).optional(),
+  })
+  .superRefine((data, ctx) => {
+    const keyMap: Record<string, string> = {
+      GEMINI: 'GEMINI_API_KEY',
+      GPT: 'OPENAI_API_KEY',
+      CLAUDE: 'ANTHROPIC_API_KEY',
+    };
+    const requiredKey = keyMap[data.LLM_PROVIDER];
+    if (!data[requiredKey as keyof typeof data]) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `LLM_PROVIDER=${data.LLM_PROVIDER} の場合、${requiredKey} は必須です`,
+        path: [requiredKey],
+      });
+    }
+  });
 
 type CommonEnv = z.infer<typeof commonSchema>;
 
@@ -41,6 +62,10 @@ function getEnv(): Env {
     S3_BUCKET_NAME: process.env.S3_BUCKET_NAME,
     CLOUDFRONT_DOMAIN: process.env.CLOUDFRONT_DOMAIN,
     CLOUDFRONT_KEY_PAIR_ID: process.env.CLOUDFRONT_KEY_PAIR_ID,
+    LLM_PROVIDER: process.env.LLM_PROVIDER,
+    GEMINI_API_KEY: process.env.GEMINI_API_KEY,
+    OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+    ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
   });
 
   const isLocal = process.env.IS_LOCAL === 'true';
