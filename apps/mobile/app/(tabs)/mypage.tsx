@@ -85,7 +85,7 @@ export default function MyPageScreen() {
       <View style={styles.settingsGroup}>
         <SettingsRow label="デフォルト推し" />
         <SettingsRow label="通知設定" onPress={() => router.push('/settings/notification')} />
-        <SettingsRow label="表示名の変更" />
+        <SettingsRow label="プロフィール編集" onPress={() => router.push('/settings/profile')} />
       </View>
 
       <View style={styles.settingsGroup}>

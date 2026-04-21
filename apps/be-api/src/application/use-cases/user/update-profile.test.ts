@@ -19,6 +19,7 @@ function createMockStorageGateway(overrides: Partial<IStorageGateway> = {}): ISt
   return {
     generateAvatarUploadUrls: vi.fn(),
     generateAvatarDisplayUrls: vi.fn(),
+    deleteAvatarImages: vi.fn().mockResolvedValue(undefined),
     ...overrides,
   };
 }
@@ -43,6 +44,7 @@ describe('UpdateProfileUseCase', () => {
       avatarPath: 'avatars/u_testUser123/original.jpg',
     };
     const userRepository = createMockUserRepository({
+      findById: vi.fn().mockResolvedValue(MOCK_USER),
       updateProfile: vi.fn().mockResolvedValue(userWithAvatar),
     });
     const storageGateway = createMockStorageGateway({
@@ -70,6 +72,7 @@ describe('UpdateProfileUseCase', () => {
 
   it('avatarPath がない場合 avatarUrl は null', async () => {
     const userRepository = createMockUserRepository({
+      findById: vi.fn().mockResolvedValue(MOCK_USER),
       updateProfile: vi.fn().mockResolvedValue(MOCK_USER),
     });
     const storageGateway = createMockStorageGateway();
@@ -84,8 +87,23 @@ describe('UpdateProfileUseCase', () => {
     expect(storageGateway.generateAvatarDisplayUrls).not.toHaveBeenCalled();
   });
 
+  it('ユーザーが存在しない場合 NotFoundException をスローする', async () => {
+    const userRepository = createMockUserRepository({
+      findById: vi.fn().mockResolvedValue(null),
+    });
+    const storageGateway = createMockStorageGateway();
+
+    const useCase = new UpdateProfileUseCase(userRepository, storageGateway);
+
+    await expect(useCase.execute({ userId: USER_ID, displayName: 'Name' })).rejects.toThrow(
+      'ユーザーが見つかりません',
+    );
+    expect(userRepository.updateProfile).not.toHaveBeenCalled();
+  });
+
   it('updateProfile に正しいパラメータを渡す', async () => {
     const userRepository = createMockUserRepository({
+      findById: vi.fn().mockResolvedValue(MOCK_USER),
       updateProfile: vi.fn().mockResolvedValue(MOCK_USER),
     });
     const storageGateway = createMockStorageGateway();
@@ -102,5 +120,93 @@ describe('UpdateProfileUseCase', () => {
       displayName: 'New Name',
       avatarPath: 'some/path.jpg',
     });
+  });
+
+  it('アバター変更時に旧画像が削除される', async () => {
+    const oldUser: User = { ...MOCK_USER, avatarPath: 'avatars/u_testUser123/old_hash' };
+    const newUser: User = { ...MOCK_USER, avatarPath: 'avatars/u_testUser123/new_hash' };
+    const userRepository = createMockUserRepository({
+      findById: vi.fn().mockResolvedValue(oldUser),
+      updateProfile: vi.fn().mockResolvedValue(newUser),
+    });
+    const storageGateway = createMockStorageGateway({
+      generateAvatarDisplayUrls: vi.fn().mockReturnValue({
+        avatarSmUrl: 'https://cdn.example.com/sm.webp',
+        avatarLgUrl: 'https://cdn.example.com/lg.webp',
+      }),
+    });
+
+    const useCase = new UpdateProfileUseCase(userRepository, storageGateway);
+    await useCase.execute({
+      userId: USER_ID,
+      displayName: 'Name',
+      avatarPath: 'avatars/u_testUser123/new_hash',
+    });
+
+    expect(storageGateway.deleteAvatarImages).toHaveBeenCalledWith(
+      'avatars/u_testUser123/old_hash',
+    );
+  });
+
+  it('アバター未変更時は削除されない', async () => {
+    const userRepository = createMockUserRepository({
+      findById: vi.fn().mockResolvedValue(MOCK_USER),
+      updateProfile: vi.fn().mockResolvedValue(MOCK_USER),
+    });
+    const storageGateway = createMockStorageGateway();
+
+    const useCase = new UpdateProfileUseCase(userRepository, storageGateway);
+    await useCase.execute({ userId: USER_ID, displayName: 'Name' });
+
+    expect(storageGateway.deleteAvatarImages).not.toHaveBeenCalled();
+  });
+
+  it('旧アバターがない場合は削除されない', async () => {
+    const newUser: User = { ...MOCK_USER, avatarPath: 'avatars/u_testUser123/new_hash' };
+    const userRepository = createMockUserRepository({
+      findById: vi.fn().mockResolvedValue(MOCK_USER),
+      updateProfile: vi.fn().mockResolvedValue(newUser),
+    });
+    const storageGateway = createMockStorageGateway({
+      generateAvatarDisplayUrls: vi.fn().mockReturnValue({
+        avatarSmUrl: 'https://cdn.example.com/sm.webp',
+        avatarLgUrl: 'https://cdn.example.com/lg.webp',
+      }),
+    });
+
+    const useCase = new UpdateProfileUseCase(userRepository, storageGateway);
+    await useCase.execute({
+      userId: USER_ID,
+      displayName: 'Name',
+      avatarPath: 'avatars/u_testUser123/new_hash',
+    });
+
+    expect(storageGateway.deleteAvatarImages).not.toHaveBeenCalled();
+  });
+
+  it('削除失敗でもプロフィール更新は成功する', async () => {
+    const oldUser: User = { ...MOCK_USER, avatarPath: 'avatars/u_testUser123/old_hash' };
+    const newUser: User = { ...MOCK_USER, avatarPath: 'avatars/u_testUser123/new_hash' };
+    const userRepository = createMockUserRepository({
+      findById: vi.fn().mockResolvedValue(oldUser),
+      updateProfile: vi.fn().mockResolvedValue(newUser),
+    });
+    const storageGateway = createMockStorageGateway({
+      deleteAvatarImages: vi.fn().mockRejectedValue(new Error('S3 error')),
+      generateAvatarDisplayUrls: vi.fn().mockReturnValue({
+        avatarSmUrl: 'https://cdn.example.com/sm.webp',
+        avatarLgUrl: 'https://cdn.example.com/lg.webp',
+      }),
+    });
+
+    const useCase = new UpdateProfileUseCase(userRepository, storageGateway);
+    const result = await useCase.execute({
+      userId: USER_ID,
+      displayName: 'Name',
+      avatarPath: 'avatars/u_testUser123/new_hash',
+    });
+
+    expect(result.avatarPath).toBe('avatars/u_testUser123/new_hash');
+    expect(storageGateway.deleteAvatarImages).toHaveBeenCalled();
   });
 });

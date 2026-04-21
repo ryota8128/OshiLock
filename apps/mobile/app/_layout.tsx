@@ -49,6 +49,15 @@ function RootNavigator() {
           headerStyle: { backgroundColor: '#FAF8F4' },
         }}
       />
+      <Stack.Screen
+        name="settings/profile"
+        options={{
+          title: 'プロフィール編集',
+          headerShown: true,
+          headerBackButtonDisplayMode: 'minimal',
+          headerStyle: { backgroundColor: '#FAF8F4' },
+        }}
+      />
       <Stack.Screen name="post" options={{ presentation: 'modal' }} />
     </Stack>
   );

@@ -10,6 +10,7 @@ function createMockStorageGateway(overrides: Partial<IStorageGateway> = {}): ISt
   return {
     generateAvatarUploadUrls: vi.fn(),
     generateAvatarDisplayUrls: vi.fn(),
+    deleteAvatarImages: vi.fn(),
     ...overrides,
   };
 }
