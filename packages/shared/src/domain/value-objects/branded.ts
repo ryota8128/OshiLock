@@ -1,8 +1,6 @@
 import { z } from 'zod';
 import { ulid } from 'ulid';
 
-declare const __brand: unique symbol;
-
 export type Branded<T, B extends string> = T & { readonly [__brand]: B };
 
 export type UserId = Branded<string, 'UserId'>;

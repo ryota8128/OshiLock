@@ -1,5 +1,6 @@
 export const POST_STATUS = {
   PENDING: 'PENDING',
+  PROCESSING: 'PROCESSING',
   PROCESSED: 'PROCESSED',
   FAILED: 'FAILED',
 } as const;

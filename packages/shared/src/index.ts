@@ -31,6 +31,9 @@ export { SUBSCRIPTION_STATUS } from './domain/enum/subscription-status';
 export { SubscriptionStatus } from './domain/enum/subscription-status';
 export type { UserOshi } from './domain/models/user-oshi';
 export { DisplayName } from './domain/value-objects/display-name';
+export { PostBody } from './domain/value-objects/post-body';
+export { POST_STATUS } from './domain/enum/post-status';
+export type { PostStatus } from './domain/enum/post-status';
 export { signInRequestSchema } from './api/request/auth.request';
 export type { SignInRequest } from './api/request/auth.request';
 export { updateProfileRequestSchema } from './api/request/user.request';
@@ -44,3 +47,6 @@ export type {
   AvatarPresignedUrlsResponse,
 } from './api/response/user.response';
 export type { UserSettingsResponse } from './api/response/user-settings.response';
+export { createPostRequestSchema } from './api/request/post.request';
+export type { CreatePostRequest } from './api/request/post.request';
+export type { CreatePostResponse } from './api/response/post.response';
