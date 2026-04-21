@@ -1,14 +1,14 @@
 // TODO: Development Build 移行時に @react-native-firebase に置き換え
 // 現在は Expo Go 互換のため Firebase Web SDK を使用
 import { initializeApp } from 'firebase/app';
-// @ts-expect-error -- firebase/auth の型定義に getReactNativePersistence が含まれていない（実行時は存在する）
 import {
   initializeAuth,
+  // @ts-ignore -- firebase/auth の型定義に getReactNativePersistence が含まれていない（実行時は存在する）
   getReactNativePersistence,
   OAuthProvider,
   signInWithCredential,
 } from 'firebase/auth';
-import { createAsyncStorage } from '@react-native-async-storage/async-storage';
+import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyAn0BnHlDH9mLEzqthwyA8VJU2rjBlI7DM',
@@ -18,9 +18,8 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const appStorage = createAsyncStorage('firebase-auth');
 export const firebaseAuth = initializeAuth(app, {
-  persistence: getReactNativePersistence(appStorage),
+  persistence: getReactNativePersistence(ReactNativeAsyncStorage),
 });
 
 export async function signInWithAppleCredential(identityToken: string, nonce: string) {
