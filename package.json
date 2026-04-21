@@ -9,6 +9,9 @@
     "mobile:clear": "pnpm --filter @oshilock/mobile start:ts -- --clear",
     "api": "pnpm --filter @oshilock/be-api dev",
     "test": "turbo test",
+    "test:all": "turbo test:all",
+    "test:ut": "turbo test:ut",
+    "test:db": "turbo test:db",
     "prepare": "husky"
   },
   "devDependencies": {

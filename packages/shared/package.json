@@ -15,7 +15,10 @@
   "scripts": {
     "build": "tsc",
     "lint": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "pnpm run test:all",
+    "test:all": "vitest run",
+    "test:ut": "vitest run",
+    "test:db": "echo 'No DB tests for @oshilock/shared'"
   },
   "dependencies": {
     "zod": "catalog:",

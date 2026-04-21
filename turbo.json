@@ -14,6 +14,15 @@
     },
     "test": {
       "cache": false
+    },
+    "test:all": {
+      "cache": false
+    },
+    "test:ut": {
+      "cache": false
+    },
+    "test:db": {
+      "cache": false
     }
   }
 }
