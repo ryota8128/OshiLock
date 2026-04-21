@@ -3,8 +3,8 @@
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
-    "start": "expo start",
-    "start:ts": "REACT_NATIVE_PACKAGER_HOSTNAME=$(tailscale ip -4) EXPO_PUBLIC_API_URL=http://$(tailscale ip -4):3012 expo start",
+    "start": "expo start --port 8083",
+    "start:ts": "REACT_NATIVE_PACKAGER_HOSTNAME=$(tailscale ip -4) EXPO_PUBLIC_API_URL=http://$(tailscale ip -4):3012 expo start --port 8083",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web"

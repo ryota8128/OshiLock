@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import type { UpdateUserSettingsRequest } from '@oshilock/shared';
+import type { UpdateUserSettingsRequest, UserSettings } from '@oshilock/shared';
 import { userApi } from '@/api/user';
 
 const SETTINGS_KEY = ['users', 'me', 'settings'] as const;
@@ -18,8 +18,29 @@ export function useUpdateSettings() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (body: UpdateUserSettingsRequest) => userApi.updateSettings(body),
-    onSuccess: (data) => {
-      queryClient.setQueryData(SETTINGS_KEY, data);
+    onMutate: async (body) => {
+      await queryClient.cancelQueries({ queryKey: SETTINGS_KEY });
+      const previous = queryClient.getQueryData(SETTINGS_KEY);
+
+      queryClient.setQueryData(SETTINGS_KEY, (old: { settings: UserSettings } | undefined) => {
+        if (!old) return old;
+        return {
+          settings: {
+            ...old.settings,
+            notification: { ...old.settings.notification, ...body.notification },
+          },
+        };
+      });
+
+      return { previous };
+    },
+    onError: (_err, _body, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(SETTINGS_KEY, context.previous);
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: SETTINGS_KEY });
     },
   });
 }

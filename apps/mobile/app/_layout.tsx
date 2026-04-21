@@ -40,6 +40,15 @@ function RootNavigator() {
       <Stack.Screen name="onboarding" />
       <Stack.Screen name="(tabs)" />
       <Stack.Screen name="event/[id]" />
+      <Stack.Screen
+        name="settings/notification"
+        options={{
+          title: '通知設定',
+          headerShown: true,
+          headerBackButtonDisplayMode: 'minimal',
+          headerStyle: { backgroundColor: '#FAF8F4' },
+        }}
+      />
       <Stack.Screen name="post" options={{ presentation: 'modal' }} />
     </Stack>
   );

@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet, ScrollView, Pressable, ActivityIndicator } from 'react-native';
+import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, spacing, typography, radii } from '@/constants/theme';
 import { useAuth } from '@/contexts/AuthContext';
@@ -83,7 +84,7 @@ export default function MyPageScreen() {
       {/* Settings */}
       <View style={styles.settingsGroup}>
         <SettingsRow label="デフォルト推し" />
-        <SettingsRow label="通知設定" />
+        <SettingsRow label="通知設定" onPress={() => router.push('/settings/notification')} />
         <SettingsRow label="表示名の変更" />
       </View>
 
