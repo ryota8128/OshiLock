@@ -20,6 +20,7 @@
     "@google/genai": "catalog:",
     "@hono/node-server": "catalog:",
     "@oshilock/shared": "workspace:*",
+    "@toon-format/toon": "catalog:",
     "@types/turndown": "catalog:",
     "@vercel/functions": "catalog:",
     "cheerio": "catalog:",

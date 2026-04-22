@@ -26,6 +26,7 @@ catalog:
   '@aws-sdk/client-sqs': ^3.1034.0
   '@aws-sdk/cloudfront-signer': ^3.1031.0
   '@google/genai': ^1.50.1
+  '@toon-format/toon': ^2.1.0
   cheerio: ^1.2.0
   turndown: ^7.2.4
   '@types/turndown': ^5.0.6
