@@ -64,6 +64,36 @@ type: ["APPLE", "GOOGLE"] as const,
 enum: ['EVENT', 'GOODS', 'MEDIA', 'SNS', 'NEWS'],
 ```
 
+## キーテンプレート設計
+
+### primary インデックス
+
+PK はリソースの所属単位（推し等）でエンティティ横断OK。SK プレフィックスでエンティティを区別する。
+
+```
+// ✅ primary — 推し単位で Post も EventInfo も同居
+PK: OSHI#${oshiId}
+SK: POST#${postId}     ← Post
+SK: EVENT#${eventId}   ← EventInfo
+```
+
+### GSI
+
+GSI の PK にはエンティティ種別プレフィックスを入れ、PK レベルでエンティティを分離する。
+シングルテーブル設計で他エンティティとの混在を防ぐ。
+
+```
+// ✅ GSI PK にエンティティ種別 + 所属キー
+PK: EVENT#OSHI#${oshiId}    ← EventInfo 専用
+SK: CAT#${category}#${createdAt}
+
+PK: USER#${userId}           ← Post のユーザー別取得
+SK: POST#${createdAt}
+
+// ❌ エンティティ種別なしの GSI PK（他エンティティと混在する）
+PK: OSHI#${oshiId}
+```
+
 ## クエリ
 
 ### GSI クエリの hydrate

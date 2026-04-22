@@ -16,7 +16,7 @@ export interface EventInfo {
     endTime: TimeString | null;
   };
   summary: string;
-  content: string;
+  detail: string;
   category: EventCategory;
   sourceReliability: SourceReliability;
   sourceUrls: string[];
