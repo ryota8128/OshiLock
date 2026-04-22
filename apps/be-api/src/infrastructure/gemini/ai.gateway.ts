@@ -1,33 +1,36 @@
-import type { GoogleGenAI, Schema } from '@google/genai';
-import type { z, ZodSchema, ZodType } from 'zod';
-import type { AiParseResult } from '../../domain/gateway/ai-parse-result.js';
-import { parseResultZodSchema } from '../../domain/gateway/ai-parse-result.js';
-import type { IAiGateway, AiParseInput } from '../../domain/gateway/ai.gateway.interface.js';
+import type { GoogleGenAI } from '@google/genai';
 import { AiGatewayException } from '../../domain/errors/ai-gateway.exception.js';
+import type { AiParseResult } from '../../domain/gateway/ai-parse-result.js';
+import {
+  ACTIVE_PARSE_RESULT_VERSION,
+  parseResultZodSchema,
+} from '../../domain/gateway/ai-parse-result.js';
+import type { AiParseInput, IAiGateway } from '../../domain/gateway/ai.gateway.interface.js';
 import { buildParsePrompt } from './prompts/parse.prompt.js';
 import { parseResponseSchema } from './schemas/parse.schema.js';
 
-const MODEL = 'gemini-2.0-flash';
-const MAX_RETRIES = 1;
-
 export class GeminiAiGateway implements IAiGateway {
+  static readonly model = 'gemini-2.0-flash';
+  static readonly maxRetries = 1;
+  static readonly activeParseResultVersion = ACTIVE_PARSE_RESULT_VERSION;
+  static readonly parseResponseSchema = parseResponseSchema;
+
   constructor(private readonly client: GoogleGenAI) {}
 
   async parse(input: AiParseInput): Promise<AiParseResult> {
     const prompt = buildParsePrompt(input);
-    return this.generateWithValidation(prompt, parseResponseSchema, parseResultZodSchema);
+    return this.generateWithValidation(prompt);
   }
 
-  private async generateWithValidation<T>(
-    prompt: string,
-    responseSchema: Schema,
-    zodSchema: z.ZodType<T, z.ZodTypeDef, unknown>,
-  ): Promise<T> {
+  private async generateWithValidation(prompt: string): Promise<AiParseResult> {
     let lastError: unknown;
 
-    for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
-      const responseText = await this.generate(prompt, responseSchema);
-      const parseResult = zodSchema.safeParse(JSON.parse(responseText));
+    for (let attempt = 0; attempt <= GeminiAiGateway.maxRetries; attempt++) {
+      const responseText = await this.generate(prompt);
+      const parseResult = parseResultZodSchema.safeParse({
+        version: ACTIVE_PARSE_RESULT_VERSION,
+        ...JSON.parse(responseText),
+      });
 
       if (parseResult.success) {
         return parseResult.data;
@@ -41,13 +44,13 @@ export class GeminiAiGateway implements IAiGateway {
     );
   }
 
-  private async generate(prompt: string, responseSchema: Schema): Promise<string> {
+  private async generate(prompt: string): Promise<string> {
     const response = await this.client.models.generateContent({
-      model: MODEL,
+      model: GeminiAiGateway.model,
       contents: prompt,
       config: {
         responseMimeType: 'application/json',
-        responseSchema,
+        responseSchema: parseResponseSchema,
       },
     });
 

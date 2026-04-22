@@ -59,4 +59,12 @@ export class DynamoPostRepository implements IPostRepository {
   async updateStatus(oshiId: OshiId, postId: PostId, status: PostStatus): Promise<void> {
     await PostDb.entity.patch({ oshiId, postId }).set({ status }).go();
   }
+
+  async saveParseResult(oshiId: OshiId, postId: PostId, parseResultJson: string): Promise<void> {
+    await PostDb.entity
+      .patch({ oshiId, postId })
+      .set({ parseResult: parseResultJson, status: POST_STATUS.PARSED })
+      .where(({ status }, { eq }) => eq(status, POST_STATUS.PARSING as string))
+      .go();
+  }
 }

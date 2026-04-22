@@ -21,6 +21,7 @@ const _entity = new Entity(
         required: true,
         default: POST_STATUS.PENDING,
       },
+      parseResult: { type: 'string' },
       createdAt: { type: 'string', required: true },
     },
     indexes: {

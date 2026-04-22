@@ -12,6 +12,7 @@ function createMockPostRepository(overrides: Partial<IPostRepository> = {}): IPo
     countTodayByUser: vi.fn().mockResolvedValue(0),
     findLatestByUser: vi.fn().mockResolvedValue(null),
     updateStatus: vi.fn(),
+    saveParseResult: vi.fn(),
     ...overrides,
   };
 }

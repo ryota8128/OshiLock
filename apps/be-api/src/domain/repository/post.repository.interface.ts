@@ -13,4 +13,5 @@ export interface IPostRepository {
   countTodayByUser(userId: UserId, oshiId: OshiId): Promise<number>;
   findLatestByUser(userId: UserId): Promise<Post | null>;
   updateStatus(oshiId: OshiId, postId: PostId, status: PostStatus): Promise<void>;
+  saveParseResult(oshiId: OshiId, postId: PostId, parseResultJson: string): Promise<void>;
 }

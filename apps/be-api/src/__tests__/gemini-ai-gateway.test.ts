@@ -23,7 +23,7 @@ describe('GeminiAiGateway', () => {
         endDate: null,
         endTime: null,
         summary: '夏フェス 東京ガーデンシアター 7/20開催',
-        detail: '夏フェス2026が東京ガーデンシアターで7/20に開催。チケット情報は後日発表。',
+        detail: '夏フェス2026が東京ガーデンシアターで7/20に開催。',
       });
 
       const client = createMockClient(mockResponse);
