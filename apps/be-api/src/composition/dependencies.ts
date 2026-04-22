@@ -9,6 +9,9 @@ import { GenerateAvatarUploadUrlsUseCase } from '../application/use-cases/user/g
 import { GetSettingsUseCase } from '../application/use-cases/user/get-settings.js';
 import { UpdateSettingsUseCase } from '../application/use-cases/user/update-settings.js';
 import { DynamoPostRepository } from '../infrastructure/dynamo/repository/post.repository.js';
+import { GeminiAiGateway } from '../infrastructure/gemini/ai.gateway.js';
+import { geminiClient } from '../infrastructure/gemini/client.js';
+import { UrlProcessor } from '../application/services/post/url-processor.js';
 import { CreatePostUseCase } from '../application/use-cases/post/create-post.js';
 
 // Infrastructure
@@ -17,6 +20,10 @@ const userRepository = new DynamoUserRepository();
 const userSettingsRepository = new DynamoUserSettingsRepository();
 const storageGateway = new S3StorageGateway();
 const postRepository = new DynamoPostRepository();
+const aiGateway = new GeminiAiGateway(geminiClient);
+
+// Application Services
+const urlProcessor = new UrlProcessor();
 
 // Use Cases
 export const signInUseCase = new SignInUseCase(authGateway, userRepository);
@@ -25,4 +32,4 @@ export const updateProfileUseCase = new UpdateProfileUseCase(userRepository, sto
 export const generateAvatarUploadUrlsUseCase = new GenerateAvatarUploadUrlsUseCase(storageGateway);
 export const getSettingsUseCase = new GetSettingsUseCase(userSettingsRepository);
 export const updateSettingsUseCase = new UpdateSettingsUseCase(userSettingsRepository);
-export const createPostUseCase = new CreatePostUseCase(postRepository);
+export const createPostUseCase = new CreatePostUseCase(postRepository, aiGateway, urlProcessor);

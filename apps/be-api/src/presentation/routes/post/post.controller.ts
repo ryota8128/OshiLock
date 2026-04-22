@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
+import { waitUntil } from '@vercel/functions';
 import type { AuthEnv } from '../../middleware/auth.js';
-import { type CreatePostResponse, createPostRequestSchema } from '@oshilock/shared';
+import { type CreatePostResponse, createPostRequestSchema, OshiId } from '@oshilock/shared';
 import { createPostUseCase } from '../../../composition/dependencies.js';
 import { validate } from '../../middleware/validate.js';
 
@@ -16,6 +17,8 @@ post.post('/', validate({ body: createPostRequestSchema }), async (c) => {
     body,
     sourceUrls,
   });
+
+  waitUntil(createPostUseCase.parseInBackground(result));
 
   const response: CreatePostResponse = { post: result };
   return c.json(response, 201);

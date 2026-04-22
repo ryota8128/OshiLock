@@ -9,6 +9,7 @@ export const parseResultZodSchema = z.object({
   endDate: DateString.schema.nullable(),
   endTime: TimeString.schema.nullable(),
   summary: z.string(),
+  detail: z.string(),
 });
 
 export type AiParseResult = z.output<typeof parseResultZodSchema>;

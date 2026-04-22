@@ -34,6 +34,19 @@ export const parseResponseSchema: Schema = {
       type: Type.STRING,
       description: '1行サマリ（50文字以内）',
     },
+    detail: {
+      type: Type.STRING,
+      description: '情報の詳細。日時・場所・条件・注意事項など、ソースから読み取れる情報をまとめる',
+    },
   },
-  required: ['title', 'category', 'startDate', 'startTime', 'endDate', 'endTime', 'summary'],
+  required: [
+    'title',
+    'category',
+    'startDate',
+    'startTime',
+    'endDate',
+    'endTime',
+    'summary',
+    'detail',
+  ],
 } as const;

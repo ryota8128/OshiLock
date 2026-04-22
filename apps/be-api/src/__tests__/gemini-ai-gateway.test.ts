@@ -23,6 +23,7 @@ describe('GeminiAiGateway', () => {
         endDate: null,
         endTime: null,
         summary: '夏フェス 東京ガーデンシアター 7/20開催',
+        detail: '夏フェス2026が東京ガーデンシアターで7/20に開催。チケット情報は後日発表。',
       });
 
       const client = createMockClient(mockResponse);
@@ -31,8 +32,7 @@ describe('GeminiAiGateway', () => {
       const result = await gateway.parse({
         postBody: '夏フェス2026やるって！7/20 東京ガーデンシアター',
         sourceTexts: [],
-        currentDate: '2026-06-15',
-        currentTime: '10:00',
+        timezone: { iana: 'Asia/Tokyo', offset: 9 } as const,
       });
 
       expect(result.title).toBe('夏フェス2026');
@@ -52,6 +52,7 @@ describe('GeminiAiGateway', () => {
         endDate: '2026-07-20',
         endTime: '21:00',
         summary: 'ライブ 7/20',
+        detail: 'ライブ 7/20開催',
       });
 
       const client = createMockClient(mockResponse);
@@ -60,8 +61,7 @@ describe('GeminiAiGateway', () => {
       const result = await gateway.parse({
         postBody: 'ライブ 7/20',
         sourceTexts: [],
-        currentDate: '2026-06-15',
-        currentTime: '10:00',
+        timezone: { iana: 'Asia/Tokyo', offset: 9 } as const,
       });
 
       expect(result.endDate).toBe('2026-07-20');
@@ -77,6 +77,7 @@ describe('GeminiAiGateway', () => {
         endDate: null,
         endTime: null,
         summary: 'ライブ',
+        detail: 'ライブ',
       });
       const validResponse = JSON.stringify({
         title: 'ライブ',
@@ -86,6 +87,7 @@ describe('GeminiAiGateway', () => {
         endDate: null,
         endTime: null,
         summary: 'ライブ',
+        detail: 'ライブ',
       });
 
       const client = {
@@ -101,8 +103,7 @@ describe('GeminiAiGateway', () => {
       const result = await gateway.parse({
         postBody: 'ライブ',
         sourceTexts: [],
-        currentDate: '2026-06-15',
-        currentTime: '10:00',
+        timezone: { iana: 'Asia/Tokyo', offset: 9 } as const,
       });
 
       expect(result.category).toBe('EVENT');
@@ -118,6 +119,7 @@ describe('GeminiAiGateway', () => {
         endDate: null,
         endTime: null,
         summary: 'ライブ',
+        detail: 'ライブ',
       });
 
       const client = {
@@ -132,8 +134,7 @@ describe('GeminiAiGateway', () => {
         gateway.parse({
           postBody: 'ライブ',
           sourceTexts: [],
-          currentDate: '2026-06-15',
-          currentTime: '10:00',
+          timezone: { iana: 'Asia/Tokyo', offset: 9 } as const,
         }),
       ).rejects.toThrow('AI レスポンスの検証に失敗しました');
       expect(client.models.generateContent).toHaveBeenCalledTimes(2);
@@ -152,8 +153,7 @@ describe('GeminiAiGateway', () => {
         gateway.parse({
           postBody: 'テスト',
           sourceTexts: [],
-          currentDate: '2026-06-15',
-          currentTime: '10:00',
+          timezone: { iana: 'Asia/Tokyo', offset: 9 } as const,
         }),
       ).rejects.toThrow('AI からの応答が空です');
     });

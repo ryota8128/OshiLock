@@ -1,6 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 import { CreatePostUseCase } from './create-post';
 import type { IPostRepository } from '../../../domain/repository/post.repository.interface';
+import type { IAiGateway } from '../../../domain/gateway/ai.gateway.interface';
+import type { UrlProcessor } from '../../services/post/url-processor';
 import type { Post } from '@oshilock/shared';
 import { UserId, OshiId, PostId, UtcIsoString } from '@oshilock/shared';
 
@@ -13,6 +15,13 @@ function createMockPostRepository(overrides: Partial<IPostRepository> = {}): IPo
     ...overrides,
   };
 }
+
+const mockAiGateway: IAiGateway = { parse: vi.fn() };
+const mockUrlProcessor = {
+  extractUrls: vi.fn(),
+  normalizeUrl: vi.fn(),
+  fetchUrlText: vi.fn(),
+} as unknown as UrlProcessor;
 
 const USER_ID = UserId.from('u_testUser123');
 const OSHI_ID = OshiId.from('oshi_test');
@@ -32,7 +41,7 @@ describe('CreatePostUseCase', () => {
     const postRepository = createMockPostRepository({
       create: vi.fn().mockResolvedValue(MOCK_POST),
     });
-    const useCase = new CreatePostUseCase(postRepository);
+    const useCase = new CreatePostUseCase(postRepository, mockAiGateway, mockUrlProcessor);
 
     const result = await useCase.execute({
       userId: USER_ID,
@@ -50,7 +59,7 @@ describe('CreatePostUseCase', () => {
     const postRepository = createMockPostRepository({
       countTodayByUser: vi.fn().mockResolvedValue(3),
     });
-    const useCase = new CreatePostUseCase(postRepository);
+    const useCase = new CreatePostUseCase(postRepository, mockAiGateway, mockUrlProcessor);
 
     await expect(
       useCase.execute({
@@ -70,7 +79,7 @@ describe('CreatePostUseCase', () => {
     const postRepository = createMockPostRepository({
       findLatestByUser: vi.fn().mockResolvedValue(recentPost),
     });
-    const useCase = new CreatePostUseCase(postRepository);
+    const useCase = new CreatePostUseCase(postRepository, mockAiGateway, mockUrlProcessor);
 
     await expect(
       useCase.execute({
@@ -91,7 +100,7 @@ describe('CreatePostUseCase', () => {
       findLatestByUser: vi.fn().mockResolvedValue(oldPost),
       create: vi.fn().mockResolvedValue(MOCK_POST),
     });
-    const useCase = new CreatePostUseCase(postRepository);
+    const useCase = new CreatePostUseCase(postRepository, mockAiGateway, mockUrlProcessor);
 
     const result = await useCase.execute({
       userId: USER_ID,

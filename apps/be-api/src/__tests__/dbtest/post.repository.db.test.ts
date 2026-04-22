@@ -156,7 +156,7 @@ describe('DynamoPostRepository', () => {
   });
 
   describe('updateStatus', () => {
-    it('ステータスを PROCESSED に更新できる', async () => {
+    it('ステータスを SUCCESS に更新できる', async () => {
       const post = await repository.create({
         postId: PostId.generate(),
         oshiId: OSHI_ID,
@@ -165,10 +165,10 @@ describe('DynamoPostRepository', () => {
         sourceUrls: [],
       });
 
-      await repository.updateStatus(OSHI_ID, post.id, 'PROCESSED');
+      await repository.updateStatus(OSHI_ID, post.id, 'SUCCESS');
 
       const result = await PostDb.entity.query.primary({ oshiId: OSHI_ID, postId: post.id }).go();
-      expect(result.data[0]?.status).toBe('PROCESSED');
+      expect(result.data[0]?.status).toBe('SUCCESS');
     });
 
     it('ステータスを FAILED に更新できる', async () => {
