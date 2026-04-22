@@ -9,6 +9,7 @@ import type {
   PaginatedResult,
 } from '@oshilock/shared';
 import type { AiParseResult } from '../value-objects/parse-result-json.js';
+import type { AiMergeResult } from '../value-objects/ai-merge-result.js';
 
 export type CreateEventInfoParams = {
   eventId: EventId;
@@ -17,6 +18,13 @@ export type CreateEventInfoParams = {
   parseResult: AiParseResult;
   sourceUrls: string[];
   sourceReliability: SourceReliability;
+};
+
+export type UpdateFromMergeParams = {
+  oshiId: OshiId;
+  eventId: EventId;
+  mergeResult: AiMergeResult;
+  sourceUrls: string[];
 };
 
 export interface IEventInfoRepository {
@@ -28,4 +36,5 @@ export interface IEventInfoRepository {
     category: EventCategory,
     pagination: PaginationParams,
   ): Promise<PaginatedResult<EventInfo>>;
+  updateFromMerge(params: UpdateFromMergeParams): Promise<EventInfo>;
 }

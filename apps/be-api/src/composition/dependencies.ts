@@ -14,8 +14,11 @@ import { GeminiAiGateway } from '../infrastructure/gemini/ai.gateway.js';
 import { geminiClient } from '../infrastructure/gemini/client.js';
 import { SqsGateway } from '../infrastructure/sqs/sqs.gateway.js';
 import { sqsClient } from '../infrastructure/sqs/client.js';
+import { S3SummaryGateway } from '../infrastructure/s3/summary.gateway.js';
 import { UrlProcessor } from '../application/services/post/url-processor.js';
 import { UrlDuplicateChecker } from '../application/services/post/url-duplicate-checker.js';
+import { PostEligibilityFilter } from '../domain/service/post-eligibility-filter.js';
+import { ToonBuilder } from '../application/services/post/toon-builder.js';
 import { CreatePostUseCase } from '../application/use-cases/post/create-post.js';
 import { ProcessPostUseCase } from '../application/use-cases/post/process-post.js';
 
@@ -28,10 +31,13 @@ const postRepository = new DynamoPostRepository();
 const eventInfoRepository = new DynamoEventInfoRepository();
 const aiGateway = new GeminiAiGateway(geminiClient);
 const sqsGateway = new SqsGateway(sqsClient);
+const summaryGateway = new S3SummaryGateway();
 
 // Application Services
 const urlProcessor = new UrlProcessor();
 const urlDuplicateChecker = new UrlDuplicateChecker(eventInfoRepository);
+const eligibilityFilter = new PostEligibilityFilter();
+const toonBuilder = new ToonBuilder();
 
 // Use Cases
 export const signInUseCase = new SignInUseCase(authGateway, userRepository);
@@ -45,9 +51,14 @@ export const createPostUseCase = new CreatePostUseCase(
   aiGateway,
   urlProcessor,
   sqsGateway,
+  eligibilityFilter,
 );
 export const processPostUseCase = new ProcessPostUseCase(
   postRepository,
   eventInfoRepository,
+  aiGateway,
+  summaryGateway,
   urlDuplicateChecker,
+  eligibilityFilter,
+  toonBuilder,
 );
