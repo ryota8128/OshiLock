@@ -3,7 +3,7 @@ import { EventId, POST_STATUS, SOURCE_RELIABILITY } from '@oshilock/shared';
 import type { IPostRepository } from '../../../domain/repository/post.repository.interface.js';
 import type { IEventInfoRepository } from '../../../domain/repository/event-info.repository.interface.js';
 import { ParseResultJson } from '../../../domain/value-objects/parse-result-json.js';
-import type { DuplicateChecker } from '../../services/post/duplicate-checker.js';
+import type { UrlDuplicateChecker } from '../../services/post/url-duplicate-checker.js';
 import { NotFoundException } from '../../../domain/errors/not-found.exception.js';
 import { OshiLockBeException } from '../../../domain/errors/oshilock-be.exception.js';
 
@@ -11,7 +11,7 @@ export class ProcessPostUseCase {
   constructor(
     private readonly postRepository: IPostRepository,
     private readonly eventInfoRepository: IEventInfoRepository,
-    private readonly duplicateChecker: DuplicateChecker,
+    private readonly urlDuplicateChecker: UrlDuplicateChecker,
   ) {}
 
   async execute(oshiId: OshiId, postId: PostId): Promise<void> {
@@ -35,7 +35,7 @@ export class ProcessPostUseCase {
       const sourceReliability =
         post.sourceUrls.length > 0 ? SOURCE_RELIABILITY.SOURCED : SOURCE_RELIABILITY.UNVERIFIED;
 
-      const isDuplicate = await this.duplicateChecker.isDuplicate(oshiId, post.sourceUrls);
+      const isDuplicate = await this.urlDuplicateChecker.isDuplicate(oshiId, post.sourceUrls);
 
       if (!isDuplicate) {
         await this.eventInfoRepository.create({

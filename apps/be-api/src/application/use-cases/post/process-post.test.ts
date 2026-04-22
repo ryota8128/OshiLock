@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { ProcessPostUseCase } from './process-post.js';
 import type { IPostRepository } from '../../../domain/repository/post.repository.interface.js';
 import type { IEventInfoRepository } from '../../../domain/repository/event-info.repository.interface.js';
-import type { UrlDuplicateChecker } from '../../services/post/duplicate-checker.js';
+import type { UrlDuplicateChecker } from '../../services/post/url-duplicate-checker.js';
 import type { Post } from '@oshilock/shared';
 import {
   UserId,
