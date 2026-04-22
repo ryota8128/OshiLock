@@ -8,7 +8,7 @@ import type {
   PaginationParams,
   PaginatedResult,
 } from '@oshilock/shared';
-import type { AiParseResult } from '../gateway/ai-parse-result.js';
+import type { AiParseResult } from '../value-objects/parse-result-json.js';
 
 export type CreateEventInfoParams = {
   eventId: EventId;

@@ -1,5 +1,5 @@
 import type { Timezone } from '@oshilock/shared';
-import type { AiParseResult } from './ai-parse-result.js';
+import type { AiParseResult } from '../value-objects/parse-result-json.js';
 
 export type AiParseInput = {
   postBody: string;
