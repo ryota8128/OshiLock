@@ -36,6 +36,8 @@ export { POST_STATUS } from './domain/enum/post-status';
 export { LLM_PROVIDER } from './domain/enum/llm-provider';
 export type { LlmProvider } from './domain/enum/llm-provider';
 export type { PostStatus } from './domain/enum/post-status';
+export { MATCH_TYPE } from './domain/enum/match-type';
+export type { MatchType } from './domain/enum/match-type';
 export type { PaginationParams, PaginatedResult } from './api/pagination';
 export { signInRequestSchema } from './api/request/auth.request';
 export type { SignInRequest } from './api/request/auth.request';
