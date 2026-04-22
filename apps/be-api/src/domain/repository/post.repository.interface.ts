@@ -10,6 +10,7 @@ export type CreatePostParams = {
 
 export interface IPostRepository {
   create(params: CreatePostParams): Promise<Post>;
+  findById(oshiId: OshiId, postId: PostId): Promise<Post | null>;
   countTodayByUser(userId: UserId, oshiId: OshiId): Promise<number>;
   findLatestByUser(userId: UserId): Promise<Post | null>;
   updateStatus(oshiId: OshiId, postId: PostId, status: PostStatus): Promise<void>;

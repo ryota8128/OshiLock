@@ -9,5 +9,6 @@ export interface Post {
   body: string;
   sourceUrls: string[];
   status: PostStatus;
+  parseResult: string | null;
   createdAt: UtcIsoString;
 }

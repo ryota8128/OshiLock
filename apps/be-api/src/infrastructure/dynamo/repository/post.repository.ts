@@ -34,6 +34,12 @@ export class DynamoPostRepository implements IPostRepository {
     return PostDb.toDomain(result.data);
   }
 
+  async findById(oshiId: OshiId, postId: PostId): Promise<Post | null> {
+    const result = await PostDb.entity.query.primary({ oshiId, postId }).go();
+    const record = result.data[0];
+    return record ? PostDb.toDomain(record) : null;
+  }
+
   async countTodayByUser(userId: UserId, oshiId: OshiId): Promise<number> {
     const todayStart = DateString.now(TIMEZONES.ASIA_TOKYO) + 'T00:00:00.000Z';
 

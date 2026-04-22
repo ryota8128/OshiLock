@@ -59,6 +59,7 @@ export namespace PostDb {
       body: record.body,
       sourceUrls: record.sourceUrls,
       status: record.status,
+      parseResult: record.parseResult ?? null,
       createdAt: UtcIsoString.from(record.createdAt),
     };
   }
