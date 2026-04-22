@@ -6,6 +6,7 @@ import type { ISqsGateway } from '../../../domain/gateway/sqs.gateway.interface.
 import { PostCreationPolicy } from '../../../domain/service/post-creation-policy.js';
 import { ParseResultJson } from '../../../domain/value-objects/parse-result-json.js';
 import type { UrlProcessor } from '../../services/post/url-processor.js';
+import type { PostEligibilityFilter } from '../../../domain/service/post-eligibility-filter.js';
 
 type CreatePostInput = {
   userId: UserId;
@@ -22,6 +23,7 @@ export class CreatePostUseCase {
     private readonly aiGateway: IAiGateway,
     private readonly urlProcessor: UrlProcessor,
     private readonly sqsGateway: ISqsGateway,
+    private readonly eligibilityFilter: PostEligibilityFilter,
   ) {
     this.policy = new PostCreationPolicy(postRepository);
   }
@@ -57,6 +59,11 @@ export class CreatePostUseCase {
         post.id,
         ParseResultJson.stringify(parseResult),
       );
+
+      if (!this.eligibilityFilter.shouldProcess(parseResult)) {
+        await this.postRepository.updateStatus(post.oshiId, post.id, POST_STATUS.SKIPPED);
+        return;
+      }
 
       await this.sqsGateway.sendPostProcessing(post.oshiId, post.id);
     } catch (e) {

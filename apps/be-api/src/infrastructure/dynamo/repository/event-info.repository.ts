@@ -9,6 +9,7 @@ import type {
 import { UtcIsoString } from '@oshilock/shared';
 import type {
   CreateEventInfoParams,
+  UpdateFromMergeParams,
   IEventInfoRepository,
 } from '../../../domain/repository/event-info.repository.interface.js';
 import { EventInfoDb } from '../entity/event-info.db.js';
@@ -82,5 +83,27 @@ export class DynamoEventInfoRepository implements IEventInfoRepository {
       items: result.data.map(EventInfoDb.toDomain),
       cursor: result.cursor ?? null,
     };
+  }
+
+  async updateFromMerge(params: UpdateFromMergeParams): Promise<EventInfo> {
+    const now = UtcIsoString.now();
+
+    const result = await EventInfoDb.entity
+      .patch({ oshiId: params.oshiId, eventId: params.eventId })
+      .set({
+        title: params.mergeResult.title,
+        category: params.mergeResult.category,
+        scheduleStartDate: params.mergeResult.startDate ?? undefined,
+        scheduleStartTime: params.mergeResult.startTime ?? undefined,
+        scheduleEndDate: params.mergeResult.endDate ?? undefined,
+        scheduleEndTime: params.mergeResult.endTime ?? undefined,
+        summary: params.mergeResult.summary,
+        detail: params.mergeResult.detail,
+        sourceUrls: params.sourceUrls,
+        updatedAt: now,
+      })
+      .go({ response: 'all_new' });
+
+    return EventInfoDb.toDomain(result.data);
   }
 }

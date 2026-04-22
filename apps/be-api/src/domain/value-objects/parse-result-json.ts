@@ -1,21 +1,11 @@
 import { z } from 'zod';
-import { EVENT_CATEGORY, DateString, TimeString } from '@oshilock/shared';
 import { OshiLockBeException } from '../errors/oshilock-be.exception.js';
+import { aiEventBaseSchema } from './ai-event-schema.js';
 
 export const ACTIVE_PARSE_RESULT_VERSION = 1 as const;
 
 const schemas = {
-  1: z.object({
-    version: z.literal(1),
-    title: z.string(),
-    category: z.nativeEnum(EVENT_CATEGORY),
-    startDate: DateString.schema.nullable(),
-    startTime: TimeString.schema.nullable(),
-    endDate: DateString.schema.nullable(),
-    endTime: TimeString.schema.nullable(),
-    summary: z.string(),
-    detail: z.string(),
-  }),
+  1: aiEventBaseSchema.extend({ version: z.literal(1) }),
 } as const;
 
 export const parseResultZodSchema = schemas[ACTIVE_PARSE_RESULT_VERSION];
