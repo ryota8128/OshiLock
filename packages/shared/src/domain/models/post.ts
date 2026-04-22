@@ -1,4 +1,5 @@
 import { OshiId, PostId, UserId } from '../value-objects/branded';
+import { MatchType } from '../enum/match-type';
 import { PostStatus } from '../enum/post-status';
 import { UtcIsoString } from '../value-objects/utc-iso-string';
 
@@ -10,5 +11,6 @@ export interface Post {
   sourceUrls: string[];
   status: PostStatus;
   parseResult: string | null;
+  matchType: MatchType | null;
   createdAt: UtcIsoString;
 }

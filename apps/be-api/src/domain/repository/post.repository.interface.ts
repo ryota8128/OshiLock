@@ -1,4 +1,4 @@
-import type { Post, UserId, OshiId, PostId, PostStatus } from '@oshilock/shared';
+import type { Post, UserId, OshiId, PostId, PostStatus, MatchType } from '@oshilock/shared';
 
 export type CreatePostParams = {
   postId: PostId;
@@ -15,4 +15,5 @@ export interface IPostRepository {
   findLatestByUser(userId: UserId): Promise<Post | null>;
   updateStatus(oshiId: OshiId, postId: PostId, status: PostStatus): Promise<void>;
   saveParseResult(oshiId: OshiId, postId: PostId, parseResultJson: string): Promise<void>;
+  completeProcessing(oshiId: OshiId, postId: PostId, matchType: MatchType): Promise<void>;
 }

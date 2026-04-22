@@ -1,5 +1,5 @@
 import type { Post } from '@oshilock/shared';
-import { OshiId, POST_STATUS, PostId, UserId, UtcIsoString } from '@oshilock/shared';
+import { MATCH_TYPE, OshiId, POST_STATUS, PostId, UserId, UtcIsoString } from '@oshilock/shared';
 import { Entity, type EntityItem } from 'electrodb';
 import { dynamoClient, TABLE_NAME } from '../client.js';
 
@@ -22,6 +22,7 @@ const _entity = new Entity(
         default: POST_STATUS.PENDING,
       },
       parseResult: { type: 'string' },
+      matchType: { type: Object.values(MATCH_TYPE) },
       createdAt: { type: 'string', required: true },
     },
     indexes: {
@@ -60,6 +61,7 @@ export namespace PostDb {
       sourceUrls: record.sourceUrls,
       status: record.status,
       parseResult: record.parseResult ?? null,
+      matchType: record.matchType ?? null,
       createdAt: UtcIsoString.from(record.createdAt),
     };
   }

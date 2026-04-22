@@ -49,7 +49,7 @@ export class ProcessPostUseCase {
       // 1. URL 重複チェック（コードベース、高速）
       const isUrlDuplicate = await this.urlDuplicateChecker.isDuplicate(oshiId, post.sourceUrls);
       if (isUrlDuplicate) {
-        await this.postRepository.updateStatus(oshiId, postId, POST_STATUS.SUCCESS);
+        await this.postRepository.completeProcessing(oshiId, postId, MATCH_TYPE.DUPLICATE);
         return;
       }
 
@@ -64,7 +64,7 @@ export class ProcessPostUseCase {
 
       // 4a. DUPLICATE: スキップ
       if (duplicateResult.matchType === MATCH_TYPE.DUPLICATE) {
-        await this.postRepository.updateStatus(oshiId, postId, POST_STATUS.SUCCESS);
+        await this.postRepository.completeProcessing(oshiId, postId, MATCH_TYPE.DUPLICATE);
         return;
       }
 
@@ -79,7 +79,7 @@ export class ProcessPostUseCase {
           sourceReliability,
         });
         await this.toonService.updateToon(oshiId, rawToon, newEvent);
-        await this.postRepository.updateStatus(oshiId, postId, POST_STATUS.SUCCESS);
+        await this.postRepository.completeProcessing(oshiId, postId, MATCH_TYPE.NEW);
         return;
       }
 
@@ -123,7 +123,7 @@ export class ProcessPostUseCase {
         sourceUrls: mergedSourceUrls,
       });
       await this.toonService.updateToon(oshiId, rawToon, updatedEvent);
-      await this.postRepository.updateStatus(oshiId, postId, POST_STATUS.SUCCESS);
+      await this.postRepository.completeProcessing(oshiId, postId, MATCH_TYPE.UPDATE);
     } catch (e) {
       console.error('Post processing failed:', e);
       await this.postRepository.updateStatus(oshiId, postId, POST_STATUS.FAILED);

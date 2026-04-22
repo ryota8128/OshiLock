@@ -4,6 +4,7 @@ import {
   type OshiId,
   type PostId,
   type PostStatus,
+  type MatchType,
   POST_STATUS,
   UtcIsoString,
   DateString,
@@ -71,6 +72,14 @@ export class DynamoPostRepository implements IPostRepository {
       .patch({ oshiId, postId })
       .set({ parseResult: parseResultJson, status: POST_STATUS.PARSED })
       .where(({ status }, { eq }) => eq(status, POST_STATUS.PARSING as string))
+      .go();
+  }
+
+  async completeProcessing(oshiId: OshiId, postId: PostId, matchType: MatchType): Promise<void> {
+    await PostDb.entity
+      .patch({ oshiId, postId })
+      .set({ status: POST_STATUS.SUCCESS, matchType })
+      .where(({ status }, { eq }) => eq(status, POST_STATUS.PROCESSING as string))
       .go();
   }
 }
