@@ -16,6 +16,16 @@ export namespace DateString {
     return schema.parse(value);
   }
 
+  export function fromIsoDateString(isoString: string, timezone: Timezone): DateString {
+    const formatter = new Intl.DateTimeFormat('en-CA', {
+      timeZone: timezone.iana,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    });
+    return formatter.format(new Date(isoString)) as DateString;
+  }
+
   export function addDays(value: DateString, days: number): DateString {
     const date = new Date(value);
     date.setDate(date.getDate() + days);

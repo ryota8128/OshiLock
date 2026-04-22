@@ -10,7 +10,7 @@ export interface EventInfo {
   oshiId: OshiId;
   title: string;
   schedule: {
-    startDate: DateString;
+    startDate: DateString | null;
     startTime: TimeString | null;
     endDate: DateString | null;
     endTime: TimeString | null;
@@ -24,6 +24,7 @@ export interface EventInfo {
   commentCount: number;
   savedCount: number;
   tasukaruCount: number;
+  sortDate: UtcIsoString;
   createdAt: UtcIsoString;
   updatedAt: UtcIsoString;
 }
