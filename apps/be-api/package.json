@@ -5,8 +5,9 @@
     "dev": "tsx watch --env-file=.env src/index.ts",
     "lint": "tsc --noEmit",
     "test": "pnpm run test:all",
-    "test:ut": "vitest run --exclude '**/*.db.test.ts'",
+    "test:ut": "vitest run --exclude '**/*.db.test.ts' --exclude '**/*.ai.test.ts'",
     "test:db": "vitest run --config vitest.db.config.ts",
+    "test:ai": "vitest run --include '**/*.ai.test.ts'",
     "test:all": "pnpm run test:ut && pnpm run test:db"
   },
   "dependencies": {
