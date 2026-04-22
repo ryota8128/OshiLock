@@ -16,6 +16,20 @@ export namespace DateString {
     return schema.parse(value);
   }
 
+  export function addDays(value: DateString, days: number): DateString {
+    const date = new Date(value);
+    date.setDate(date.getDate() + days);
+    return from(date.toISOString().slice(0, 10));
+  }
+
+  export function isBefore(a: DateString, b: DateString): boolean {
+    return a < b;
+  }
+
+  export function isAfter(a: DateString, b: DateString): boolean {
+    return a > b;
+  }
+
   export function now(timezone: Timezone): DateString {
     const formatter = new Intl.DateTimeFormat('en-CA', {
       timeZone: timezone.iana,
