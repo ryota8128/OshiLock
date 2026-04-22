@@ -26,36 +26,24 @@ describe('extractUrls', () => {
     const result = processor.extractUrls('', sourceUrls);
     expect(result).toHaveLength(3);
   });
-});
 
-describe('normalizeUrl', () => {
-  it('http を https に変換', () => {
-    expect(processor.normalizeUrl('http://example.com/page')).toBe('https://example.com/page');
+  it('URL を正規化して返す（http→https, www除去, トラッキングパラメータ除去）', () => {
+    const result = processor.extractUrls('', [
+      'http://www.example.com/page?utm_source=twitter&id=123',
+    ]);
+    expect(result).toEqual(['https://example.com/page?id=123']);
   });
 
-  it('www. を除去', () => {
-    expect(processor.normalizeUrl('https://www.example.com/page')).toBe('https://example.com/page');
-  });
-
-  it('末尾スラッシュを除去', () => {
-    expect(processor.normalizeUrl('https://example.com/page/')).toBe('https://example.com/page');
-  });
-
-  it('トラッキングパラメータを除去', () => {
-    expect(processor.normalizeUrl('https://example.com/page?utm_source=twitter&id=123')).toBe(
-      'https://example.com/page?id=123',
-    );
-  });
-
-  it('フラグメントを除去', () => {
-    expect(processor.normalizeUrl('https://example.com/page#section')).toBe(
+  it('正規化後に重複する URL は1件にまとめる', () => {
+    const result = processor.extractUrls('', [
       'https://example.com/page',
-    );
+      'https://www.example.com/page/',
+    ]);
+    expect(result).toEqual(['https://example.com/page']);
   });
 
-  it('意味のあるクエリパラメータは保持', () => {
-    expect(processor.normalizeUrl('https://example.com/page?id=123&tab=info')).toBe(
-      'https://example.com/page?id=123&tab=info',
-    );
+  it('フラグメントを除去する', () => {
+    const result = processor.extractUrls('', ['https://example.com/page#section']);
+    expect(result).toEqual(['https://example.com/page']);
   });
 });

@@ -9,6 +9,7 @@ import { UserId, OshiId, PostId, UtcIsoString } from '@oshilock/shared';
 function createMockPostRepository(overrides: Partial<IPostRepository> = {}): IPostRepository {
   return {
     create: vi.fn(),
+    findById: vi.fn(),
     countTodayByUser: vi.fn().mockResolvedValue(0),
     findLatestByUser: vi.fn().mockResolvedValue(null),
     updateStatus: vi.fn(),
@@ -34,6 +35,7 @@ const MOCK_POST: Post = {
   body: 'テスト投稿',
   sourceUrls: [],
   status: 'PENDING',
+  parseResult: null,
   createdAt: UtcIsoString.from('2026-04-21T00:00:00.000Z'),
 };
 

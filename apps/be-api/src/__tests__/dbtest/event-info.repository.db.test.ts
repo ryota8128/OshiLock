@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { EventId, OshiId, UserId, SOURCE_RELIABILITY, EVENT_CATEGORY } from '@oshilock/shared';
-import type { AiParseResult } from '../../domain/gateway/ai-parse-result.js';
-import { ACTIVE_PARSE_RESULT_VERSION } from '../../domain/gateway/ai-parse-result.js';
+import type { AiParseResult } from '../../domain/value-objects/parse-result-json.js';
+import { ACTIVE_PARSE_RESULT_VERSION } from '../../domain/value-objects/parse-result-json.js';
 import { DynamoEventInfoRepository } from '../../infrastructure/dynamo/repository/event-info.repository.js';
 import { createTestDocumentClient } from './helpers/dynamodb-client.js';
 import { cleanupTable } from './helpers/cleanup.js';

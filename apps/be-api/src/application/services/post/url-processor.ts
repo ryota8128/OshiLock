@@ -22,14 +22,14 @@ export class UrlProcessor {
     const result = new Set<string>();
 
     for (const url of [...sourceUrls, ...fromBody]) {
-      result.add(url);
+      result.add(this.normalizeUrl(url));
       if (result.size >= 3) break;
     }
 
     return [...result];
   }
 
-  normalizeUrl(rawUrl: string): string {
+  private normalizeUrl(rawUrl: string): string {
     const url = new URL(rawUrl);
 
     url.protocol = 'https:';
