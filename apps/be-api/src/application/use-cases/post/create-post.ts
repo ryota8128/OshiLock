@@ -2,6 +2,7 @@ import type { OshiId, Post, UserId } from '@oshilock/shared';
 import { PostId, TIMEZONES, POST_STATUS } from '@oshilock/shared';
 import type { IPostRepository } from '../../../domain/repository/post.repository.interface.js';
 import type { IAiGateway } from '../../../domain/gateway/ai.gateway.interface.js';
+import type { ISqsGateway } from '../../../domain/gateway/sqs.gateway.interface.js';
 import { PostCreationPolicy } from '../../../domain/service/post-creation-policy.js';
 import { ParseResultJson } from '../../../domain/value-objects/parse-result-json.js';
 import type { UrlProcessor } from '../../services/post/url-processor.js';
@@ -20,6 +21,7 @@ export class CreatePostUseCase {
     private readonly postRepository: IPostRepository,
     private readonly aiGateway: IAiGateway,
     private readonly urlProcessor: UrlProcessor,
+    private readonly sqsGateway: ISqsGateway,
   ) {
     this.policy = new PostCreationPolicy(postRepository);
   }
@@ -56,7 +58,7 @@ export class CreatePostUseCase {
         ParseResultJson.stringify(parseResult),
       );
 
-      // TODO: SQS に postId 送信（A-3 で実装）
+      await this.sqsGateway.sendPostProcessing(post.oshiId, post.id);
     } catch (e) {
       console.error('Post parse failed:', e);
       await this.postRepository.updateStatus(post.oshiId, post.id, POST_STATUS.FAILED);

@@ -3,6 +3,7 @@ import { Hono } from 'hono';
 import { env } from './config/env.js';
 import { errorHandler } from './presentation/middleware/error-handler.js';
 import { authMiddleware, type AuthEnv } from './presentation/middleware/auth.js';
+import { internalAuthMiddleware } from './presentation/middleware/internal-auth.js';
 import { auth } from './presentation/routes/auth/auth.controller.js';
 import { health } from './presentation/routes/health.controller.js';
 import { user } from './presentation/routes/user/user.controller.js';
@@ -14,8 +15,9 @@ const publicApp = new Hono();
 publicApp.route('/health', health);
 publicApp.route('/auth', auth);
 
-// 内部 API（認証なし、MVP）
+// 内部 API
 const internalApp = new Hono();
+internalApp.use('*', internalAuthMiddleware);
 internalApp.route('/internal', internal);
 
 // 認証必須のルート
