@@ -60,6 +60,7 @@ describe('DynamoEventInfoRepository', () => {
       expect(eventInfo.commentCount).toBe(0);
       expect(eventInfo.savedCount).toBe(0);
       expect(eventInfo.tasukaruCount).toBe(0);
+      expect(eventInfo.sortDate).toBe('2026-07-20');
     });
   });
 

@@ -28,6 +28,7 @@ const MOCK_EVENT: EventInfo = {
   commentCount: 0,
   savedCount: 0,
   tasukaruCount: 0,
+  sortDate: UtcIsoString.from('2026-07-20T05:00:00.000Z'),
   createdAt: UtcIsoString.from('2026-04-22T00:00:00.000Z'),
   updatedAt: UtcIsoString.from('2026-04-22T00:00:00.000Z'),
 };
