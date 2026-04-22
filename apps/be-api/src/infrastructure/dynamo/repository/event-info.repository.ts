@@ -6,7 +6,7 @@ import type {
   PaginationParams,
   PaginatedResult,
 } from '@oshilock/shared';
-import { UtcIsoString } from '@oshilock/shared';
+import { DateString, TIMEZONES, UtcIsoString } from '@oshilock/shared';
 import type {
   CreateEventInfoParams,
   UpdateFromMergeParams,
@@ -17,6 +17,14 @@ import { EventInfoDb } from '../entity/event-info.db.js';
 export class DynamoEventInfoRepository implements IEventInfoRepository {
   async create(params: CreateEventInfoParams): Promise<EventInfo> {
     const now = UtcIsoString.now();
+
+    const sortDate = params.parseResult.startDate
+      ? UtcIsoString.fromDateAndTime(
+          params.parseResult.startDate,
+          params.parseResult.startTime,
+          TIMEZONES.ASIA_TOKYO,
+        )
+      : now;
 
     const result = await EventInfoDb.entity
       .create({
@@ -32,6 +40,7 @@ export class DynamoEventInfoRepository implements IEventInfoRepository {
         category: params.parseResult.category,
         sourceReliability: params.sourceReliability,
         sourceUrls: params.sourceUrls,
+        sortDate,
         fastestPosterIds: [params.posterId, '', ''],
         commentCount: 0,
         savedCount: 0,
@@ -87,7 +96,6 @@ export class DynamoEventInfoRepository implements IEventInfoRepository {
 
   async updateFromMerge(params: UpdateFromMergeParams): Promise<EventInfo> {
     const now = UtcIsoString.now();
-
     const result = await EventInfoDb.entity
       .patch({ oshiId: params.oshiId, eventId: params.eventId })
       .set({
@@ -99,6 +107,7 @@ export class DynamoEventInfoRepository implements IEventInfoRepository {
         scheduleEndTime: params.mergeResult.endTime ?? undefined,
         summary: params.mergeResult.summary,
         detail: params.mergeResult.detail,
+        sortDate: params.sortDate,
         sourceUrls: params.sourceUrls,
         updatedAt: now,
       })

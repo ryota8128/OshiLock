@@ -101,7 +101,7 @@ export namespace EventInfoDb {
         record.fastestPosterIds[1] ? UserId.from(record.fastestPosterIds[1]) : null,
         record.fastestPosterIds[2] ? UserId.from(record.fastestPosterIds[2]) : null,
       ],
-      sortDate: DateString.from(record.sortDate),
+      sortDate: UtcIsoString.from(record.sortDate),
       commentCount: record.commentCount,
       savedCount: record.savedCount,
       tasukaruCount: record.tasukaruCount,

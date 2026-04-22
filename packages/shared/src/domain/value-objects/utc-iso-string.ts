@@ -21,6 +21,19 @@ export namespace UtcIsoString {
     return new Date().toISOString() as UtcIsoString;
   }
 
+  /** ローカル日時（date + time + timezone）から UTC ISO 文字列に変換 */
+  export function fromDateAndTime(
+    date: DateString,
+    time: TimeString | null,
+    timezone: Timezone,
+  ): UtcIsoString {
+    const timeStr = time ?? '00:00';
+    // offset 時間で直接変換（timezone.offset は UTC からの時差）
+    const localMs = new Date(`${date}T${timeStr}:00.000Z`).getTime();
+    const utcMs = localMs - timezone.offset;
+    return from(new Date(utcMs).toISOString());
+  }
+
   export function afterMs(ms: number): UtcIsoString {
     return UtcIsoString.from(new Date(Date.now() + ms).toISOString());
   }
