@@ -1,7 +1,7 @@
 import { encode, decode } from '@toon-format/toon';
-import type { DateString, EventInfo, TimeString } from '@oshilock/shared';
+import type { DateString, EventInfo, TimeString, UtcIsoString } from '@oshilock/shared';
 
-type ToonEntry = {
+export type ToonEntry = {
   eventId: string;
   category: string;
   startDate: DateString | null;
@@ -10,6 +10,7 @@ type ToonEntry = {
   endTime: TimeString | null;
   title: string;
   summary: string;
+  sortDate: UtcIsoString;
 };
 
 export class ToonBuilder {
@@ -23,11 +24,14 @@ export class ToonBuilder {
       endTime: event.schedule.endTime,
       title: event.title,
       summary: event.summary,
+      sortDate: event.sortDate,
     };
   }
 
   entriesToToon(entries: ToonEntry[]): string {
-    return encode(entries);
+    // sortDate は内部フィルタ用。LLM には渡さない
+    const forLlm = entries.map(({ sortDate, ...rest }) => rest);
+    return encode(forLlm);
   }
 
   parseToon(toon: string): ToonEntry[] {

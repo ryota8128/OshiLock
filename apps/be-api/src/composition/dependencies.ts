@@ -19,6 +19,7 @@ import { UrlProcessor } from '../application/services/post/url-processor.js';
 import { UrlDuplicateChecker } from '../application/services/post/url-duplicate-checker.js';
 import { PostEligibilityFilter } from '../domain/service/post-eligibility-filter.js';
 import { ToonBuilder } from '../application/services/post/toon-builder.js';
+import { ToonService } from '../application/services/post/toon-service.js';
 import { CreatePostUseCase } from '../application/use-cases/post/create-post.js';
 import { ProcessPostUseCase } from '../application/use-cases/post/process-post.js';
 
@@ -38,6 +39,7 @@ const urlProcessor = new UrlProcessor();
 const urlDuplicateChecker = new UrlDuplicateChecker(eventInfoRepository);
 const eligibilityFilter = new PostEligibilityFilter();
 const toonBuilder = new ToonBuilder();
+const toonService = new ToonService(summaryGateway, eligibilityFilter, toonBuilder);
 
 // Use Cases
 export const signInUseCase = new SignInUseCase(authGateway, userRepository);
@@ -57,8 +59,6 @@ export const processPostUseCase = new ProcessPostUseCase(
   postRepository,
   eventInfoRepository,
   aiGateway,
-  summaryGateway,
   urlDuplicateChecker,
-  eligibilityFilter,
-  toonBuilder,
+  toonService,
 );

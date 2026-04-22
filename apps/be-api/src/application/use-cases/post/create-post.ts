@@ -1,5 +1,5 @@
 import type { OshiId, Post, UserId } from '@oshilock/shared';
-import { PostId, TIMEZONES, POST_STATUS } from '@oshilock/shared';
+import { PostId, UtcIsoString, TIMEZONES, POST_STATUS } from '@oshilock/shared';
 import type { IPostRepository } from '../../../domain/repository/post.repository.interface.js';
 import type { IAiGateway } from '../../../domain/gateway/ai.gateway.interface.js';
 import type { ISqsGateway } from '../../../domain/gateway/sqs.gateway.interface.js';
@@ -60,7 +60,14 @@ export class CreatePostUseCase {
         ParseResultJson.stringify(parseResult),
       );
 
-      if (!this.eligibilityFilter.shouldProcess(parseResult)) {
+      const sortDate = parseResult.startDate
+        ? UtcIsoString.fromDateAndTime(
+            parseResult.startDate,
+            parseResult.startTime,
+            TIMEZONES.ASIA_TOKYO,
+          )
+        : post.createdAt;
+      if (!this.eligibilityFilter.shouldProcess({ sortDate })) {
         await this.postRepository.updateStatus(post.oshiId, post.id, POST_STATUS.SKIPPED);
         return;
       }

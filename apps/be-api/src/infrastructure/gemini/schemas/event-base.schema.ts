@@ -13,7 +13,8 @@ export const eventBaseResponseSchema: Schema = {
     },
     startDate: {
       type: Type.STRING,
-      description: '開始日（YYYY-MM-DD）。不明な場合は現在日時の日付を入れる',
+      nullable: true,
+      description: '開始日（YYYY-MM-DD）。不明な場合は null',
     },
     startTime: {
       type: Type.STRING,

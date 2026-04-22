@@ -7,6 +7,7 @@ import type {
   SourceReliability,
   PaginationParams,
   PaginatedResult,
+  UtcIsoString,
 } from '@oshilock/shared';
 import type { AiParseResult } from '../value-objects/parse-result-json.js';
 import type { AiMergeResult } from '../value-objects/ai-merge-result.js';
@@ -24,6 +25,7 @@ export type UpdateFromMergeParams = {
   oshiId: OshiId;
   eventId: EventId;
   mergeResult: AiMergeResult;
+  sortDate: UtcIsoString;
   sourceUrls: string[];
 };
 
