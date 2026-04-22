@@ -70,6 +70,28 @@ module "storage" {
   cloudfront_public_key_pem = file("../../keys/cloudfront-dev-public.pem")
 }
 
+# 投稿処理キュー（FIFO）
+# MessageGroupId = oshiId で推しごとに直列、異なる推しは並列
+#
+# 環境別設定:
+#   dev:  visibility_timeout=300, max_receive_count=1（リトライなし）
+#   stg:  visibility_timeout=300, max_receive_count=3
+#   prod: visibility_timeout=300, max_receive_count=3, message_retention=1209600（14日）
+module "sqs_post_processing" {
+  source = "../../modules/sqs"
+
+  queue_name                 = "oshilock-post-processing-${local.env}"
+  env                        = local.env
+  fifo                       = true
+  visibility_timeout_seconds = 300
+  message_retention_seconds  = 345600 // 4日
+  max_receive_count          = 1
+}
+
+output "sqs_post_processing_queue_url" {
+  value = module.sqs_post_processing.queue_url
+}
+
 output "cloudfront_domain_name" {
   value = module.storage.cloudfront_domain_name
 }

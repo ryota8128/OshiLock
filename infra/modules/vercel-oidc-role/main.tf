@@ -80,6 +80,24 @@ data "aws_iam_policy_document" "permissions" {
       "${var.s3_bucket_arn}/*",
     ]
   }
+
+  # SQS
+  dynamic "statement" {
+    for_each = length(var.sqs_queue_arns) > 0 ? [1] : []
+    content {
+      sid    = "SQSAccess"
+      effect = "Allow"
+
+      actions = [
+        "sqs:SendMessage",
+        "sqs:ReceiveMessage",
+        "sqs:DeleteMessage",
+        "sqs:GetQueueAttributes",
+      ]
+
+      resources = var.sqs_queue_arns
+    }
+  }
 }
 
 resource "aws_iam_policy" "this" {

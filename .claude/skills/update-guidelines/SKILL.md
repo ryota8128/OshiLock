@@ -71,13 +71,26 @@ _docs/coding-guidlines/
 - 新しいカテゴリの場合は適切なディレクトリに新規ファイルを作成する
 - ファイル全体の整合性を確認する
 
-### 5. implement スキルへの反映
+### 5. implement スキル群への反映
 
-**規約ファイルを追加・削除・リネームした場合は、必ず `.claude/skills/implement/SKILL.md` の「規約ファイルと読み込みタイミング」テーブルも更新すること。**
+**規約ファイルを追加・削除・リネームした場合は、対応する implement スキルも更新すること。**
 
-- 新規ファイル追加 → テーブルに行を追加（ファイル名 + 読み込みタイミングの説明）
-- ファイル削除 → テーブルから行を削除
-- ファイルリネーム → テーブルのパスを更新
+スキル一覧（`.claude/skills/` 配下）:
+
+| スキル | 参照する規約 |
+|---|---|
+| `implement/` | `overview.md`, `typescript.md`（入口、常に読む） |
+| `implement-be-api/` | `be/architecture.md`, `be/api-contracts.md`, `be/di.md`, `be/env.md` |
+| `implement-be-db/` | `be/database.md`, `be/architecture.md`, `be/testing.md` |
+| `implement-be-error/` | `be/error-handling.md` |
+| `implement-mobile-screen/` | `mobile/navigation.md`, `mobile/layout.md`, `mobile/auth.md` |
+| `implement-mobile-data/` | `mobile/data-fetching.md` |
+| `implement-shared/` | `shared/package.md`, `shared/branded-types.md` |
+
+更新内容:
+- 新規規約ファイル追加 → 該当スキルの「読み込むドキュメント」に追加
+- 規約ファイル削除 → 該当スキルから参照を削除
+- 新しい分野の規約 → 必要に応じて新しい implement スキルを作成
 
 ## 注意事項
 

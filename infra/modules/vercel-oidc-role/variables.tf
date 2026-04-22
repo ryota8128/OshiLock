@@ -33,6 +33,12 @@ variable "s3_bucket_arn" {
   type        = string
 }
 
+variable "sqs_queue_arns" {
+  description = "アクセスを許可する SQS キュー ARN のリスト"
+  type        = list(string)
+  default     = []
+}
+
 variable "env" {
   description = "環境（dev / stg / prod）"
   type        = string

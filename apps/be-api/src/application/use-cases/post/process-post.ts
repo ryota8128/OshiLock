@@ -51,6 +51,7 @@ export class ProcessPostUseCase {
       // TODO: S3 TOON サマリを使った AI 被り判定 + マージ（フェーズ C で実装）
       // URL 重複チェックを通過した場合に、AI で既存 EventInfo との意味的重複を判定する
       // new → そのまま / duplicate → スキップ / related → 既存 EventInfo にマージ
+      // s3のレースコンディションも考慮すること
 
       await this.postRepository.updateStatus(oshiId, postId, POST_STATUS.SUCCESS);
     } catch (e) {
