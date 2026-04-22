@@ -23,7 +23,7 @@ const _entity = new Entity(
       eventId: { type: 'string', required: true },
       oshiId: { type: 'string', required: true },
       title: { type: 'string', required: true },
-      scheduleStartDate: { type: 'string' },
+      scheduleStartDate: { type: 'string', required: true },
       scheduleStartTime: { type: 'string' },
       scheduleEndDate: { type: 'string' },
       scheduleEndTime: { type: 'string' },
@@ -85,7 +85,7 @@ export namespace EventInfoDb {
       oshiId: OshiId.from(record.oshiId),
       title: record.title,
       schedule: {
-        startDate: record.scheduleStartDate ? DateString.from(record.scheduleStartDate) : null,
+        startDate: DateString.from(record.scheduleStartDate),
         startTime: record.scheduleStartTime ? TimeString.from(record.scheduleStartTime) : null,
         endDate: record.scheduleEndDate ? DateString.from(record.scheduleEndDate) : null,
         endTime: record.scheduleEndTime ? TimeString.from(record.scheduleEndTime) : null,
