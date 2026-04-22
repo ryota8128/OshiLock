@@ -1,7 +1,13 @@
 import type { MiddlewareHandler } from 'hono';
+import { env } from '../../config/env.js';
+import { UnauthorizedException } from '../../domain/errors/unauthorized.exception.js';
 
-// TODO: 内部 API 認証を実装する（GitHub Issue #5）
-// 候補: API キー認証、VPC 内通信制限、IAM 署名検証 等
-export const internalAuthMiddleware: MiddlewareHandler = async (_c, next) => {
+export const internalAuthMiddleware: MiddlewareHandler = async (c, next) => {
+  const apiKey = c.req.header('x-api-key');
+
+  if (apiKey !== env.INTERNAL_API_KEY) {
+    throw new UnauthorizedException('無効な API キーです');
+  }
+
   await next();
 };
