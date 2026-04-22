@@ -88,6 +88,34 @@ module "sqs_post_processing" {
   max_receive_count          = 1
 }
 
+# SQS → Vercel API（EventBridge Pipe）
+# API キー認証で内部 API を保護
+#
+# 環境別設定:
+#   dev/stg: invocation_rate_limit_per_second=10
+#   prod:    invocation_rate_limit_per_second=50
+#
+# 事前に SSM パラメータを作成すること:
+#   aws ssm put-parameter \
+#     --name "/oshilock/${env}/internal-api-key" \
+#     --type SecureString \
+#     --value "$(openssl rand -hex 32)" \
+#     --profile oshilock
+data "aws_ssm_parameter" "internal_api_key" {
+  name = "/oshilock/${local.env}/internal-api-key"
+}
+
+module "eventbridge_post_processing" {
+  source = "../../modules/eventbridge-pipe"
+
+  pipe_name     = "oshilock-post-processing-${local.env}"
+  env           = local.env
+  sqs_queue_arn = module.sqs_post_processing.queue_arn
+  api_endpoint                    = "https://${local.env}.api.oshilock.com/internal/process-post"
+  api_key_value                   = data.aws_ssm_parameter.internal_api_key.value
+  invocation_rate_limit_per_second = 10
+}
+
 output "sqs_post_processing_queue_url" {
   value = module.sqs_post_processing.queue_url
 }
