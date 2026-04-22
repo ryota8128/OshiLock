@@ -7,11 +7,16 @@ import { auth } from './presentation/routes/auth/auth.controller.js';
 import { health } from './presentation/routes/health.controller.js';
 import { user } from './presentation/routes/user/user.controller.js';
 import { post } from './presentation/routes/post/post.controller.js';
+import { internal } from './presentation/routes/internal/internal.controller.js';
 
 // 認証不要のルート
 const publicApp = new Hono();
 publicApp.route('/health', health);
 publicApp.route('/auth', auth);
+
+// 内部 API（認証なし、MVP）
+const internalApp = new Hono();
+internalApp.route('/internal', internal);
 
 // 認証必須のルート
 const protectedApp = new Hono<AuthEnv>();
@@ -29,6 +34,7 @@ app.get('/', (c) => {
 
 app.route('/', publicApp);
 app.route('/', protectedApp);
+app.route('/', internalApp);
 
 serve({ fetch: app.fetch, port: env.PORT }, (info) => {
   console.log(`OshiLock API running at http://localhost:${info.port}`);

@@ -12,6 +12,7 @@
   "dependencies": {
     "@aws-sdk/client-dynamodb": "catalog:",
     "@aws-sdk/client-s3": "catalog:",
+    "@aws-sdk/client-sqs": "catalog:",
     "@aws-sdk/cloudfront-signer": "catalog:",
     "@aws-sdk/credential-providers": "catalog:",
     "@aws-sdk/lib-dynamodb": "catalog:",

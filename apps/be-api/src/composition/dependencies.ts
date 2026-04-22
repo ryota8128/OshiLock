@@ -9,10 +9,15 @@ import { GenerateAvatarUploadUrlsUseCase } from '../application/use-cases/user/g
 import { GetSettingsUseCase } from '../application/use-cases/user/get-settings.js';
 import { UpdateSettingsUseCase } from '../application/use-cases/user/update-settings.js';
 import { DynamoPostRepository } from '../infrastructure/dynamo/repository/post.repository.js';
+import { DynamoEventInfoRepository } from '../infrastructure/dynamo/repository/event-info.repository.js';
 import { GeminiAiGateway } from '../infrastructure/gemini/ai.gateway.js';
 import { geminiClient } from '../infrastructure/gemini/client.js';
+import { SqsGateway } from '../infrastructure/sqs/sqs.gateway.js';
+import { sqsClient } from '../infrastructure/sqs/client.js';
 import { UrlProcessor } from '../application/services/post/url-processor.js';
+import { UrlDuplicateChecker } from '../application/services/post/url-duplicate-checker.js';
 import { CreatePostUseCase } from '../application/use-cases/post/create-post.js';
+import { ProcessPostUseCase } from '../application/use-cases/post/process-post.js';
 
 // Infrastructure
 const authGateway = new FirebaseAuthGateway();
@@ -20,10 +25,13 @@ const userRepository = new DynamoUserRepository();
 const userSettingsRepository = new DynamoUserSettingsRepository();
 const storageGateway = new S3StorageGateway();
 const postRepository = new DynamoPostRepository();
+const eventInfoRepository = new DynamoEventInfoRepository();
 const aiGateway = new GeminiAiGateway(geminiClient);
+const sqsGateway = new SqsGateway(sqsClient);
 
 // Application Services
 const urlProcessor = new UrlProcessor();
+const urlDuplicateChecker = new UrlDuplicateChecker(eventInfoRepository);
 
 // Use Cases
 export const signInUseCase = new SignInUseCase(authGateway, userRepository);
@@ -32,4 +40,14 @@ export const updateProfileUseCase = new UpdateProfileUseCase(userRepository, sto
 export const generateAvatarUploadUrlsUseCase = new GenerateAvatarUploadUrlsUseCase(storageGateway);
 export const getSettingsUseCase = new GetSettingsUseCase(userSettingsRepository);
 export const updateSettingsUseCase = new UpdateSettingsUseCase(userSettingsRepository);
-export const createPostUseCase = new CreatePostUseCase(postRepository, aiGateway, urlProcessor);
+export const createPostUseCase = new CreatePostUseCase(
+  postRepository,
+  aiGateway,
+  urlProcessor,
+  sqsGateway,
+);
+export const processPostUseCase = new ProcessPostUseCase(
+  postRepository,
+  eventInfoRepository,
+  urlDuplicateChecker,
+);
