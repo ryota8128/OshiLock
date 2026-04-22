@@ -23,7 +23,7 @@ import { eventBaseResponseSchema } from './schemas/event-base.schema.js';
 import { duplicateCheckResponseSchema } from './schemas/duplicate-check.schema.js';
 
 export class GeminiAiGateway implements IAiGateway {
-  static readonly model = 'gemini-2.0-flash';
+  static readonly model = 'gemini-2.5-flash-lite';
   static readonly maxRetries = 1;
   static readonly activeParseResultVersion = ACTIVE_PARSE_RESULT_VERSION;
   static readonly eventBaseSchema = eventBaseResponseSchema;

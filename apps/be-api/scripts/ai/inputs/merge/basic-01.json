@@ -1,0 +1,26 @@
+{
+  "existingEventInfo": {
+    "id": "e_001",
+    "title": "夏フェス2026",
+    "category": "EVENT",
+    "schedule": {
+      "startDate": "2026-07-20",
+      "startTime": "14:00",
+      "endDate": null,
+      "endTime": null
+    },
+    "summary": "夏フェス 東京ガーデンシアター 7/20開催",
+    "detail": "夏フェス2026が東京ガーデンシアターで開催。"
+  },
+  "parseResult": {
+    "version": 1,
+    "title": "夏フェス チケット情報",
+    "category": "EVENT",
+    "startDate": "2026-07-20",
+    "startTime": "14:00",
+    "endDate": null,
+    "endTime": null,
+    "summary": "夏フェス チケット6/1発売",
+    "detail": "チケットは6月1日から販売開始。モバイル会員限定先行あり。1人4枚まで。"
+  }
+}

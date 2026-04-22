@@ -1,0 +1,14 @@
+{
+  "parseResult": {
+    "version": 1,
+    "title": "秋コンサート2026",
+    "category": "EVENT",
+    "startDate": "2026-10-15",
+    "startTime": "18:00",
+    "endDate": null,
+    "endTime": null,
+    "summary": "秋コンサート 10/15開催",
+    "detail": "秋コンサート詳細"
+  },
+  "existingToon": "[1]{eventId,category,startDate,startTime,endDate,endTime,title,summary}:\n  e_001,EVENT,2026-07-20,\"14:00\",null,null,夏フェス2026,夏フェス 東京ガーデンシアター 7/20開催"
+}

@@ -14,7 +14,7 @@ const TRACKING_PARAMS = new Set([
   'ref',
 ]);
 
-const MAX_TEXT_LENGTH = 4000;
+const MAX_TEXT_LENGTH = 10000;
 
 export class UrlProcessor {
   extractUrls(body: string, sourceUrls: string[]): string[] {
