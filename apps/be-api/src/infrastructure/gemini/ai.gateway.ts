@@ -1,10 +1,10 @@
 import type { GoogleGenAI } from '@google/genai';
 import { AiGatewayException } from '../../domain/errors/ai-gateway.exception.js';
-import type { AiParseResult } from '../../domain/gateway/ai-parse-result.js';
+import type { AiParseResult } from '../../domain/value-objects/parse-result-json.js';
 import {
   ACTIVE_PARSE_RESULT_VERSION,
   parseResultZodSchema,
-} from '../../domain/gateway/ai-parse-result.js';
+} from '../../domain/value-objects/parse-result-json.js';
 import type { AiParseInput, IAiGateway } from '../../domain/gateway/ai.gateway.interface.js';
 import { buildParsePrompt } from './prompts/parse.prompt.js';
 import { parseResponseSchema } from './schemas/parse.schema.js';

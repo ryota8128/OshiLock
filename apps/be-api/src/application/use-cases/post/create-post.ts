@@ -3,6 +3,7 @@ import { PostId, TIMEZONES, POST_STATUS } from '@oshilock/shared';
 import type { IPostRepository } from '../../../domain/repository/post.repository.interface.js';
 import type { IAiGateway } from '../../../domain/gateway/ai.gateway.interface.js';
 import { PostCreationPolicy } from '../../../domain/service/post-creation-policy.js';
+import { ParseResultJson } from '../../../domain/value-objects/parse-result-json.js';
 import type { UrlProcessor } from '../../services/post/url-processor.js';
 
 type CreatePostInput = {
@@ -49,8 +50,11 @@ export class CreatePostUseCase {
         timezone: TIMEZONES.ASIA_TOKYO,
       });
 
-      const parseResultJson = JSON.stringify(parseResult);
-      await this.postRepository.saveParseResult(post.oshiId, post.id, parseResultJson);
+      await this.postRepository.saveParseResult(
+        post.oshiId,
+        post.id,
+        ParseResultJson.stringify(parseResult),
+      );
 
       // TODO: SQS に postId 送信（A-3 で実装）
     } catch (e) {
