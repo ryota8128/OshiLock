@@ -3,7 +3,7 @@ import { Hono } from 'hono';
 import { logger } from 'hono/logger';
 import { env } from './config/env.js';
 import { errorHandler } from './presentation/middleware/error-handler.js';
-import { authMiddleware, type AuthEnv } from './presentation/middleware/auth.js';
+import { authMiddleware } from './presentation/middleware/auth.js';
 import { internalAuthMiddleware } from './presentation/middleware/internal-auth.js';
 import { auth } from './presentation/routes/auth/auth.controller.js';
 import { health } from './presentation/routes/health.controller.js';
@@ -11,34 +11,26 @@ import { user } from './presentation/routes/user/user.controller.js';
 import { post } from './presentation/routes/post/post.controller.js';
 import { internal } from './presentation/routes/internal/internal.controller.js';
 
-// 認証不要のルート
-const publicApp = new Hono();
-publicApp.route('/health', health);
-publicApp.route('/auth', auth);
-
-// 内部 API
-const internalApp = new Hono();
-internalApp.use('*', internalAuthMiddleware);
-internalApp.route('/internal', internal);
-
-// 認証必須のルート
-const protectedApp = new Hono<AuthEnv>();
-protectedApp.use('*', authMiddleware);
-protectedApp.route('/users', user);
-protectedApp.route('/posts', post);
-
-// メインアプリ
 const app = new Hono();
 app.use('*', logger());
 app.onError(errorHandler);
 
-app.get('/', (c) => {
-  return c.json({ name: 'OshiLock API', status: 'ok' });
-});
+app.get('/', (c) => c.json({ name: 'OshiLock API', status: 'ok' }));
 
-app.route('/', publicApp);
-app.route('/', protectedApp);
-app.route('/', internalApp);
+// --- Public（認証なし） ---
+app.route('/health', health);
+app.route('/auth', auth);
+
+// --- Protected（Firebase Auth） ---
+app.use('/users/*', authMiddleware);
+app.route('/users', user);
+
+app.use('/posts/*', authMiddleware);
+app.route('/posts', post);
+
+// --- Internal（API Key） ---
+app.use('/internal/*', internalAuthMiddleware);
+app.route('/internal', internal);
 
 serve({ fetch: app.fetch, port: env.PORT }, (info) => {
   console.log(`OshiLock API running at http://localhost:${info.port}`);
