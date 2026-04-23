@@ -54,7 +54,7 @@ async function main() {
   const result = await gateway.parse(parseInput);
   console.log(JSON.stringify(result, null, 2));
 
-  saveResult(inputPath, { ...input, sourceTexts }, result, GeminiAiGateway.model);
+  saveResult(inputPath, { ...input, sourceTexts }, result, GeminiAiGateway.model, 'parse');
 }
 
 main().catch(console.error);

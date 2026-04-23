@@ -20,8 +20,14 @@ function jstTimestamp(): string {
   return jstNow().replace(/[\s/:]/g, '');
 }
 
-export function saveResult(inputPath: string, input: unknown, output: unknown, model: string) {
-  const resultsDir = join(__dirname, 'results', model);
+export function saveResult(
+  inputPath: string,
+  input: unknown,
+  output: unknown,
+  model: string,
+  type: 'parse' | 'duplicate' | 'merge',
+) {
+  const resultsDir = join(__dirname, 'results', type, model);
   mkdirSync(resultsDir, { recursive: true });
 
   const name = basename(inputPath, '.json');

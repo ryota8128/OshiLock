@@ -35,7 +35,7 @@ async function main() {
   });
   console.log(JSON.stringify(result, null, 2));
 
-  saveResult(inputPath, input, result, GeminiAiGateway.model);
+  saveResult(inputPath, input, result, GeminiAiGateway.model, 'duplicate');
 }
 
 main().catch(console.error);
