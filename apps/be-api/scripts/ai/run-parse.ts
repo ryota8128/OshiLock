@@ -47,12 +47,17 @@ async function main() {
 
   console.log('\n=== AI parse ===');
   const parseInput = {
+    oshiName: 'UVERworld',
     postBody: input.postBody,
     sourceTexts,
     timezone: TIMEZONES.ASIA_TOKYO,
   };
   const result = await gateway.parse(parseInput);
-  console.log(JSON.stringify(result, null, 2));
+  if (result === null) {
+    console.log('→ isRelevant: false（無関係な投稿と判定）');
+  } else {
+    console.log(JSON.stringify(result, null, 2));
+  }
 
   saveResult(inputPath, { ...input, sourceTexts }, result, GeminiAiGateway.model, 'parse');
 }
