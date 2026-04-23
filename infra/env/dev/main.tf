@@ -111,7 +111,7 @@ module "eventbridge_post_processing" {
   pipe_name     = "oshilock-post-processing-${local.env}"
   env           = local.env
   sqs_queue_arn = module.sqs_post_processing.queue_arn
-  api_endpoint                    = "https://${local.env}.api.oshilock.com/internal/process-post"
+  api_endpoint                    = "https://protest-commissioner-meet-feature.trycloudflare.com/internal/process-post"
   api_key_value                   = data.aws_ssm_parameter.internal_api_key.value
   invocation_rate_limit_per_second = 10
 }
