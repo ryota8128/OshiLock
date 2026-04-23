@@ -14,6 +14,7 @@ import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Plus, Info } from 'lucide-react-native';
 import { colors, radii, typography } from '@/constants/theme';
+import * as Burnt from 'burnt';
 import { useCreatePost } from '@/hooks/useCreatePost';
 import { MOCK_OSHI } from '@/data/mock';
 
@@ -47,7 +48,14 @@ export default function PostScreen() {
     mutate(
       { oshiId: MOCK_OSHI.id, body: trimmed, sourceUrls },
       {
-        onSuccess: () => router.back(),
+        onSuccess: () => {
+          router.back();
+          Burnt.toast({
+            title: '投稿しました！',
+            message: '反映まで少しお待ちください。',
+            preset: 'done',
+          });
+        },
         onError: () =>
           Alert.alert('投稿に失敗しました', 'しばらくしてからもう一度お試しください。'),
       },

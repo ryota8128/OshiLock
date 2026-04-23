@@ -30,7 +30,7 @@ export const MOCK_POSTER_NAMES: Record<string, string> = {
 };
 
 export const MOCK_OSHI: Oshi = {
-  id: oshiId('oshi-1'),
+  id: oshiId('o_01JTESTMOCKOSHI00000000000'),
   name: '乃木坂46',
   iconUrl: null,
   memberCount: 87,
