@@ -4,6 +4,7 @@ import type { AiDuplicateResult } from '../value-objects/ai-duplicate-result.js'
 import type { AiMergeResult } from '../value-objects/ai-merge-result.js';
 
 export type AiParseInput = {
+  oshiName: string;
   postBody: string;
   sourceTexts: string[];
   timezone: Timezone;
@@ -20,7 +21,7 @@ export type AiMergeInput = {
 };
 
 export interface IAiGateway {
-  parse(input: AiParseInput): Promise<AiParseResult>;
+  parse(input: AiParseInput): Promise<AiParseResult | null>;
   checkDuplicate(input: AiDuplicateInput): Promise<AiDuplicateResult>;
   merge(input: AiMergeInput): Promise<AiMergeResult>;
 }

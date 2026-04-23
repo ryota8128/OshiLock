@@ -49,10 +49,16 @@ export class CreatePostUseCase {
       const sourceTexts = results.filter((text): text is string => text !== null);
 
       const parseResult = await this.aiGateway.parse({
+        oshiName: 'UVERworld', // TODO: ポストのオシIDからオシ名を取得する
         postBody: post.body,
         sourceTexts,
         timezone: TIMEZONES.ASIA_TOKYO,
       });
+
+      if (!parseResult) {
+        await this.postRepository.updateStatus(post.oshiId, post.id, POST_STATUS.REJECTED);
+        return;
+      }
 
       await this.postRepository.saveParseResult(
         post.oshiId,

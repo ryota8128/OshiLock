@@ -11,7 +11,17 @@ export function buildParsePrompt(input: AiParseInput): string {
   const currentTime = TimeString.now(input.timezone);
 
   return `あなたはファン向け情報アプリの情報整理 AI です。
-ユーザーの投稿から、推し活に関するイベント・ニュース情報を構造化してください。
+ユーザーの投稿から「${input.oshiName}」に関するイベント・ニュース情報を構造化してください。
+
+## 対象の推し
+${input.oshiName}
+
+## isRelevant の判定
+以下の場合は isRelevant: false にし、他フィールドは空文字・null で返してください:
+- 「${input.oshiName}」と無関係な投稿
+- 意味不明・イタズラ・スパムと思われる投稿
+- 推し活の情報として価値がない投稿（挨拶だけ、感想だけ等）
+上記に該当しない場合は isRelevant: true にし、以下のルールで構造化してください。
 
 ## 現在日時
 日付: ${currentDate}
@@ -44,26 +54,15 @@ EVENT（ライブ・イベント）、GOODS（グッズ発売）、MEDIA（TV・
 ### 例1
 投稿: "MAIZURU PLAYBACK Fes.、4/26に舞鶴市で開催！UVERworldやウルフルズが出るよ"
 →
+isRelevant: true
 title: "MAIZURU PLAYBACK Fes. 2026"
 summary: "4/26に舞鶴市で開催。UVERworld、ウルフルズなど多数出演。チケット発売中"
 
-❌ NG: summary: "MAIZURU PLAYBACK Fes. 2026、4/26開催！"
-→ titleと重複している
-
-### 例2
-投稿: "明日のMステに初出演決定！新曲披露するみたい"
+### 例2（無関係な投稿）
+投稿: "今日のランチ美味しかった"
 →
-title: "Mステ初出演決定"
-summary: "明日放送。新曲を披露予定"
-
-❌ NG: summary: "Mステに初出演が決定"
-→ titleと同じ内容
-
-### 例3
-投稿: "コラボグッズ、来週からローソンで売り出すって！アクスタとクリアファイル全6種"
-→
-title: "ローソン コラボグッズ発売"
-summary: "4/28から販売開始。アクスタ・クリアファイル全6種ラインナップ"
+isRelevant: false
+（他フィールドは空文字・null）
 
 ## 投稿テキスト
 ${input.postBody}

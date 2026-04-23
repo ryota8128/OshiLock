@@ -4,13 +4,24 @@ import { aiEventBaseSchema } from './ai-event-schema.js';
 
 export const ACTIVE_PARSE_RESULT_VERSION = 1 as const;
 
+const relevantSchema = z.object({
+  isRelevant: z.literal(true),
+  version: z.literal(1),
+  ...aiEventBaseSchema.shape,
+});
+
+const irrelevantSchema = z.object({
+  isRelevant: z.literal(false),
+});
+
 const schemas = {
-  1: aiEventBaseSchema.extend({ version: z.literal(1) }),
+  1: z.discriminatedUnion('isRelevant', [relevantSchema, irrelevantSchema]),
 } as const;
 
 export const parseResultZodSchema = schemas[ACTIVE_PARSE_RESULT_VERSION];
 
-export type AiParseResult = z.output<typeof parseResultZodSchema>;
+export type AiParseResult = z.output<typeof relevantSchema>;
+export type AiParseOutput = z.output<typeof parseResultZodSchema>;
 
 export function getParseResultSchema(version: number) {
   const schema = schemas[version as keyof typeof schemas];
@@ -23,8 +34,13 @@ export namespace ParseResultJson {
     const raw = JSON.parse(json) as { version?: number };
     const version = raw.version ?? ACTIVE_PARSE_RESULT_VERSION;
     try {
-      return getParseResultSchema(version).parse(raw);
+      const result = getParseResultSchema(version).parse(raw);
+      if (!result.isRelevant) {
+        throw new OshiLockBeException(500, 'パース結果が irrelevant ですが復元が要求されました');
+      }
+      return result;
     } catch (e) {
+      if (e instanceof OshiLockBeException) throw e;
       console.error(`パース結果の復元に失敗しました（version: ${version}）${json}`);
       throw new OshiLockBeException(500, `パース結果の復元に失敗しました（version: ${version}）`);
     }
