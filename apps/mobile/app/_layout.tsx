@@ -17,9 +17,11 @@ function RootNavigator() {
   const firstSegment = segments[0];
 
   useEffect(() => {
-    if (isLoading) return;
+    if (!isLoading) SplashScreen.hideAsync();
+  }, [isLoading]);
 
-    SplashScreen.hideAsync();
+  useEffect(() => {
+    if (isLoading) return;
 
     const inAuthGroup = firstSegment === 'login';
 

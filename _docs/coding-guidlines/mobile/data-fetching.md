@@ -60,3 +60,55 @@ export function useUpdateSettings() {
   });
 }
 ```
+
+### 更新系は useMutation で統一
+
+更新系（POST / PUT / DELETE）は必ず `useMutation` を使う。コンポーネント内で `try/catch` + `useState` で手動管理しない。
+
+**理由:**
+- `isPending` / `isError` / `error` が自動で取れる
+- 二重送信防止（`isPending` 中のボタン disabled）が統一的に実装できる
+- `onSuccess` / `onError` / `onSettled` でキャッシュ操作をフック内に閉じ込められる
+
+### Mutation Hook パターン（送信のみ）
+
+投稿など、キャッシュの楽観的更新が不要なケースのパターン。
+
+```typescript
+// hooks/useCreatePost.ts
+export function useCreatePost() {
+  return useMutation({
+    mutationFn: (input: CreatePostRequest) => postApi.create(input),
+  });
+}
+
+// 画面側 — mutate + コールバックで宣言的に書く
+const { mutate, isPending } = useCreatePost();
+
+const handleSubmit = () => {
+  mutate(
+    { oshiId, body, sourceUrls },
+    {
+      onSuccess: () => router.back(),
+      onError: () => Alert.alert('投稿に失敗しました'),
+    },
+  );
+};
+
+// ボタン — isPending 中は disabled にして二重送信を防ぐ
+<Pressable onPress={handleSubmit} disabled={isPending}>
+  <Text>{isPending ? '送信中...' : '投稿'}</Text>
+</Pressable>
+```
+
+### 二重送信防止
+
+更新系ボタンは必ず `isPending` で disabled にする。
+
+```typescript
+// ✅ isPending で disabled
+<Pressable onPress={handleSubmit} disabled={isPending}>
+
+// ❌ useState で手動管理しない
+const [isSubmitting, setIsSubmitting] = useState(false);
+```
