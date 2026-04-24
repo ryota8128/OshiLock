@@ -116,6 +116,8 @@ resource "aws_pipes_pipe" "this" {
   target = aws_cloudwatch_event_api_destination.this.arn
 
   target_parameters {
+    input_template = "{\"postId\": <$.body.postId>}"
+
     http_parameters {
       header_parameters = {}
     }

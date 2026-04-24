@@ -83,7 +83,7 @@ module "sqs_post_processing" {
   queue_name                 = "oshilock-post-processing-${local.env}"
   env                        = local.env
   fifo                       = true
-  visibility_timeout_seconds = 300
+  visibility_timeout_seconds = 30
   message_retention_seconds  = 345600 // 4日
   max_receive_count          = 1
 }
@@ -111,7 +111,7 @@ module "eventbridge_post_processing" {
   pipe_name     = "oshilock-post-processing-${local.env}"
   env           = local.env
   sqs_queue_arn = module.sqs_post_processing.queue_arn
-  api_endpoint                    = "https://protest-commissioner-meet-feature.trycloudflare.com/internal/process-post"
+  api_endpoint                    = "https://artists-classification-fifteen-olympic.trycloudflare.com/internal/process-post"
   api_key_value                   = data.aws_ssm_parameter.internal_api_key.value
   invocation_rate_limit_per_second = 10
 }
