@@ -55,5 +55,8 @@ export type { UserSettingsResponse } from './api/response/user-settings.response
 export { createPostRequestSchema } from './api/request/post.request';
 export type { CreatePostRequest } from './api/request/post.request';
 export type { CreatePostResponse } from './api/response/post.response';
-export type { GetEventInfoListResponse } from './api/response/event-info.response';
+export type {
+  GetEventInfoListResponse,
+  GetEventInfoResponse,
+} from './api/response/event-info.response';
 export { withRetry } from './utils/with-retry';

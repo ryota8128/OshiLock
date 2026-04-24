@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { colors, categoryColors, radii, typography } from '@/constants/theme';
-import type { EventInfoWithUserContext, EventCategory } from '@oshilock/shared';
+import type { EventInfo, EventCategory } from '@oshilock/shared';
 import type { DateString, TimeString } from '@oshilock/shared';
 import { MessageCircle, Bookmark, Trophy } from 'lucide-react-native';
 
@@ -25,7 +25,7 @@ function formatSchedule(startDate: DateString | null, startTime: TimeString | nu
 }
 
 type Props = {
-  card: EventInfoWithUserContext;
+  card: EventInfo;
   posterNames?: Record<string, string>;
   onPress?: () => void;
 };
@@ -53,7 +53,7 @@ export function EventCardItem({ card, posterNames, onPress }: Props) {
 
   return (
     <Pressable onPress={onPress} style={styles.wrapper}>
-      {!card.isRead && <View style={styles.unreadDot} />}
+      {/* isRead は EventInfoWithUserContext 固有のため、EventInfo では未読ドットは非表示 */}
 
       <View style={[styles.band, { backgroundColor: c.bg, borderBottomColor: c.line }]}>
         <Text style={[styles.catLabel, { color: c.fg }]}>{c.label}</Text>
@@ -76,7 +76,7 @@ export function EventCardItem({ card, posterNames, onPress }: Props) {
           </Text>
         )}
         <Text style={styles.contentText} numberOfLines={2}>
-          {card.content}
+          {card.summary}
         </Text>
 
         <View style={styles.metaRow}>
@@ -92,13 +92,9 @@ export function EventCardItem({ card, posterNames, onPress }: Props) {
               <Text style={styles.meta}>{card.commentCount}</Text>
             </View>
             <View style={styles.metaItem}>
-              <Bookmark
-                size={14}
-                color={card.saved ? colors.watchedRose : colors.inkSoft}
-                strokeWidth={1.5}
-                fill={card.saved ? colors.watchedRose : 'none'}
-              />
-              <Text style={[styles.meta, card.saved && styles.savedMeta]}>{card.savedCount}</Text>
+              {/* TODO: saved はユーザーコンテキスト取得後に対応予定。現時点では常に未保存表示 */}
+              <Bookmark size={14} color={colors.inkSoft} strokeWidth={1.5} fill="none" />
+              <Text style={styles.meta}>{card.savedCount}</Text>
             </View>
           </View>
         </View>

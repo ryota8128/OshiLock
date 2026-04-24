@@ -1,5 +1,5 @@
 import { apiClient } from './client';
-import type { GetEventInfoListResponse } from '@oshilock/shared';
+import type { GetEventInfoListResponse, GetEventInfoResponse } from '@oshilock/shared';
 
 export const eventInfoApi = {
   /**
@@ -9,9 +9,19 @@ export const eventInfoApi = {
    * @param cursor - ページネーションカーソル（省略時は先頭から取得）
    */
   getList(oshiId: string, limit?: number, cursor?: string): Promise<GetEventInfoListResponse> {
-    const params = new URLSearchParams({ oshiId });
+    const params = new URLSearchParams();
     if (limit !== undefined) params.set('limit', String(limit));
     if (cursor !== undefined) params.set('cursor', cursor);
-    return apiClient.get(`/events?${params}`);
+    const qs = params.toString();
+    return apiClient.get(`/events/${oshiId}${qs ? `?${qs}` : ''}`);
+  },
+
+  /**
+   * 指定した推しのイベント情報1件を取得する。
+   * @param oshiId - 推しID
+   * @param eventId - イベントID
+   */
+  getById(oshiId: string, eventId: string): Promise<GetEventInfoResponse> {
+    return apiClient.get(`/events/${oshiId}/${eventId}`);
   },
 };
