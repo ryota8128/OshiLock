@@ -50,15 +50,26 @@ describe('ToonBuilder', () => {
   });
 
   describe('entriesToToon', () => {
-    it('TOON 形式の文字列を生成する', () => {
+    it('sortDate を含む TOON 形式の文字列を生成する', () => {
       const entry = builder.eventInfoToEntry(MOCK_EVENT);
       const toon = builder.entriesToToon([entry]);
+
+      expect(toon).toContain('sortDate');
+      expect(toon).toContain('2026-07-20T05:00:00.000Z');
+    });
+  });
+
+  describe('entriesToToonForLlm', () => {
+    it('sortDate を除外した TOON 形式の文字列を生成する', () => {
+      const entry = builder.eventInfoToEntry(MOCK_EVENT);
+      const toon = builder.entriesToToonForLlm([entry]);
 
       const expected = [
         '[1]{eventId,category,startDate,startTime,endDate,endTime,title,summary}:',
         '  e_test001,EVENT,2026-07-20,"14:00",null,null,夏フェス2026,夏フェス 東京ガーデンシアター 7/20開催',
       ].join('\n');
       expect(toon).toBe(expected);
+      expect(toon).not.toContain('sortDate');
     });
 
     it('複数エントリを含む TOON を生成する', () => {
@@ -72,7 +83,7 @@ describe('ToonBuilder', () => {
         title: '別イベント',
         summary: '別サマリ',
       };
-      const toon = builder.entriesToToon([entry1, entry2]);
+      const toon = builder.entriesToToonForLlm([entry1, entry2]);
 
       const expected = [
         '[2]{eventId,category,startDate,startTime,endDate,endTime,title,summary}:',

@@ -29,7 +29,10 @@ export class ToonBuilder {
   }
 
   entriesToToon(entries: ToonEntry[]): string {
-    // sortDate は内部フィルタ用。LLM には渡さない
+    return encode(entries);
+  }
+
+  entriesToToonForLlm(entries: ToonEntry[]): string {
     const forLlm = entries.map(({ sortDate, ...rest }) => rest);
     return encode(forLlm);
   }

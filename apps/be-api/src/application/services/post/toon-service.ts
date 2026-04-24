@@ -14,7 +14,7 @@ export class ToonService {
     const rawToon = (await this.summaryGateway.getToonSummary(oshiId)) ?? '';
     const entries = this.toonBuilder.parseToon(rawToon);
     const filtered = this.eligibilityFilter.filterToonEntries(entries);
-    const filteredToon = this.toonBuilder.entriesToToon(filtered);
+    const filteredToon = this.toonBuilder.entriesToToonForLlm(filtered);
     return { rawToon, filteredToon };
   }
 
