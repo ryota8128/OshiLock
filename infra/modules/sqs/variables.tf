@@ -24,6 +24,11 @@ variable "message_retention_seconds" {
 }
 
 variable "max_receive_count" {
-  description = "最大受信回数。超えたらメッセージを破棄"
+  description = "最大受信回数。超えたら DLQ へ移動"
+  type        = number
+}
+
+variable "dlq_message_retention_seconds" {
+  description = "DLQ のメッセージ保持期間（秒）"
   type        = number
 }

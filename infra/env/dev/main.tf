@@ -74,9 +74,9 @@ module "storage" {
 # MessageGroupId = oshiId で推しごとに直列、異なる推しは並列
 #
 # 環境別設定:
-#   dev:  visibility_timeout=300, max_receive_count=1（リトライなし）
-#   stg:  visibility_timeout=300, max_receive_count=3
-#   prod: visibility_timeout=300, max_receive_count=3, message_retention=1209600（14日）
+#   dev:  visibility_timeout=30,  max_receive_count=1, message_retention=4日,  dlq_retention=4日
+#   stg:  visibility_timeout=30,  max_receive_count=3, message_retention=4日,  dlq_retention=4日
+#   prod: visibility_timeout=300, max_receive_count=3, message_retention=14日, dlq_retention=14日
 module "sqs_post_processing" {
   source = "../../modules/sqs"
 
@@ -85,7 +85,8 @@ module "sqs_post_processing" {
   fifo                       = true
   visibility_timeout_seconds = 30
   message_retention_seconds  = 345600 // 4日
-  max_receive_count          = 1
+  max_receive_count             = 1
+  dlq_message_retention_seconds = 345600 // 4日
 }
 
 # SQS → Vercel API（EventBridge Pipe）
