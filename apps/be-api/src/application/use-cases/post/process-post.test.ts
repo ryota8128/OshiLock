@@ -61,7 +61,7 @@ function createMockEventInfoRepository(
   overrides: Partial<IEventInfoRepository> = {},
 ): IEventInfoRepository {
   return {
-    create: vi.fn(),
+    create: vi.fn().mockResolvedValue({ id: 'e_new', oshiId: OSHI_ID }),
     findById: vi.fn(),
     findByOshi: vi.fn(),
     findByOshiAndCategory: vi.fn(),

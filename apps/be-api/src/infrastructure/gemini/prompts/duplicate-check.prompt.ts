@@ -21,8 +21,7 @@ endTime: ${pr.endTime ?? 'null'}
 summary: ${pr.summary}
 
 ## 既存イベント情報サマリ（TOON形式）
-@id category startDate startTime endDate endTime title
-${input.filteredToon}
+${input.filteredToon || '（なし）'}
 
 ## 注意
 - matchType が NEW の場合、matchedEventId は null にしてください

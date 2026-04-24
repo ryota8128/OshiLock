@@ -42,6 +42,7 @@ export class ProcessPostUseCase {
 
     try {
       const parseResult = ParseResultJson.parse(post.parseResult);
+      console.log(`[ProcessPost] postId=${postId} title="${parseResult.title}"`);
 
       // TODO: 推しごとの公式ドメインリストと照合して OFFICIAL 判定する（GitHub Issue #4）
       const sourceReliability =
@@ -50,18 +51,25 @@ export class ProcessPostUseCase {
       // 1. URL 重複チェック（コードベース、高速）
       const isUrlDuplicate = await this.urlDuplicateChecker.isDuplicate(oshiId, post.sourceUrls);
       if (isUrlDuplicate) {
+        console.log(`[ProcessPost] postId=${postId} → URL_DUPLICATE`);
         await this.postRepository.completeProcessing(postId, MATCH_TYPE.DUPLICATE);
         return;
       }
 
       // 2. S3 TOON 読み込み + フィルタ
       const { rawToon, filteredToon } = await this.toonService.getFilteredToon(oshiId);
+      console.log(
+        `[ProcessPost] postId=${postId} filteredToon=${filteredToon.length > 0 ? `${filteredToon.split('\n').length}entries` : 'empty'}`,
+      );
 
       // 3. AI 被り判定
       const duplicateResult = await this.aiGateway.checkDuplicate({
         parseResult,
         filteredToon,
       });
+      console.log(
+        `[ProcessPost] postId=${postId} → AI判定: ${duplicateResult.matchType}${duplicateResult.matchedEventId ? ` (matchedId=${duplicateResult.matchedEventId})` : ''}`,
+      );
 
       // 4a. DUPLICATE: スキップ
       if (duplicateResult.matchType === MATCH_TYPE.DUPLICATE) {
@@ -80,6 +88,7 @@ export class ProcessPostUseCase {
           sourceReliability,
         });
         await this.toonService.updateToon(oshiId, rawToon, newEvent);
+        console.log(`[ProcessPost] postId=${postId} → EventInfo created: ${newEvent.id}`);
         await this.postRepository.completeProcessing(postId, MATCH_TYPE.NEW);
         return;
       }
@@ -124,6 +133,9 @@ export class ProcessPostUseCase {
         sourceUrls: mergedSourceUrls,
       });
       await this.toonService.updateToon(oshiId, rawToon, updatedEvent);
+      console.log(
+        `[ProcessPost] postId=${postId} → EventInfo updated: ${duplicateResult.matchedEventId}`,
+      );
       await this.postRepository.completeProcessing(postId, MATCH_TYPE.UPDATE);
     } catch (e) {
       console.error('Post processing failed:', e);

@@ -71,9 +71,9 @@ describe('CreatePostUseCase', () => {
     expect(postRepository.create).toHaveBeenCalled();
   });
 
-  it('1日5件を超えると 429 エラー', async () => {
+  it('1日10件を超えると 429 エラー', async () => {
     const postRepository = createMockPostRepository({
-      countTodayByUser: vi.fn().mockResolvedValue(5),
+      countTodayByUser: vi.fn().mockResolvedValue(10),
     });
     const useCase = new CreatePostUseCase(
       postRepository,
