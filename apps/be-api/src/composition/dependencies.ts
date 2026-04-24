@@ -22,6 +22,7 @@ import { ToonBuilder } from '../application/services/post/toon-builder.js';
 import { ToonService } from '../application/services/post/toon-service.js';
 import { CreatePostUseCase } from '../application/use-cases/post/create-post.js';
 import { ProcessPostUseCase } from '../application/use-cases/post/process-post.js';
+import { GetEventInfoListUseCase } from '../application/use-cases/event-info/get-event-info-list.js';
 
 // Infrastructure
 const authGateway = new FirebaseAuthGateway();
@@ -62,3 +63,4 @@ export const processPostUseCase = new ProcessPostUseCase(
   urlDuplicateChecker,
   toonService,
 );
+export const getEventInfoListUseCase = new GetEventInfoListUseCase(eventInfoRepository);

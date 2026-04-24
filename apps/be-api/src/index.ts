@@ -10,6 +10,7 @@ import { health } from './presentation/routes/health.controller.js';
 import { user } from './presentation/routes/user/user.controller.js';
 import { post } from './presentation/routes/post/post.controller.js';
 import { internal } from './presentation/routes/internal/internal.controller.js';
+import { eventInfo } from './presentation/routes/event-info/event-info.controller.js';
 
 const app = new Hono();
 app.use('*', requestLogger);
@@ -27,6 +28,9 @@ app.route('/users', user);
 
 app.use('/posts/*', authMiddleware);
 app.route('/posts', post);
+
+app.use('/events/*', authMiddleware);
+app.route('/events', eventInfo);
 
 // --- Internal（API Key） ---
 app.use('/internal/*', internalAuthMiddleware);
