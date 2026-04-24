@@ -5,8 +5,9 @@
   "scripts": {
     "start": "expo start --port 8083",
     "start:ts": "REACT_NATIVE_PACKAGER_HOSTNAME=$(tailscale ip -4) EXPO_PUBLIC_API_URL=http://$(tailscale ip -4):3012 expo start --port 8083",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "ios:dev": "expo run:ios",
     "web": "expo start --web"
   },
   "dependencies": {

@@ -165,9 +165,9 @@ describe('DynamoPostRepository', () => {
         sourceUrls: [],
       });
 
-      await repository.updateStatus(OSHI_ID, post.id, 'SUCCESS');
+      await repository.updateStatus(post.id, 'SUCCESS');
 
-      const result = await PostDb.entity.query.primary({ oshiId: OSHI_ID, postId: post.id }).go();
+      const result = await PostDb.entity.query.primary({ postId: post.id }).go();
       expect(result.data[0]?.status).toBe('SUCCESS');
     });
 
@@ -180,9 +180,9 @@ describe('DynamoPostRepository', () => {
         sourceUrls: [],
       });
 
-      await repository.updateStatus(OSHI_ID, post.id, 'FAILED');
+      await repository.updateStatus(post.id, 'FAILED');
 
-      const result = await PostDb.entity.query.primary({ oshiId: OSHI_ID, postId: post.id }).go();
+      const result = await PostDb.entity.query.primary({ postId: post.id }).go();
       expect(result.data[0]?.status).toBe('FAILED');
     });
   });

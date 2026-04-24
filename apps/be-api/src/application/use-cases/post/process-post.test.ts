@@ -20,6 +20,7 @@ const POST_ID = PostId.from('p_test');
 const USER_ID = UserId.from('u_test');
 
 const MOCK_PARSE_RESULT = JSON.stringify({
+  isRelevant: true,
   version: ACTIVE_PARSE_RESULT_VERSION,
   title: '夏フェス2026',
   category: EVENT_CATEGORY.EVENT,
@@ -110,9 +111,9 @@ describe('ProcessPostUseCase', () => {
       mockToonService,
     );
 
-    await useCase.execute(OSHI_ID, POST_ID);
+    await useCase.execute(POST_ID);
 
-    expect(postRepo.updateStatus).toHaveBeenCalledWith(OSHI_ID, POST_ID, POST_STATUS.PROCESSING);
+    expect(postRepo.updateStatus).toHaveBeenCalledWith(POST_ID, POST_STATUS.PROCESSING);
     expect(eventRepo.create).toHaveBeenCalledWith(
       expect.objectContaining({
         oshiId: OSHI_ID,
@@ -138,7 +139,7 @@ describe('ProcessPostUseCase', () => {
       mockToonService,
     );
 
-    await useCase.execute(OSHI_ID, POST_ID);
+    await useCase.execute(POST_ID);
 
     expect(eventRepo.create).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -161,7 +162,7 @@ describe('ProcessPostUseCase', () => {
       mockToonService,
     );
 
-    await useCase.execute(OSHI_ID, POST_ID);
+    await useCase.execute(POST_ID);
 
     expect(eventRepo.create).not.toHaveBeenCalled();
     expect(postRepo.completeProcessing).toHaveBeenCalled();
@@ -183,7 +184,7 @@ describe('ProcessPostUseCase', () => {
       mockToonService,
     );
 
-    await useCase.execute(OSHI_ID, POST_ID);
+    await useCase.execute(POST_ID);
 
     expect(eventRepo.create).not.toHaveBeenCalled();
     expect(eventRepo.updateFromMerge).not.toHaveBeenCalled();
@@ -229,7 +230,7 @@ describe('ProcessPostUseCase', () => {
       mockToonService,
     );
 
-    await useCase.execute(OSHI_ID, POST_ID);
+    await useCase.execute(POST_ID);
 
     expect(eventRepo.updateFromMerge).toHaveBeenCalled();
     expect(eventRepo.create).not.toHaveBeenCalled();
@@ -257,10 +258,10 @@ describe('ProcessPostUseCase', () => {
       mockToonService,
     );
 
-    await expect(useCase.execute(OSHI_ID, POST_ID)).rejects.toThrow(
+    await expect(useCase.execute(POST_ID)).rejects.toThrow(
       'マージ対象の EventInfo が見つかりません',
     );
-    expect(postRepo.updateStatus).toHaveBeenCalledWith(OSHI_ID, POST_ID, POST_STATUS.FAILED);
+    expect(postRepo.updateStatus).toHaveBeenCalledWith(POST_ID, POST_STATUS.FAILED);
   });
 
   it('投稿が見つからない場合はエラー', async () => {
@@ -277,7 +278,7 @@ describe('ProcessPostUseCase', () => {
       mockToonService,
     );
 
-    await expect(useCase.execute(OSHI_ID, POST_ID)).rejects.toThrow('投稿が見つかりません');
-    expect(postRepo.updateStatus).toHaveBeenCalledWith(OSHI_ID, POST_ID, POST_STATUS.FAILED);
+    await expect(useCase.execute(POST_ID)).rejects.toThrow('投稿が見つかりません');
+    expect(postRepo.updateStatus).not.toHaveBeenCalled();
   });
 });

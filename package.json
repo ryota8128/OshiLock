@@ -7,6 +7,7 @@
     "lint": "turbo lint",
     "mobile": "pnpm --filter @oshilock/mobile start:ts",
     "mobile:clear": "pnpm --filter @oshilock/mobile start:ts -- --clear",
+    "mobile:ios": "pnpm --filter @oshilock/mobile ios:dev",
     "api": "pnpm --filter @oshilock/be-api dev",
     "test": "turbo test",
     "test:all": "turbo test:all",

@@ -71,9 +71,9 @@ describe('CreatePostUseCase', () => {
     expect(postRepository.create).toHaveBeenCalled();
   });
 
-  it('1日3件を超えると 429 エラー', async () => {
+  it('1日5件を超えると 429 エラー', async () => {
     const postRepository = createMockPostRepository({
-      countTodayByUser: vi.fn().mockResolvedValue(3),
+      countTodayByUser: vi.fn().mockResolvedValue(5),
     });
     const useCase = new CreatePostUseCase(
       postRepository,
@@ -93,10 +93,10 @@ describe('CreatePostUseCase', () => {
     ).rejects.toThrow('投稿上限に達しました');
   });
 
-  it('5分以内の連続投稿は 429 エラー', async () => {
+  it('1分以内の連続投稿は 429 エラー', async () => {
     const recentPost: Post = {
       ...MOCK_POST,
-      createdAt: UtcIsoString.from(new Date(Date.now() - 60 * 1000).toISOString()), // 1分前
+      createdAt: UtcIsoString.from(new Date(Date.now() - 30 * 1000).toISOString()), // 30秒前
     };
     const postRepository = createMockPostRepository({
       findLatestByUser: vi.fn().mockResolvedValue(recentPost),
@@ -119,10 +119,10 @@ describe('CreatePostUseCase', () => {
     ).rejects.toThrow('秒後に可能です');
   });
 
-  it('5分経過後は投稿できる', async () => {
+  it('1分経過後は投稿できる', async () => {
     const oldPost: Post = {
       ...MOCK_POST,
-      createdAt: UtcIsoString.from(new Date(Date.now() - 6 * 60 * 1000).toISOString()), // 6分前
+      createdAt: UtcIsoString.from(new Date(Date.now() - 2 * 60 * 1000).toISOString()), // 2分前
     };
     const postRepository = createMockPostRepository({
       findLatestByUser: vi.fn().mockResolvedValue(oldPost),
@@ -169,11 +169,7 @@ describe('CreatePostUseCase', () => {
 
       await useCase.parseInBackground(MOCK_POST);
 
-      expect(postRepository.updateStatus).toHaveBeenCalledWith(
-        MOCK_POST.oshiId,
-        MOCK_POST.id,
-        POST_STATUS.SKIPPED,
-      );
+      expect(postRepository.updateStatus).toHaveBeenCalledWith(MOCK_POST.id, POST_STATUS.SKIPPED);
       expect(sqsGateway.sendPostProcessing).not.toHaveBeenCalled();
     });
 
@@ -195,7 +191,7 @@ describe('CreatePostUseCase', () => {
 
       await useCase.parseInBackground(MOCK_POST);
 
-      expect(sqsGateway.sendPostProcessing).toHaveBeenCalledWith(MOCK_POST.oshiId, MOCK_POST.id);
+      expect(sqsGateway.sendPostProcessing).toHaveBeenCalledWith(MOCK_POST.id, MOCK_POST.oshiId);
     });
   });
 });
