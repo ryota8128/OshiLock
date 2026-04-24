@@ -6,11 +6,11 @@ import { env } from '../../config/env.js';
 export class SqsGateway implements ISqsGateway {
   constructor(private readonly client: SQSClient) {}
 
-  async sendPostProcessing(oshiId: OshiId, postId: PostId): Promise<void> {
+  async sendPostProcessing(postId: PostId, oshiId: OshiId): Promise<void> {
     await this.client.send(
       new SendMessageCommand({
         QueueUrl: env.SQS_QUEUE_URL,
-        MessageBody: JSON.stringify({ oshiId, postId }),
+        MessageBody: JSON.stringify({ postId }),
         MessageGroupId: oshiId,
       }),
     );

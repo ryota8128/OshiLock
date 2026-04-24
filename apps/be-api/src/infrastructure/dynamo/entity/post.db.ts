@@ -27,8 +27,8 @@ const _entity = new Entity(
     },
     indexes: {
       primary: {
-        pk: { field: 'pk', composite: ['oshiId'], template: 'OSHI#${oshiId}' },
-        sk: { field: 'sk', composite: ['postId'], template: 'POST#${postId}' },
+        pk: { field: 'pk', composite: ['postId'], template: 'POST#${postId}' },
+        sk: { field: 'sk', composite: [], template: 'POST' },
       },
       byUser: {
         index: 'GSI1',

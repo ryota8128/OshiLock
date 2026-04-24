@@ -42,7 +42,7 @@ export class CreatePostUseCase {
 
   async parseInBackground(post: Post): Promise<void> {
     try {
-      await this.postRepository.updateStatus(post.oshiId, post.id, POST_STATUS.PARSING);
+      await this.postRepository.updateStatus(post.id, POST_STATUS.PARSING);
 
       const urls = this.urlProcessor.extractUrls(post.body, post.sourceUrls);
       const results = await Promise.all(urls.map((url) => this.urlProcessor.fetchUrlText(url)));
@@ -56,15 +56,11 @@ export class CreatePostUseCase {
       });
 
       if (!parseResult) {
-        await this.postRepository.updateStatus(post.oshiId, post.id, POST_STATUS.REJECTED);
+        await this.postRepository.updateStatus(post.id, POST_STATUS.REJECTED);
         return;
       }
 
-      await this.postRepository.saveParseResult(
-        post.oshiId,
-        post.id,
-        ParseResultJson.stringify(parseResult),
-      );
+      await this.postRepository.saveParseResult(post.id, ParseResultJson.stringify(parseResult));
 
       const sortDate = parseResult.startDate
         ? UtcIsoString.fromDateAndTime(
@@ -74,14 +70,14 @@ export class CreatePostUseCase {
           )
         : post.createdAt;
       if (!this.eligibilityFilter.shouldProcess({ sortDate })) {
-        await this.postRepository.updateStatus(post.oshiId, post.id, POST_STATUS.SKIPPED);
+        await this.postRepository.updateStatus(post.id, POST_STATUS.SKIPPED);
         return;
       }
 
-      await this.sqsGateway.sendPostProcessing(post.oshiId, post.id);
+      await this.sqsGateway.sendPostProcessing(post.id, post.oshiId);
     } catch (e) {
       console.error('Post parse failed:', e);
-      await this.postRepository.updateStatus(post.oshiId, post.id, POST_STATUS.FAILED);
+      await this.postRepository.updateStatus(post.id, POST_STATUS.FAILED);
     }
   }
 }

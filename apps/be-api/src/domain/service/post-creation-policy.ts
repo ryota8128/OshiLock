@@ -2,8 +2,8 @@ import type { OshiId, UserId } from '@oshilock/shared';
 import { RateLimitException } from '../errors/rate-limit.exception.js';
 import type { IPostRepository } from '../repository/post.repository.interface.js';
 
-const DAILY_LIMIT = 3;
-const COOL_DOWN_MS = 5 * 60 * 1000;
+const DAILY_LIMIT = 5;
+const COOL_DOWN_MS = 60 * 1000; // 1m
 
 export class PostCreationPolicy {
   constructor(private readonly postRepository: IPostRepository) {}

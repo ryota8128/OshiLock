@@ -1,8 +1,8 @@
 import { serve } from '@hono/node-server';
 import { Hono } from 'hono';
-import { logger } from 'hono/logger';
 import { env } from './config/env.js';
 import { errorHandler } from './presentation/middleware/error-handler.js';
+import { requestLogger } from './presentation/middleware/logger.js';
 import { authMiddleware } from './presentation/middleware/auth.js';
 import { internalAuthMiddleware } from './presentation/middleware/internal-auth.js';
 import { auth } from './presentation/routes/auth/auth.controller.js';
@@ -12,7 +12,7 @@ import { post } from './presentation/routes/post/post.controller.js';
 import { internal } from './presentation/routes/internal/internal.controller.js';
 
 const app = new Hono();
-app.use('*', logger());
+app.use('*', requestLogger);
 app.onError(errorHandler);
 
 app.get('/', (c) => c.json({ name: 'OshiLock API', status: 'ok' }));

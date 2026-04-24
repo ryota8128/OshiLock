@@ -35,8 +35,8 @@ export class DynamoPostRepository implements IPostRepository {
     return PostDb.toDomain(result.data);
   }
 
-  async findById(oshiId: OshiId, postId: PostId): Promise<Post | null> {
-    const result = await PostDb.entity.query.primary({ oshiId, postId }).go();
+  async findById(postId: PostId): Promise<Post | null> {
+    const result = await PostDb.entity.query.primary({ postId }).go();
     const record = result.data[0];
     return record ? PostDb.toDomain(record) : null;
   }
@@ -63,21 +63,21 @@ export class DynamoPostRepository implements IPostRepository {
     return record ? PostDb.toDomain(record) : null;
   }
 
-  async updateStatus(oshiId: OshiId, postId: PostId, status: PostStatus): Promise<void> {
-    await PostDb.entity.patch({ oshiId, postId }).set({ status }).go();
+  async updateStatus(postId: PostId, status: PostStatus): Promise<void> {
+    await PostDb.entity.patch({ postId }).set({ status }).go();
   }
 
-  async saveParseResult(oshiId: OshiId, postId: PostId, parseResultJson: string): Promise<void> {
+  async saveParseResult(postId: PostId, parseResultJson: string): Promise<void> {
     await PostDb.entity
-      .patch({ oshiId, postId })
+      .patch({ postId })
       .set({ parseResult: parseResultJson, status: POST_STATUS.PARSED })
       .where(({ status }, { eq }) => eq(status, POST_STATUS.PARSING as string))
       .go();
   }
 
-  async completeProcessing(oshiId: OshiId, postId: PostId, matchType: MatchType): Promise<void> {
+  async completeProcessing(postId: PostId, matchType: MatchType): Promise<void> {
     await PostDb.entity
-      .patch({ oshiId, postId })
+      .patch({ postId })
       .set({ status: POST_STATUS.SUCCESS, matchType })
       .where(({ status }, { eq }) => eq(status, POST_STATUS.PROCESSING as string))
       .go();

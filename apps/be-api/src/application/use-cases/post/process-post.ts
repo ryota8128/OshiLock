@@ -1,4 +1,4 @@
-import type { OshiId, PostId } from '@oshilock/shared';
+import type { PostId } from '@oshilock/shared';
 import {
   EventId,
   UtcIsoString,
@@ -25,21 +25,22 @@ export class ProcessPostUseCase {
     private readonly toonService: ToonService,
   ) {}
 
-  async execute(oshiId: OshiId, postId: PostId): Promise<void> {
-    await this.postRepository.updateStatus(oshiId, postId, POST_STATUS.PROCESSING);
+  async execute(postId: PostId): Promise<void> {
+    const post = await this.postRepository.findById(postId);
+    if (!post) {
+      throw new NotFoundException('投稿が見つかりません');
+    }
+    if (post.status !== POST_STATUS.PARSED) {
+      throw new OshiLockBeException(409, `投稿のステータスが不正です: ${post.status}`);
+    }
+    if (!post.parseResult) {
+      throw new OshiLockBeException(500, 'パース結果が保存されていません');
+    }
+
+    const oshiId = post.oshiId;
+    await this.postRepository.updateStatus(postId, POST_STATUS.PROCESSING);
 
     try {
-      const post = await this.postRepository.findById(oshiId, postId);
-      if (!post) {
-        throw new NotFoundException('投稿が見つかりません');
-      }
-      if (post.status !== POST_STATUS.PARSED) {
-        throw new OshiLockBeException(409, `投稿のステータスが不正です: ${post.status}`);
-      }
-      if (!post.parseResult) {
-        throw new OshiLockBeException(500, 'パース結果が保存されていません');
-      }
-
       const parseResult = ParseResultJson.parse(post.parseResult);
 
       // TODO: 推しごとの公式ドメインリストと照合して OFFICIAL 判定する（GitHub Issue #4）
@@ -49,7 +50,7 @@ export class ProcessPostUseCase {
       // 1. URL 重複チェック（コードベース、高速）
       const isUrlDuplicate = await this.urlDuplicateChecker.isDuplicate(oshiId, post.sourceUrls);
       if (isUrlDuplicate) {
-        await this.postRepository.completeProcessing(oshiId, postId, MATCH_TYPE.DUPLICATE);
+        await this.postRepository.completeProcessing(postId, MATCH_TYPE.DUPLICATE);
         return;
       }
 
@@ -64,7 +65,7 @@ export class ProcessPostUseCase {
 
       // 4a. DUPLICATE: スキップ
       if (duplicateResult.matchType === MATCH_TYPE.DUPLICATE) {
-        await this.postRepository.completeProcessing(oshiId, postId, MATCH_TYPE.DUPLICATE);
+        await this.postRepository.completeProcessing(postId, MATCH_TYPE.DUPLICATE);
         return;
       }
 
@@ -79,7 +80,7 @@ export class ProcessPostUseCase {
           sourceReliability,
         });
         await this.toonService.updateToon(oshiId, rawToon, newEvent);
-        await this.postRepository.completeProcessing(oshiId, postId, MATCH_TYPE.NEW);
+        await this.postRepository.completeProcessing(postId, MATCH_TYPE.NEW);
         return;
       }
 
@@ -123,10 +124,10 @@ export class ProcessPostUseCase {
         sourceUrls: mergedSourceUrls,
       });
       await this.toonService.updateToon(oshiId, rawToon, updatedEvent);
-      await this.postRepository.completeProcessing(oshiId, postId, MATCH_TYPE.UPDATE);
+      await this.postRepository.completeProcessing(postId, MATCH_TYPE.UPDATE);
     } catch (e) {
       console.error('Post processing failed:', e);
-      await this.postRepository.updateStatus(oshiId, postId, POST_STATUS.FAILED);
+      await this.postRepository.updateStatus(postId, POST_STATUS.FAILED);
       throw e;
     }
   }

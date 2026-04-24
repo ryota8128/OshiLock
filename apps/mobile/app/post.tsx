@@ -14,7 +14,8 @@ import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Plus, Info } from 'lucide-react-native';
 import { colors, radii, typography } from '@/constants/theme';
-import * as Burnt from 'burnt';
+// TODO: dev build 移行後に burnt を有効化
+// import * as Burnt from 'burnt';
 import { useCreatePost } from '@/hooks/useCreatePost';
 import { MOCK_OSHI } from '@/data/mock';
 
@@ -50,11 +51,12 @@ export default function PostScreen() {
       {
         onSuccess: () => {
           router.back();
-          Burnt.toast({
-            title: '投稿しました！',
-            message: '反映まで少しお待ちください。',
-            preset: 'done',
-          });
+          // TODO: dev build 移行後に burnt を有効化
+          // Burnt.toast({
+          //   title: '投稿しました！',
+          //   message: '反映まで少しお待ちください。',
+          //   preset: 'done',
+          // });
         },
         onError: () =>
           Alert.alert('投稿に失敗しました', 'しばらくしてからもう一度お試しください。'),

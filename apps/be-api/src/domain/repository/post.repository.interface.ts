@@ -10,10 +10,10 @@ export type CreatePostParams = {
 
 export interface IPostRepository {
   create(params: CreatePostParams): Promise<Post>;
-  findById(oshiId: OshiId, postId: PostId): Promise<Post | null>;
+  findById(postId: PostId): Promise<Post | null>;
   countTodayByUser(userId: UserId, oshiId: OshiId): Promise<number>;
   findLatestByUser(userId: UserId): Promise<Post | null>;
-  updateStatus(oshiId: OshiId, postId: PostId, status: PostStatus): Promise<void>;
-  saveParseResult(oshiId: OshiId, postId: PostId, parseResultJson: string): Promise<void>;
-  completeProcessing(oshiId: OshiId, postId: PostId, matchType: MatchType): Promise<void>;
+  updateStatus(postId: PostId, status: PostStatus): Promise<void>;
+  saveParseResult(postId: PostId, parseResultJson: string): Promise<void>;
+  completeProcessing(postId: PostId, matchType: MatchType): Promise<void>;
 }
