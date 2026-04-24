@@ -1,6 +1,6 @@
 import { categoryColors, colors, typography } from '@/constants/theme';
-import { MOCK_CARDS, MOCK_COMMENTS, MOCK_POSTER_NAMES } from '@/data/mock';
-import type { EventCategory } from '@oshilock/shared';
+import { useEventInfo } from '@/hooks/useEventInfo';
+import type { EventCategory, Comment } from '@oshilock/shared';
 import type { DateString, TimeString } from '@oshilock/shared';
 import { router, useLocalSearchParams } from 'expo-router';
 import {
@@ -16,9 +16,26 @@ import {
   Trophy,
 } from 'lucide-react-native';
 import { useState } from 'react';
-import { Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  Share,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+/** 暫定の推しID。oshiId を画面遷移パラメータで受け取るまでの仮値。 */
+const MOCK_OSHI_ID = 'o_01JTESTMOCKOSHI00000000000';
+
+/** コメントAPIが未実装のため暫定で空配列を使用する。 */
+const PLACEHOLDER_COMMENTS: Comment[] = [];
+
+/** posterNames APIが未実装のため暫定で空オブジェクトを使用する。 */
+const PLACEHOLDER_POSTER_NAMES: Record<string, string> = {};
 
 const catKey = (cat: EventCategory): keyof typeof categoryColors => {
   switch (cat) {
@@ -52,17 +69,26 @@ export default function EventDetailScreen() {
   const insets = useSafeAreaInsets();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const card = MOCK_CARDS.find((c) => c.id === id);
-  if (!card) {
+  const { data: card, isLoading, isError } = useEventInfo(MOCK_OSHI_ID, id);
+
+  if (isLoading) {
     return (
-      <View style={[styles.container, { paddingTop: insets.top }]}>
-        <Text>カードが見つかりません</Text>
+      <View style={[styles.container, styles.centered, { paddingTop: insets.top }]}>
+        <ActivityIndicator color={colors.ink} />
+      </View>
+    );
+  }
+
+  if (isError || !card) {
+    return (
+      <View style={[styles.container, styles.centered, { paddingTop: insets.top }]}>
+        <Text style={styles.errorText}>イベント情報が見つかりません</Text>
       </View>
     );
   }
 
   const c = categoryColors[catKey(card.category)];
-  const comments = MOCK_COMMENTS.filter((cm) => cm.eventId === card.id);
+  const comments = PLACEHOLDER_COMMENTS;
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -137,12 +163,7 @@ export default function EventDetailScreen() {
 
         {/* Save button */}
         <Pressable style={styles.saveButton}>
-          <Bookmark
-            size={16}
-            color={colors.watchedRose}
-            strokeWidth={1.8}
-            fill={card.saved ? colors.watchedRose : 'none'}
-          />
+          <Bookmark size={16} color={colors.watchedRose} strokeWidth={1.8} fill="none" />
           <Text style={styles.saveButtonText}>保存する</Text>
           <Text style={styles.saveCount}>{card.savedCount}</Text>
         </Pressable>
@@ -165,7 +186,7 @@ export default function EventDetailScreen() {
         {/* Body */}
         <Text style={styles.sectionLabel}>詳細</Text>
         <View style={styles.bodyCard}>
-          <Text style={styles.bodyText}>{card.content}</Text>
+          <Text style={styles.bodyText}>{card.detail}</Text>
         </View>
 
         {/* Source */}
@@ -198,7 +219,7 @@ export default function EventDetailScreen() {
             <View style={styles.top3Card}>
               {card.fastestPosterIds.map((uid, i) => {
                 if (!uid) return null;
-                const name = MOCK_POSTER_NAMES[uid] || uid;
+                const name = PLACEHOLDER_POSTER_NAMES[uid] ?? uid;
                 const isLast = card.fastestPosterIds.slice(i + 1).every((u) => u === null);
                 return (
                   <View key={i} style={[styles.top3Row, !isLast && styles.top3RowBorder]}>
@@ -228,7 +249,7 @@ export default function EventDetailScreen() {
         <Text style={styles.sectionLabel}>コメント · {card.commentCount}</Text>
         <View style={styles.commentList}>
           {comments.map((cm) => {
-            const name = MOCK_POSTER_NAMES[cm.userId] || cm.userId;
+            const name = PLACEHOLDER_POSTER_NAMES[cm.userId] ?? cm.userId;
             return (
               <View key={cm.id} style={styles.commentRow}>
                 <View style={styles.commentAvatar}>
@@ -253,6 +274,8 @@ export default function EventDetailScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.paper },
+  centered: { justifyContent: 'center', alignItems: 'center' },
+  errorText: { fontSize: 14, color: colors.inkSoft },
   navBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
